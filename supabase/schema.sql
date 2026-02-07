@@ -114,7 +114,52 @@ create trigger trg_compute_audit_ready
   for each row
   execute function public.compute_audit_ready();
 
--- 6. Create the hsa-documents storage bucket for file uploads
+-- 6. Create user profiles table (auto-created on signup via trigger)
+create table if not exists public.profiles (
+  id uuid references auth.users(id) on delete cascade primary key,
+  email text,
+  created_at timestamptz default now() not null
+);
+
+alter table public.profiles enable row level security;
+
+create policy "Users can view their own profile"
+  on public.profiles for select using (auth.uid() = id);
+
+create policy "Users can update their own profile"
+  on public.profiles for update using (auth.uid() = id);
+
+-- 7. Auto-create profile + storage folders on signup
+-- This trigger fires when a new user is inserted into auth.users.
+-- It creates a profile row and initializes the user's document folder
+-- structure in the hsa-documents bucket with a .keep placeholder.
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  -- Create profile row
+  insert into public.profiles (id, email)
+  values (new.id, new.email);
+
+  -- Initialize storage folders with a .keep placeholder
+  -- This ensures the folder structure exists before the user uploads
+  insert into storage.objects (bucket_id, name, owner, metadata)
+  values
+    ('hsa-documents', new.id || '/receipt/.keep', new.id, '{"placeholder":true}'::jsonb),
+    ('hsa-documents', new.id || '/eob/.keep', new.id, '{"placeholder":true}'::jsonb),
+    ('hsa-documents', new.id || '/invoice/.keep', new.id, '{"placeholder":true}'::jsonb),
+    ('hsa-documents', new.id || '/cc-statement/.keep', new.id, '{"placeholder":true}'::jsonb)
+  on conflict do nothing;
+
+  return new;
+end;
+$$ language plpgsql security definer;
+
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row
+  execute function public.handle_new_user();
+
+-- 8. Create the hsa-documents storage bucket for file uploads
 -- Documents are stored per-user: {user_id}/{folder}/{timestamp}-{filename}
 -- Folders: receipt, eob, invoice, cc-statement
 insert into storage.buckets (id, name, public)

@@ -30,10 +30,29 @@ export async function signup(formData: FormData) {
     password: formData.get("password") as string,
   };
 
-  const { error } = await supabase.auth.signUp(data);
+  const { data: authData, error } = await supabase.auth.signUp(data);
 
   if (error) {
     redirect("/signup?error=" + encodeURIComponent(error.message));
+  }
+
+  // Initialize the user's document folders in Supabase Storage.
+  // Each user gets their own folder: {user_id}/receipt/, eob/, invoice/, cc-statement/
+  // We upload a tiny .keep placeholder so the folder structure exists.
+  if (authData.user) {
+    const userId = authData.user.id;
+    const folders = ["receipt", "eob", "invoice", "cc-statement"];
+    const placeholder = new Blob([""], { type: "text/plain" });
+
+    await Promise.allSettled(
+      folders.map((folder) =>
+        supabase.storage
+          .from("hsa-documents")
+          .upload(`${userId}/${folder}/.keep`, placeholder, {
+            upsert: true,
+          })
+      )
+    );
   }
 
   revalidatePath("/", "layout");
