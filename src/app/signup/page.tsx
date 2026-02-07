@@ -24,7 +24,7 @@ export default async function SignUpPage({
           </div>
           <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
           <CardDescription>
-            Start tracking your HSA expenses today
+            Start tracking your expenses with HSA Plus
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -24,7 +24,7 @@ export default async function LoginPage({
           </div>
           <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
           <CardDescription>
-            Sign in to your HSA Expense Tracker account
+            Sign in to your HSA Plus account
           </CardDescription>
         </CardHeader>
         <CardContent>

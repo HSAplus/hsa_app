@@ -32,7 +32,7 @@ export default async function Home() {
             <div className="rounded-lg bg-emerald-100 dark:bg-emerald-900/30 p-1.5">
               <Heart className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <span className="text-lg font-bold">HSA Tracker</span>
+            <span className="text-lg font-bold">HSA Plus</span>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/login">
@@ -231,7 +231,7 @@ export default async function Home() {
       <footer className="border-t bg-white dark:bg-gray-950 py-8">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
           <p>
-            © {new Date().getFullYear()} HSA Expense Tracker. Built for smart
+            © {new Date().getFullYear()} HSA Plus. Built for smart
             HSA management.
           </p>
         </div>

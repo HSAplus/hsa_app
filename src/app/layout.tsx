@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HSA Expense Tracker",
+  title: "HSA Plus",
   description:
     "Track your medical expenses, reimbursements, and store receipts/EOBs/invoices for your Health Savings Account.",
 };

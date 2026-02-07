@@ -114,7 +114,7 @@ export function DashboardShell({ user }: DashboardShellProps) {
             <div className="rounded-lg bg-emerald-100 dark:bg-emerald-900/30 p-1.5">
               <Heart className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <span className="text-lg font-bold">HSA Tracker</span>
+            <span className="text-lg font-bold">HSA Plus</span>
           </div>
 
           <div className="flex items-center gap-3">
