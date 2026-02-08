@@ -12,7 +12,6 @@ import {
 } from "@/app/dashboard/actions";
 import type { Expense, DashboardStats, Profile } from "@/lib/types";
 import { StatsCards } from "./stats-cards";
-import { SavingsCalculator } from "./savings-calculator/savings-calculator";
 import { ExpenseTable } from "./expense-table";
 import { OnboardingDialog } from "./onboarding-dialog";
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Plus, RefreshCw, UserCog } from "lucide-react";
+import { LogOut, Plus, RefreshCw, UserCog, Calculator } from "lucide-react";
 import Image from "next/image";
 import { Toaster, toast } from "sonner";
 import Link from "next/link";
@@ -130,6 +129,17 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
             </Button>
 
             <Button
+              variant="outline"
+              size="sm"
+              asChild
+            >
+              <Link href="/calculator">
+                <Calculator className="h-4 w-4 mr-2" />
+                Calculator
+              </Link>
+            </Button>
+
+            <Button
               size="sm"
               asChild
               className="bg-emerald-600 hover:bg-emerald-700 text-white"
@@ -188,10 +198,6 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
         </div>
 
         <StatsCards stats={stats} loading={loading} />
-
-        <div className="mt-8">
-          <SavingsCalculator />
-        </div>
 
         <div className="mt-8">
           <ExpenseTable
