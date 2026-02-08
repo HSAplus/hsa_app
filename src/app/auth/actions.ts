@@ -133,14 +133,18 @@ export async function updateProfile(formData: FormData) {
   const firstName = (formData.get("firstName") as string)?.trim() || "";
   const lastName = (formData.get("lastName") as string)?.trim() || "";
   const dateOfBirth = (formData.get("dateOfBirth") as string) || null;
+  const expectedAnnualReturn = parseFloat(formData.get("expectedAnnualReturn") as string) || 7;
+  const timeHorizonYears = parseInt(formData.get("timeHorizonYears") as string, 10) || 20;
   const newEmail = formData.get("email") as string;
   const newPassword = formData.get("newPassword") as string;
   const confirmPassword = formData.get("confirmPassword") as string;
 
   // Update profiles table
-  const profileUpdates: Record<string, string | null> = {
+  const profileUpdates: Record<string, string | number | null> = {
     first_name: firstName,
     last_name: lastName,
+    expected_annual_return: expectedAnnualReturn,
+    time_horizon_years: timeHorizonYears,
     updated_at: new Date().toISOString(),
   };
   if (dateOfBirth) {

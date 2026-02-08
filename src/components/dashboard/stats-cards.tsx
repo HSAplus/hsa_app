@@ -2,7 +2,7 @@
 
 import type { DashboardStats } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, TrendingUp, Clock, Wallet } from "lucide-react";
+import { DollarSign, TrendingUp, Clock, Wallet, Sprout } from "lucide-react";
 
 interface StatsCardsProps {
   stats: DashboardStats;
@@ -42,6 +42,14 @@ export function StatsCards({ stats, loading }: StatsCardsProps) {
       icon: Wallet,
       color: "text-purple-600 dark:text-purple-400",
       bg: "bg-purple-100 dark:bg-purple-900/30",
+    },
+    {
+      title: "Expected Return",
+      value: `$${stats.expectedReturn.extraGrowth.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+      description: `Based on ${stats.expectedReturn.annualReturn}% return over ${stats.expectedReturn.timeHorizonYears} yrs — from receipts you saved`,
+      icon: Sprout,
+      color: "text-teal-600 dark:text-teal-400",
+      bg: "bg-teal-100 dark:bg-teal-900/30",
     },
   ];
 

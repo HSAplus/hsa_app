@@ -13,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, Loader2, User as UserIcon, Mail, Lock, Shield, CalendarDays, Users, Plus, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Loader2, User as UserIcon, Mail, Lock, Shield, CalendarDays, Users, Plus, Pencil, Trash2, TrendingUp } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
@@ -30,6 +30,12 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
   const [lastName, setLastName] = useState(profile?.last_name || "");
   const [dateOfBirth, setDateOfBirth] = useState(profile?.date_of_birth || "");
   const [email, setEmail] = useState(user.email || "");
+  const [expectedAnnualReturn, setExpectedAnnualReturn] = useState(
+    profile?.expected_annual_return?.toString() || "7"
+  );
+  const [timeHorizonYears, setTimeHorizonYears] = useState(
+    profile?.time_horizon_years?.toString() || "20"
+  );
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -149,6 +155,8 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
     formData.set("lastName", lastName);
     formData.set("dateOfBirth", dateOfBirth);
     formData.set("email", email);
+    formData.set("expectedAnnualReturn", expectedAnnualReturn);
+    formData.set("timeHorizonYears", timeHorizonYears);
     formData.set("newPassword", newPassword);
     formData.set("confirmPassword", confirmPassword);
 
@@ -286,6 +294,57 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                   value={dateOfBirth}
                   onChange={(e) => setDateOfBirth(e.target.value)}
                 />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* HSA Investment Parameters */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <CardTitle className="text-base">HSA Investment Parameters</CardTitle>
+                  <CardDescription>
+                    Used to project how much your HSA grows by delaying reimbursement
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="expectedAnnualReturn">Expected Annual Return (%)</Label>
+                  <Input
+                    id="expectedAnnualReturn"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="30"
+                    value={expectedAnnualReturn}
+                    onChange={(e) => setExpectedAnnualReturn(e.target.value)}
+                    placeholder="7"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Average S&P 500 return is ~7-10% after inflation
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="timeHorizonYears">Time Horizon (years)</Label>
+                  <Input
+                    id="timeHorizonYears"
+                    type="number"
+                    step="1"
+                    min="1"
+                    max="50"
+                    value={timeHorizonYears}
+                    onChange={(e) => setTimeHorizonYears(e.target.value)}
+                    placeholder="20"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    How many years before you plan to reimburse from HSA
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>

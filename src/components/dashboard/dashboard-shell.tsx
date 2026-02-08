@@ -43,6 +43,7 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
     byAccount: { hsa: 0, lpfsa: 0, hcfsa: 0 },
     auditReadiness: { total: 0, ready: 0, missing: 0 },
     retentionAlerts: 0,
+    expectedReturn: { projectedValue: 0, extraGrowth: 0, annualReturn: 7, timeHorizonYears: 20 },
   });
   const [loading, setLoading] = useState(true);
 

@@ -34,6 +34,8 @@ export interface Profile {
   first_name: string;
   last_name: string;
   date_of_birth: string | null;
+  expected_annual_return: number; // e.g. 7.00 means 7%
+  time_horizon_years: number;    // e.g. 20 means reimburse in 20 years
   created_at: string;
   updated_at: string;
 }
@@ -213,6 +215,12 @@ export interface DashboardStats {
     missing: number;
   };
   retentionAlerts: number; // Expenses approaching 7-year retention limit
+  expectedReturn: {
+    projectedValue: number;  // Total future value of all pending expenses
+    extraGrowth: number;     // projectedValue - pendingReimbursement (pure growth)
+    annualReturn: number;    // The rate used (from profile)
+    timeHorizonYears: number; // The horizon used (from profile)
+  };
 }
 
 // ViaBenefits reimbursement request form fields
@@ -271,4 +279,45 @@ export function getRetentionStatus(taxYear: number): "safe" | "warning" | "criti
   if (yearsElapsed >= IRS_RULES.RETENTION_YEARS) return "critical";
   if (yearsElapsed >= IRS_RULES.RETENTION_YEARS - 1) return "warning";
   return "safe";
+}
+
+/**
+ * Calculate projected HSA growth for unreimbursed expenses.
+ *
+ * Strategy: Pay medical bills out-of-pocket, let the equivalent HSA funds stay
+ * invested, then reimburse yourself after the time horizon.
+ *
+ * For each unreimbursed expense:
+ *   - Years already invested = (today - date_of_service) in years
+ *   - Remaining years = time_horizon - years_already_invested (min 0)
+ *   - Future Value = amount × (1 + annualReturn)^totalYears
+ *     where totalYears = years_already_invested + remaining_years
+ *     (i.e. the full time_horizon from the date of the expense)
+ *
+ * Returns { projectedValue, extraGrowth } summed across all pending expenses.
+ */
+export function calculateExpectedReturn(
+  expenses: Pick<Expense, "amount" | "date_of_service" | "reimbursed">[],
+  annualReturnPct: number,  // e.g. 7 for 7%
+  timeHorizonYears: number, // e.g. 20
+): { projectedValue: number; extraGrowth: number } {
+  const rate = annualReturnPct / 100;
+  let projectedValue = 0;
+  let totalPending = 0;
+
+  for (const expense of expenses) {
+    if (expense.reimbursed) continue;
+
+    const amount = expense.amount;
+    totalPending += amount;
+
+    // Full compound growth over the time horizon from the date of the expense
+    const fv = amount * Math.pow(1 + rate, timeHorizonYears);
+    projectedValue += fv;
+  }
+
+  return {
+    projectedValue: Math.round(projectedValue * 100) / 100,
+    extraGrowth: Math.round((projectedValue - totalPending) * 100) / 100,
+  };
 }

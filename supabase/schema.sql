@@ -122,6 +122,8 @@ create table if not exists public.profiles (
   first_name text not null default '',
   last_name text not null default '',
   date_of_birth date,
+  expected_annual_return decimal(5,2) not null default 7.00,
+  time_horizon_years integer not null default 20,
   created_at timestamptz default now() not null,
   updated_at timestamptz default now() not null
 );

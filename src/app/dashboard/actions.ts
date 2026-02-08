@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { Expense, ExpenseFormData, DashboardStats, Profile, Dependent } from "@/lib/types";
-import { isAuditReady, getRetentionStatus } from "@/lib/types";
+import { isAuditReady, getRetentionStatus, calculateExpectedReturn } from "@/lib/types";
 
 export async function getProfile(): Promise<Profile | null> {
   const supabase = await createClient();
@@ -178,7 +178,7 @@ export async function getExpenses(): Promise<Expense[]> {
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
-  const expenses = await getExpenses();
+  const [expenses, profile] = await Promise.all([getExpenses(), getProfile()]);
 
   const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
   const totalReimbursed = expenses
@@ -207,6 +207,15 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     return status === "warning" || status === "critical";
   }).length;
 
+  // Expected return: projected HSA growth if pending amounts stay invested
+  const annualReturn = profile?.expected_annual_return ?? 7;
+  const timeHorizonYears = profile?.time_horizon_years ?? 20;
+  const { projectedValue, extraGrowth } = calculateExpectedReturn(
+    expenses,
+    annualReturn,
+    timeHorizonYears,
+  );
+
   return {
     totalExpenses,
     totalReimbursed,
@@ -215,6 +224,12 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     byAccount,
     auditReadiness,
     retentionAlerts,
+    expectedReturn: {
+      projectedValue,
+      extraGrowth,
+      annualReturn,
+      timeHorizonYears,
+    },
   };
 }
 
