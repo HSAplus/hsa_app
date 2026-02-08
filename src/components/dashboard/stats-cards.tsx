@@ -2,7 +2,7 @@
 
 import type { DashboardStats } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, TrendingUp, Clock, Wallet, Sprout } from "lucide-react";
+import { DollarSign, TrendingUp, Clock, Wallet, Sprout, PiggyBank } from "lucide-react";
 
 interface StatsCardsProps {
   stats: DashboardStats;
@@ -11,6 +11,14 @@ interface StatsCardsProps {
 
 export function StatsCards({ stats, loading }: StatsCardsProps) {
   const cards = [
+    {
+      title: "Current HSA Balance",
+      value: `$${stats.currentHsaBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
+      description: "Your current HSA account balance",
+      icon: PiggyBank,
+      color: "text-indigo-600 dark:text-indigo-400",
+      bg: "bg-indigo-100 dark:bg-indigo-900/30",
+    },
     {
       title: "Total Out-of-Pocket",
       value: `$${stats.totalExpenses.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,

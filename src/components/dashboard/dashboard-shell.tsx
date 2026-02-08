@@ -14,6 +14,7 @@ import type { Expense, DashboardStats, Profile } from "@/lib/types";
 import { StatsCards } from "./stats-cards";
 import { SavingsCalculator } from "./savings-calculator/savings-calculator";
 import { ExpenseTable } from "./expense-table";
+import { OnboardingDialog } from "./onboarding-dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -36,6 +37,7 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
   const router = useRouter();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
+    currentHsaBalance: 0,
     totalExpenses: 0,
     totalReimbursed: 0,
     pendingReimbursement: 0,
@@ -104,6 +106,9 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
   return (
     <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950">
       <Toaster richColors position="top-right" />
+
+      {/* First-login onboarding popup */}
+      <OnboardingDialog profile={profile} onComplete={loadData} />
 
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b bg-white/80 dark:bg-gray-950/80 backdrop-blur supports-backdrop-filter:bg-white/60">

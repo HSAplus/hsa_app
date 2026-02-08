@@ -27,6 +27,52 @@ export async function getProfile(): Promise<Profile | null> {
   return data as Profile;
 }
 
+export async function completeOnboarding(data: {
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+  date_of_birth: string | null;
+  current_hsa_balance: number;
+  annual_contribution: number;
+  expected_annual_return: number;
+  time_horizon_years: number;
+  federal_tax_bracket: number;
+  state_tax_rate: number;
+}): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      first_name: data.first_name,
+      middle_name: data.middle_name,
+      last_name: data.last_name,
+      date_of_birth: data.date_of_birth,
+      current_hsa_balance: data.current_hsa_balance,
+      annual_contribution: data.annual_contribution,
+      expected_annual_return: data.expected_annual_return,
+      time_horizon_years: data.time_horizon_years,
+      federal_tax_bracket: data.federal_tax_bracket,
+      state_tax_rate: data.state_tax_rate,
+      onboarding_completed: true,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", user.id);
+
+  if (error) {
+    console.error("Error completing onboarding:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  return {};
+}
+
 export async function getDependents(): Promise<Dependent[]> {
   const supabase = await createClient();
   const {
@@ -217,6 +263,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   );
 
   return {
+    currentHsaBalance: profile?.current_hsa_balance ?? 0,
     totalExpenses,
     totalReimbursed,
     pendingReimbursement,

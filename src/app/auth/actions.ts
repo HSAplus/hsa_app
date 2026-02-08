@@ -109,10 +109,15 @@ export async function updateProfile(formData: FormData) {
   }
 
   const firstName = (formData.get("firstName") as string)?.trim() || "";
+  const middleName = (formData.get("middleName") as string)?.trim() || "";
   const lastName = (formData.get("lastName") as string)?.trim() || "";
   const dateOfBirth = (formData.get("dateOfBirth") as string) || null;
+  const hsaBalance = parseFloat(formData.get("hsaBalance") as string) || 0;
+  const annualContribution = parseFloat(formData.get("annualContribution") as string) || 0;
   const expectedAnnualReturn = parseFloat(formData.get("expectedAnnualReturn") as string) || 7;
   const timeHorizonYears = parseInt(formData.get("timeHorizonYears") as string, 10) || 20;
+  const federalBracket = parseFloat(formData.get("federalBracket") as string) || 22;
+  const stateTaxRate = parseFloat(formData.get("stateTaxRate") as string) || 5;
   const newEmail = formData.get("email") as string;
   const newPassword = formData.get("newPassword") as string;
   const confirmPassword = formData.get("confirmPassword") as string;
@@ -120,9 +125,14 @@ export async function updateProfile(formData: FormData) {
   // Update profiles table
   const profileUpdates: Record<string, string | number | null> = {
     first_name: firstName,
+    middle_name: middleName,
     last_name: lastName,
+    current_hsa_balance: hsaBalance,
+    annual_contribution: annualContribution,
     expected_annual_return: expectedAnnualReturn,
     time_horizon_years: timeHorizonYears,
+    federal_tax_bracket: federalBracket,
+    state_tax_rate: stateTaxRate,
     updated_at: new Date().toISOString(),
   };
   if (dateOfBirth) {

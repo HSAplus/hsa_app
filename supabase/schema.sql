@@ -120,10 +120,16 @@ create table if not exists public.profiles (
   id uuid references auth.users(id) on delete cascade primary key,
   email text,
   first_name text not null default '',
+  middle_name text not null default '',
   last_name text not null default '',
   date_of_birth date,
+  current_hsa_balance decimal(12,2) not null default 0.00,
+  annual_contribution decimal(10,2) not null default 4150.00,
   expected_annual_return decimal(5,2) not null default 7.00,
   time_horizon_years integer not null default 20,
+  federal_tax_bracket decimal(4,1) not null default 22.0,
+  state_tax_rate decimal(4,1) not null default 5.0,
+  onboarding_completed boolean not null default false,
   created_at timestamptz default now() not null,
   updated_at timestamptz default now() not null
 );

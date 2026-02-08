@@ -27,14 +27,27 @@ interface ProfileFormProps {
 export function ProfileForm({ user, profile, dependents: initialDependents }: ProfileFormProps) {
   const [saving, setSaving] = useState(false);
   const [firstName, setFirstName] = useState(profile?.first_name || "");
+  const [middleName, setMiddleName] = useState(profile?.middle_name || "");
   const [lastName, setLastName] = useState(profile?.last_name || "");
   const [dateOfBirth, setDateOfBirth] = useState(profile?.date_of_birth || "");
   const [email, setEmail] = useState(user.email || "");
+  const [hsaBalance, setHsaBalance] = useState(
+    profile?.current_hsa_balance?.toString() || "0"
+  );
+  const [annualContribution, setAnnualContribution] = useState(
+    profile?.annual_contribution?.toString() || "4150"
+  );
   const [expectedAnnualReturn, setExpectedAnnualReturn] = useState(
     profile?.expected_annual_return?.toString() || "7"
   );
   const [timeHorizonYears, setTimeHorizonYears] = useState(
     profile?.time_horizon_years?.toString() || "20"
+  );
+  const [federalBracket, setFederalBracket] = useState(
+    profile?.federal_tax_bracket?.toString() || "22"
+  );
+  const [stateTaxRate, setStateTaxRate] = useState(
+    profile?.state_tax_rate?.toString() || "5"
   );
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -152,11 +165,16 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
 
     const formData = new FormData();
     formData.set("firstName", firstName);
+    formData.set("middleName", middleName);
     formData.set("lastName", lastName);
     formData.set("dateOfBirth", dateOfBirth);
     formData.set("email", email);
+    formData.set("hsaBalance", hsaBalance);
+    formData.set("annualContribution", annualContribution);
     formData.set("expectedAnnualReturn", expectedAnnualReturn);
     formData.set("timeHorizonYears", timeHorizonYears);
+    formData.set("federalBracket", federalBracket);
+    formData.set("stateTaxRate", stateTaxRate);
     formData.set("newPassword", newPassword);
     formData.set("confirmPassword", confirmPassword);
 
@@ -271,6 +289,17 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                   />
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="middleName">
+                  Middle Name <span className="text-xs text-muted-foreground">(optional)</span>
+                </Label>
+                <Input
+                  id="middleName"
+                  value={middleName}
+                  onChange={(e) => setMiddleName(e.target.value)}
+                  placeholder="Michael"
+                />
+              </div>
             </CardContent>
           </Card>
 
@@ -304,7 +333,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <CardTitle className="text-base">HSA Investment Parameters</CardTitle>
+                  <CardTitle className="text-base">HSA Investment Settings</CardTitle>
                   <CardDescription>
                     Used to project how much your HSA grows by delaying reimbursement
                   </CardDescription>
@@ -314,36 +343,116 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="expectedAnnualReturn">Expected Annual Return (%)</Label>
-                  <Input
-                    id="expectedAnnualReturn"
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    max="30"
-                    value={expectedAnnualReturn}
-                    onChange={(e) => setExpectedAnnualReturn(e.target.value)}
-                    placeholder="7"
-                  />
+                  <Label htmlFor="hsaBalance">Current HSA Balance</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+                    <Input
+                      id="hsaBalance"
+                      type="number"
+                      min="0"
+                      step="100"
+                      value={hsaBalance}
+                      onChange={(e) => setHsaBalance(e.target.value)}
+                      className="pl-7"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="annualContribution">Annual Contribution</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
+                    <Input
+                      id="annualContribution"
+                      type="number"
+                      min="0"
+                      max="8550"
+                      step="50"
+                      value={annualContribution}
+                      onChange={(e) => setAnnualContribution(e.target.value)}
+                      className="pl-7"
+                      placeholder="4150"
+                    />
+                  </div>
                   <p className="text-xs text-muted-foreground">
-                    Average S&P 500 return is ~7-10% after inflation
+                    2026 family max: $8,550
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="expectedAnnualReturn">Expected Annual Return</Label>
+                  <div className="relative">
+                    <Input
+                      id="expectedAnnualReturn"
+                      type="number"
+                      step="0.5"
+                      min="0"
+                      max="30"
+                      value={expectedAnnualReturn}
+                      onChange={(e) => setExpectedAnnualReturn(e.target.value)}
+                      className="pr-7"
+                      placeholder="7"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">%</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Average S&amp;P 500 return is ~7-10% after inflation
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="timeHorizonYears">Time Horizon (years)</Label>
-                  <Input
-                    id="timeHorizonYears"
-                    type="number"
-                    step="1"
-                    min="1"
-                    max="50"
-                    value={timeHorizonYears}
-                    onChange={(e) => setTimeHorizonYears(e.target.value)}
-                    placeholder="20"
-                  />
+                  <Label htmlFor="timeHorizonYears">Time Horizon</Label>
+                  <div className="relative">
+                    <Input
+                      id="timeHorizonYears"
+                      type="number"
+                      step="1"
+                      min="1"
+                      max="50"
+                      value={timeHorizonYears}
+                      onChange={(e) => setTimeHorizonYears(e.target.value)}
+                      className="pr-9"
+                      placeholder="20"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">yrs</span>
+                  </div>
                   <p className="text-xs text-muted-foreground">
                     How many years before you plan to reimburse from HSA
                   </p>
+                </div>
+              </div>
+              <Separator />
+              <p className="text-sm font-medium text-muted-foreground">Tax Settings</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="federalBracket">Federal Tax Bracket</Label>
+                  <Select value={federalBracket} onValueChange={setFederalBracket}>
+                    <SelectTrigger id="federalBracket">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {["10", "12", "22", "24", "32", "35", "37"].map((b) => (
+                        <SelectItem key={b} value={b}>{b}%</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="stateTaxRate">State Tax Rate</Label>
+                  <div className="relative">
+                    <Input
+                      id="stateTaxRate"
+                      type="number"
+                      min="0"
+                      max="15"
+                      step="0.1"
+                      value={stateTaxRate}
+                      onChange={(e) => setStateTaxRate(e.target.value)}
+                      className="pr-7"
+                      placeholder="5"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">%</span>
+                  </div>
                 </div>
               </div>
             </CardContent>

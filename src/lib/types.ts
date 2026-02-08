@@ -32,10 +32,16 @@ export interface Profile {
   id: string;
   email: string;
   first_name: string;
+  middle_name: string;
   last_name: string;
   date_of_birth: string | null;
-  expected_annual_return: number; // e.g. 7.00 means 7%
-  time_horizon_years: number;    // e.g. 20 means reimburse in 20 years
+  current_hsa_balance: number;
+  annual_contribution: number;
+  expected_annual_return: number;   // e.g. 7.00 means 7%
+  time_horizon_years: number;       // e.g. 20 means reimburse in 20 years
+  federal_tax_bracket: number;      // e.g. 22.0 means 22%
+  state_tax_rate: number;           // e.g. 5.0 means 5%
+  onboarding_completed: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -200,6 +206,7 @@ export interface ExpenseFormData {
 }
 
 export interface DashboardStats {
+  currentHsaBalance: number;
   totalExpenses: number;
   totalReimbursed: number;
   pendingReimbursement: number;
