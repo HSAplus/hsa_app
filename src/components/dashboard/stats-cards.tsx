@@ -2,7 +2,7 @@
 
 import type { DashboardStats } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, TrendingUp, Clock, Wallet, ShieldCheck, AlertTriangle } from "lucide-react";
+import { DollarSign, TrendingUp, Clock, Wallet } from "lucide-react";
 
 interface StatsCardsProps {
   stats: DashboardStats;
@@ -10,11 +10,6 @@ interface StatsCardsProps {
 }
 
 export function StatsCards({ stats, loading }: StatsCardsProps) {
-  const auditPct =
-    stats.auditReadiness.total > 0
-      ? Math.round((stats.auditReadiness.ready / stats.auditReadiness.total) * 100)
-      : 100;
-
   const cards = [
     {
       title: "Total Out-of-Pocket",
@@ -47,44 +42,6 @@ export function StatsCards({ stats, loading }: StatsCardsProps) {
       icon: Wallet,
       color: "text-purple-600 dark:text-purple-400",
       bg: "bg-purple-100 dark:bg-purple-900/30",
-    },
-    {
-      title: "IRS Audit Readiness",
-      value: `${auditPct}%`,
-      description:
-        stats.auditReadiness.missing > 0
-          ? `${stats.auditReadiness.missing} expense${stats.auditReadiness.missing !== 1 ? "s" : ""} missing docs — 20% penalty risk`
-          : "All expenses have required documentation",
-      icon: ShieldCheck,
-      color:
-        auditPct === 100
-          ? "text-emerald-600 dark:text-emerald-400"
-          : auditPct >= 75
-            ? "text-amber-600 dark:text-amber-400"
-            : "text-red-600 dark:text-red-400",
-      bg:
-        auditPct === 100
-          ? "bg-emerald-100 dark:bg-emerald-900/30"
-          : auditPct >= 75
-            ? "bg-amber-100 dark:bg-amber-900/30"
-            : "bg-red-100 dark:bg-red-900/30",
-    },
-    {
-      title: "7-Year Retention",
-      value: stats.retentionAlerts > 0 ? `${stats.retentionAlerts} alert${stats.retentionAlerts !== 1 ? "s" : ""}` : "All clear",
-      description:
-        stats.retentionAlerts > 0
-          ? "Expenses nearing 7-year IRS retention limit"
-          : "Keep records for 7 years per IRS rules",
-      icon: AlertTriangle,
-      color:
-        stats.retentionAlerts > 0
-          ? "text-orange-600 dark:text-orange-400"
-          : "text-emerald-600 dark:text-emerald-400",
-      bg:
-        stats.retentionAlerts > 0
-          ? "bg-orange-100 dark:bg-orange-900/30"
-          : "bg-emerald-100 dark:bg-emerald-900/30",
     },
   ];
 
