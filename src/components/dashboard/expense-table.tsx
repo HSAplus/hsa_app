@@ -280,51 +280,51 @@ export function ExpenseTable({
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1.5">
-                        {expense.receipt_url && (
+                        {expense.receipt_urls?.length > 0 && (
                           <a
-                            href={expense.receipt_url}
+                            href={expense.receipt_urls[0]}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-0.5 rounded-md bg-purple-100 dark:bg-purple-900/30 px-1.5 py-0.5 text-[10px] font-medium text-purple-700 dark:text-purple-300 hover:opacity-80 transition-opacity"
                           >
                             <FileText className="h-3 w-3" />
-                            RCT
+                            RCT{expense.receipt_urls.length > 1 ? ` ×${expense.receipt_urls.length}` : ""}
                           </a>
                         )}
-                        {expense.eob_url && (
+                        {expense.eob_urls?.length > 0 && (
                           <a
-                            href={expense.eob_url}
+                            href={expense.eob_urls[0]}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-0.5 rounded-md bg-blue-100 dark:bg-blue-900/30 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 dark:text-blue-300 hover:opacity-80 transition-opacity"
                           >
                             <FileText className="h-3 w-3" />
-                            EOB
+                            EOB{expense.eob_urls.length > 1 ? ` ×${expense.eob_urls.length}` : ""}
                           </a>
                         )}
-                        {expense.invoice_url && (
+                        {expense.invoice_urls?.length > 0 && (
                           <a
-                            href={expense.invoice_url}
+                            href={expense.invoice_urls[0]}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/30 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300 hover:opacity-80 transition-opacity"
                           >
                             <FileText className="h-3 w-3" />
-                            INV
+                            INV{expense.invoice_urls.length > 1 ? ` ×${expense.invoice_urls.length}` : ""}
                           </a>
                         )}
-                        {expense.credit_card_statement_url && (
+                        {expense.credit_card_statement_urls?.length > 0 && (
                           <a
-                            href={expense.credit_card_statement_url}
+                            href={expense.credit_card_statement_urls[0]}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-0.5 rounded-md bg-orange-100 dark:bg-orange-900/30 px-1.5 py-0.5 text-[10px] font-medium text-orange-700 dark:text-orange-300 hover:opacity-80 transition-opacity"
                           >
                             <FileText className="h-3 w-3" />
-                            CC
+                            CC{expense.credit_card_statement_urls.length > 1 ? ` ×${expense.credit_card_statement_urls.length}` : ""}
                           </a>
                         )}
-                        {!expense.receipt_url && !expense.eob_url && !expense.invoice_url && !expense.credit_card_statement_url && (
+                        {(!expense.receipt_urls || expense.receipt_urls.length === 0) && (!expense.eob_urls || expense.eob_urls.length === 0) && (!expense.invoice_urls || expense.invoice_urls.length === 0) && (!expense.credit_card_statement_urls || expense.credit_card_statement_urls.length === 0) && (
                           <span className="text-xs text-muted-foreground">—</span>
                         )}
                       </div>

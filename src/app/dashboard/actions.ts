@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import type { Expense, ExpenseFormData, DashboardStats, Profile } from "@/lib/types";
+import type { Expense, ExpenseFormData, DashboardStats, Profile, Dependent } from "@/lib/types";
 import { isAuditReady, getRetentionStatus } from "@/lib/types";
 
 export async function getProfile(): Promise<Profile | null> {
@@ -25,6 +25,111 @@ export async function getProfile(): Promise<Profile | null> {
   }
 
   return data as Profile;
+}
+
+export async function getDependents(): Promise<Dependent[]> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("dependents")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching dependents:", error);
+    return [];
+  }
+
+  return data as Dependent[];
+}
+
+export async function addDependent(dependent: {
+  first_name: string;
+  last_name: string;
+  date_of_birth: string | null;
+  relationship: string;
+}): Promise<{ error?: string; dependent?: Dependent }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { data, error } = await supabase.from("dependents").insert({
+    user_id: user.id,
+    ...dependent,
+  }).select().single();
+
+  if (error) {
+    console.error("Error adding dependent:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard/profile");
+  return { dependent: data as Dependent };
+}
+
+export async function updateDependent(
+  id: string,
+  dependent: {
+    first_name: string;
+    last_name: string;
+    date_of_birth: string | null;
+    relationship: string;
+  }
+): Promise<{ error?: string; dependent?: Dependent }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { data, error } = await supabase
+    .from("dependents")
+    .update({ ...dependent, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error updating dependent:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard/profile");
+  return { dependent: data as Dependent };
+}
+
+export async function deleteDependent(id: string): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { error } = await supabase
+    .from("dependents")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("Error deleting dependent:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard/profile");
+  return {};
 }
 
 export async function getExpenseById(id: string): Promise<Expense | null> {

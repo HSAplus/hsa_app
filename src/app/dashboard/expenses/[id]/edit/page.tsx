@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
-import { getExpenseById, getProfile } from "@/app/dashboard/actions";
+import { getExpenseById, getProfile, getDependents } from "@/app/dashboard/actions";
 import { ExpenseFormPage } from "@/components/dashboard/expense-form-page";
 
 interface EditExpensePageProps {
@@ -18,14 +18,15 @@ export default async function EditExpensePage({ params }: EditExpensePageProps) 
   }
 
   const { id } = await params;
-  const [expense, profile] = await Promise.all([
+  const [expense, profile, dependents] = await Promise.all([
     getExpenseById(id),
     getProfile(),
+    getDependents(),
   ]);
 
   if (!expense) {
     notFound();
   }
 
-  return <ExpenseFormPage expense={expense} profile={profile} />;
+  return <ExpenseFormPage expense={expense} profile={profile} dependents={dependents} />;
 }

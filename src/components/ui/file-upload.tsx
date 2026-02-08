@@ -10,15 +10,16 @@ import {
   Loader2,
   ExternalLink,
   ImageIcon,
+  Plus,
 } from "lucide-react";
 
 interface FileUploadProps {
   /** The storage folder path inside the bucket, e.g. "eob" or "receipts" */
   folder: string;
-  /** Current file URL (if already uploaded) */
-  value: string | null;
-  /** Called with the public URL after upload, or null on remove */
-  onChange: (url: string | null) => void;
+  /** Current file URLs (already uploaded) */
+  value: string[];
+  /** Called with the updated URL array after upload or remove */
+  onChange: (urls: string[]) => void;
   /** Label shown above the upload area */
   label: string;
   /** Optional helper text */
@@ -59,7 +60,6 @@ export function FileUpload({
       try {
         const supabase = createClient();
 
-        // Get the current user
         const {
           data: { user },
         } = await supabase.auth.getUser();
@@ -69,14 +69,11 @@ export function FileUpload({
           return;
         }
 
-        // Build path: userId/folder/timestamp-filename
-        const fileExt = file.name.split(".").pop()?.toLowerCase() || "bin";
         const safeName = file.name
           .replace(/[^a-zA-Z0-9.-]/g, "_")
           .substring(0, 50);
         const fileName = `${user.id}/${folder}/${Date.now()}-${safeName}`;
 
-        // Upload to Supabase Storage
         const { error: uploadError } = await supabase.storage
           .from("hsa-documents")
           .upload(fileName, file, {
@@ -90,12 +87,11 @@ export function FileUpload({
           return;
         }
 
-        // Get the public URL
         const {
           data: { publicUrl },
         } = supabase.storage.from("hsa-documents").getPublicUrl(fileName);
 
-        onChange(publicUrl);
+        onChange([...value, publicUrl]);
       } catch (err) {
         console.error("Upload failed:", err);
         setError("Upload failed. Please try again.");
@@ -103,13 +99,12 @@ export function FileUpload({
         setUploading(false);
       }
     },
-    [folder, onChange]
+    [folder, onChange, value]
   );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) uploadFile(file);
-    // Reset input so same file can be re-selected
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -129,97 +124,100 @@ export function FileUpload({
     setDragActive(false);
   };
 
-  const handleRemove = async () => {
-    if (!value) return;
-
-    // Try to delete from storage (best-effort)
+  const handleRemove = async (url: string) => {
     try {
       const supabase = createClient();
-      // Extract the file path from the URL
-      const url = new URL(value);
-      const pathMatch = url.pathname.match(/\/object\/public\/hsa-documents\/(.+)/);
+      const parsed = new URL(url);
+      const pathMatch = parsed.pathname.match(/\/object\/public\/hsa-documents\/(.+)/);
       if (pathMatch) {
         await supabase.storage.from("hsa-documents").remove([pathMatch[1]]);
       }
     } catch {
-      // Silently fail — file may have been moved or deleted already
+      // Silently fail
     }
 
-    onChange(null);
+    onChange(value.filter((u) => u !== url));
   };
 
-  // Determine file type from URL for icon
-  const isPdf = value?.toLowerCase().includes(".pdf");
-  const isImage =
-    value &&
-    /\.(jpg|jpeg|png|webp|gif|heic)/.test(value.toLowerCase());
+  const getFileIcon = (url: string) => {
+    if (url.toLowerCase().includes(".pdf"))
+      return <FileText className="h-4 w-4 text-red-500" />;
+    if (/\.(jpg|jpeg|png|webp|gif|heic)/i.test(url))
+      return <ImageIcon className="h-4 w-4 text-purple-500" />;
+    return <FileText className="h-4 w-4 text-blue-500" />;
+  };
 
-  // If a file is already uploaded, show the preview/link
-  if (value) {
-    return (
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="text-sm font-medium leading-none">
-            {label}
-            {required && (
-              <span className="text-amber-500 ml-1">⚠️</span>
-            )}
-          </label>
-        </div>
-        <div className="flex items-center gap-3 rounded-lg border bg-muted/50 p-3">
-          <div className="shrink-0 rounded-md bg-background p-2 border">
-            {isImage ? (
-              <ImageIcon className="h-5 w-5 text-purple-500" />
-            ) : isPdf ? (
-              <FileText className="h-5 w-5 text-red-500" />
-            ) : (
-              <FileText className="h-5 w-5 text-blue-500" />
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">
-              {folder.charAt(0).toUpperCase() + folder.slice(1)} document
-            </p>
-            <p className="text-xs text-muted-foreground truncate">{value}</p>
-          </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <a
-              href={value}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center h-8 w-8 rounded-md hover:bg-accent"
-            >
-              <ExternalLink className="h-4 w-4 text-muted-foreground" />
-            </a>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-destructive hover:text-destructive"
-              onClick={handleRemove}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const getFileName = (url: string) => {
+    try {
+      const parts = url.split("/");
+      const raw = parts[parts.length - 1];
+      const withoutTs = raw.replace(/^\d+-/, "");
+      return decodeURIComponent(withoutTs).replace(/_/g, " ");
+    } catch {
+      return "Document";
+    }
+  };
 
-  // Upload area (drag & drop or click)
+  const hasFiles = value.length > 0;
+
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <label className="text-sm font-medium leading-none">
           {label}
-          {required && (
+          {required && value.length === 0 && (
             <span className="text-amber-500 ml-1">⚠️</span>
+          )}
+          {hasFiles && (
+            <span className="text-xs text-muted-foreground ml-2 font-normal">
+              {value.length} file{value.length !== 1 ? "s" : ""}
+            </span>
           )}
         </label>
       </div>
-      {description && (
+      {description && !hasFiles && (
         <p className="text-xs text-muted-foreground">{description}</p>
       )}
+
+      {/* Uploaded files list */}
+      {hasFiles && (
+        <div className="space-y-1.5">
+          {value.map((url) => (
+            <div
+              key={url}
+              className="flex items-center gap-3 rounded-lg border bg-muted/50 p-2.5"
+            >
+              <div className="shrink-0 rounded-md bg-background p-1.5 border">
+                {getFileIcon(url)}
+              </div>
+              <p className="flex-1 min-w-0 text-sm font-medium truncate">
+                {getFileName(url)}
+              </p>
+              <div className="flex items-center gap-1 shrink-0">
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center h-7 w-7 rounded-md hover:bg-accent"
+                >
+                  <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+                </a>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-destructive hover:text-destructive"
+                  onClick={() => handleRemove(url)}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Drop zone — always visible so users can add more */}
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -227,7 +225,7 @@ export function FileUpload({
         onClick={() => inputRef.current?.click()}
         className={`
           relative flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed
-          p-4 cursor-pointer transition-colors
+          ${hasFiles ? "p-3" : "p-4"} cursor-pointer transition-colors
           ${dragActive
             ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/10"
             : "border-muted-foreground/25 hover:border-muted-foreground/50 hover:bg-muted/50"
@@ -244,9 +242,16 @@ export function FileUpload({
         />
         {uploading ? (
           <>
-            <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
+            <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
             <p className="text-sm text-muted-foreground">Uploading...</p>
           </>
+        ) : hasFiles ? (
+          <div className="flex items-center gap-2">
+            <Plus className="h-4 w-4 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">
+              <span className="font-medium text-emerald-600">Add another file</span>
+            </p>
+          </div>
         ) : (
           <>
             <Upload className="h-6 w-6 text-muted-foreground" />

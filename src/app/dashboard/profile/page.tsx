@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { ProfileForm } from "@/components/dashboard/profile-form";
-import { getProfile } from "@/app/dashboard/actions";
+import { getProfile, getDependents } from "@/app/dashboard/actions";
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -13,7 +13,10 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  const profile = await getProfile();
+  const [profile, dependents] = await Promise.all([
+    getProfile(),
+    getDependents(),
+  ]);
 
-  return <ProfileForm user={user} profile={profile} />;
+  return <ProfileForm user={user} profile={profile} dependents={dependents} />;
 }

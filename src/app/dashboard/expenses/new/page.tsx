@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { ExpenseFormPage } from "@/components/dashboard/expense-form-page";
-import { getProfile } from "@/app/dashboard/actions";
+import { getProfile, getDependents } from "@/app/dashboard/actions";
 
 export default async function NewExpensePage() {
   const supabase = await createClient();
@@ -13,7 +13,10 @@ export default async function NewExpensePage() {
     redirect("/login");
   }
 
-  const profile = await getProfile();
+  const [profile, dependents] = await Promise.all([
+    getProfile(),
+    getDependents(),
+  ]);
 
-  return <ExpenseFormPage profile={profile} />;
+  return <ExpenseFormPage profile={profile} dependents={dependents} />;
 }

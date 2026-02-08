@@ -82,9 +82,10 @@ The `expenses` table includes:
 | reimbursed_date | date | Date of reimbursement |
 | reimbursed_amount | decimal | Amount reimbursed |
 | payment_method | text | credit_card, debit_card, hsa_card, cash, check, other |
-| eob_url | text | Link to Explanation of Benefits |
-| invoice_url | text | Link to Invoice/Bill |
-| receipt_url | text | Link to Receipt/Credit Card Statement |
+| receipt_urls | text[] | Links to Receipt documents (multiple supported) |
+| eob_urls | text[] | Links to Explanation of Benefits documents |
+| invoice_urls | text[] | Links to Invoice/Bill documents |
+| credit_card_statement_urls | text[] | Links to Credit Card Statement documents |
 | notes | text | Additional notes |
 
 ## License

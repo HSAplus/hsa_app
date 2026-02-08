@@ -46,10 +46,11 @@ create table if not exists public.expenses (
   -- EOB = "first line of proof that the expense was medical and legitimate"
   -- Invoice/Bill = "comes directly from the provider, detailing the services and cost"
   -- Receipt / CC Statement = "proof you paid out-of-pocket"
-  eob_url text,
-  invoice_url text,
-  receipt_url text,
-  credit_card_statement_url text,
+  -- Stored as arrays to support multiple documents per type
+  eob_urls text[] not null default '{}',
+  invoice_urls text[] not null default '{}',
+  receipt_urls text[] not null default '{}',
+  credit_card_statement_urls text[] not null default '{}',
 
   -- IRS Audit Readiness (per HRMorning: 20% penalty + income tax on unproven purchases)
   -- https://www.hrmorning.com/articles/hsa-requirements-receipts-recordkeeping/
@@ -99,10 +100,10 @@ create or replace function public.compute_audit_ready()
 returns trigger as $$
 begin
   new.audit_ready := (
-    new.receipt_url is not null and new.receipt_url != '' and
+    array_length(new.receipt_urls, 1) is not null and array_length(new.receipt_urls, 1) > 0 and
     (
-      (new.eob_url is not null and new.eob_url != '') or
-      (new.invoice_url is not null and new.invoice_url != '')
+      (array_length(new.eob_urls, 1) is not null and array_length(new.eob_urls, 1) > 0) or
+      (array_length(new.invoice_urls, 1) is not null and array_length(new.invoice_urls, 1) > 0)
     )
   );
   return new;
@@ -135,6 +136,35 @@ create policy "Users can insert their own profile"
 
 create policy "Users can update their own profile"
   on public.profiles for update using (auth.uid() = id);
+
+-- 6b. Create dependents table (spouse, children, etc.)
+create table if not exists public.dependents (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users(id) on delete cascade not null,
+  first_name text not null,
+  last_name text not null,
+  date_of_birth date,
+  relationship text not null
+    check (relationship in ('spouse', 'dependent_child', 'domestic_partner')),
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
+);
+
+alter table public.dependents enable row level security;
+
+create policy "Users can view their own dependents"
+  on public.dependents for select using (auth.uid() = user_id);
+
+create policy "Users can insert their own dependents"
+  on public.dependents for insert with check (auth.uid() = user_id);
+
+create policy "Users can update their own dependents"
+  on public.dependents for update using (auth.uid() = user_id);
+
+create policy "Users can delete their own dependents"
+  on public.dependents for delete using (auth.uid() = user_id);
+
+create index if not exists idx_dependents_user_id on public.dependents(user_id);
 
 -- 7. Auto-create profile + storage folders on signup
 -- This trigger fires when a new user is inserted into auth.users.

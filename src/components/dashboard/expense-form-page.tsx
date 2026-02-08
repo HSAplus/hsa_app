@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import type { Expense, ExpenseCategory, ExpenseFormData, Profile } from "@/lib/types";
+import type { Expense, ExpenseCategory, ExpenseFormData, Profile, Dependent } from "@/lib/types";
 import { ELIGIBLE_EXPENSES, IRS_RULES, isAuditReady } from "@/lib/types";
-import { addExpense, updateExpense } from "@/app/dashboard/actions";
+import { addExpense, updateExpense, addDependent } from "@/app/dashboard/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +26,7 @@ import {
   ShieldAlert,
   FileText,
   User,
+  UserPlus,
   Receipt,
   ClipboardCheck,
   X,
@@ -38,6 +39,7 @@ import Image from "next/image";
 interface ExpenseFormPageProps {
   expense?: Expense;
   profile?: Profile | null;
+  dependents?: Dependent[];
 }
 
 const STEPS = [
@@ -64,10 +66,10 @@ const emptyForm: ExpenseFormData = {
   claim_type: "new",
   payment_method: "credit_card",
   notes: null,
-  eob_url: null,
-  invoice_url: null,
-  receipt_url: null,
-  credit_card_statement_url: null,
+  eob_urls: [],
+  invoice_urls: [],
+  receipt_urls: [],
+  credit_card_statement_urls: [],
   tax_year: new Date().getFullYear(),
 };
 
@@ -82,7 +84,7 @@ const categoryLabel: Record<string, string> = {
   other: "Other",
 };
 
-export function ExpenseFormPage({ expense, profile }: ExpenseFormPageProps) {
+export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFormPageProps) {
   const router = useRouter();
 
   // Auto-populate patient_name with profile name when creating a new expense
@@ -97,6 +99,8 @@ export function ExpenseFormPage({ expense, profile }: ExpenseFormPageProps) {
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dependentsList, setDependentsList] = useState<Dependent[]>(dependents);
+  const [savingDependent, setSavingDependent] = useState(false);
 
   const isEditing = !!expense;
 
@@ -108,11 +112,11 @@ export function ExpenseFormPage({ expense, profile }: ExpenseFormPageProps) {
   const currentAuditReady = useMemo(
     () =>
       isAuditReady({
-        receipt_url: form.receipt_url,
-        eob_url: form.eob_url,
-        invoice_url: form.invoice_url,
+        receipt_urls: form.receipt_urls,
+        eob_urls: form.eob_urls,
+        invoice_urls: form.invoice_urls,
       }),
-    [form.receipt_url, form.eob_url, form.invoice_url]
+    [form.receipt_urls, form.eob_urls, form.invoice_urls]
   );
 
   useEffect(() => {
@@ -134,10 +138,10 @@ export function ExpenseFormPage({ expense, profile }: ExpenseFormPageProps) {
         claim_type: expense.claim_type,
         payment_method: expense.payment_method,
         notes: expense.notes,
-        eob_url: expense.eob_url,
-        invoice_url: expense.invoice_url,
-        receipt_url: expense.receipt_url,
-        credit_card_statement_url: expense.credit_card_statement_url,
+        eob_urls: expense.eob_urls ?? [],
+        invoice_urls: expense.invoice_urls ?? [],
+        receipt_urls: expense.receipt_urls ?? [],
+        credit_card_statement_urls: expense.credit_card_statement_urls ?? [],
         tax_year: expense.tax_year ?? new Date(expense.date_of_service).getFullYear(),
       });
     }
@@ -162,6 +166,52 @@ export function ExpenseFormPage({ expense, profile }: ExpenseFormPageProps) {
         return false;
     }
   }, [step, form]);
+
+  // Determine if the current patient is a new (unsaved) dependent
+  const isNewDependent = useMemo(() => {
+    const name = form.patient_name.trim();
+    const rel = form.patient_relationship;
+    if (!name || rel === "self") return false;
+    // Check if it matches the profile owner
+    if (name.toLowerCase() === profileFullName.toLowerCase()) return false;
+    // Check if it matches any existing dependent
+    return !dependentsList.some(
+      (dep) =>
+        `${dep.first_name} ${dep.last_name}`.trim().toLowerCase() === name.toLowerCase() &&
+        dep.relationship === rel
+    );
+  }, [form.patient_name, form.patient_relationship, profileFullName, dependentsList]);
+
+  const handleSaveAsDependent = async () => {
+    const name = form.patient_name.trim();
+    const parts = name.split(/\s+/);
+    const firstName = parts[0] || "";
+    const lastName = parts.slice(1).join(" ") || "";
+    if (!firstName) return;
+
+    setSavingDependent(true);
+    try {
+      const result = await addDependent({
+        first_name: firstName,
+        last_name: lastName,
+        date_of_birth: null,
+        relationship: form.patient_relationship,
+      });
+      if (result.error) {
+        toast.error(result.error);
+      } else if (result.dependent) {
+        setDependentsList((prev) =>
+          [...prev, result.dependent!].sort((a, b) =>
+            a.first_name.localeCompare(b.first_name)
+          )
+        );
+        toast.success(`${name} saved as a dependent! They'll appear in quick-select next time.`);
+      }
+    } catch {
+      toast.error("Failed to save dependent");
+    }
+    setSavingDependent(false);
+  };
 
   const handleSubmit = async () => {
     setSaving(true);
@@ -429,6 +479,70 @@ export function ExpenseFormPage({ expense, profile }: ExpenseFormPageProps) {
             {/* ── Step 2: Patient & Account ── */}
             {step === 2 && (
               <div className="space-y-5 animate-in fade-in duration-200">
+                {/* Quick-select patient */}
+                {(profileFullName || dependentsList.length > 0) && (
+                  <div className="space-y-2">
+                    <Label className="text-xs text-muted-foreground font-normal">Quick Select Patient</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {profileFullName && (
+                        <button
+                          type="button"
+                          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                            form.patient_name === profileFullName && form.patient_relationship === "self"
+                              ? "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                              : "border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                          }`}
+                          onClick={() =>
+                            setForm({
+                              ...form,
+                              patient_name: profileFullName,
+                              patient_relationship: "self",
+                            })
+                          }
+                        >
+                          <User className="h-3.5 w-3.5" />
+                          {profileFullName}
+                          <span className="text-xs text-muted-foreground">(Self)</span>
+                        </button>
+                      )}
+                      {dependentsList.map((dep) => {
+                        const depName = `${dep.first_name} ${dep.last_name}`.trim();
+                        const isSelected =
+                          form.patient_name === depName &&
+                          form.patient_relationship === dep.relationship;
+                        const relLabel =
+                          dep.relationship === "spouse"
+                            ? "Spouse"
+                            : dep.relationship === "dependent_child"
+                              ? "Child"
+                              : "Partner";
+                        return (
+                          <button
+                            key={dep.id}
+                            type="button"
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+                              isSelected
+                                ? "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                                : "border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                            }`}
+                            onClick={() =>
+                              setForm({
+                                ...form,
+                                patient_name: depName,
+                                patient_relationship: dep.relationship,
+                              })
+                            }
+                          >
+                            <User className="h-3.5 w-3.5" />
+                            {depName}
+                            <span className="text-xs text-muted-foreground">({relLabel})</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-2 gap-x-4 gap-y-5">
                   <div className="space-y-2">
                     <Label htmlFor="patient_name">Patient Name *</Label>
@@ -467,6 +581,34 @@ export function ExpenseFormPage({ expense, profile }: ExpenseFormPageProps) {
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {/* Save as dependent prompt */}
+                  {isNewDependent && (
+                    <div className="col-span-2 flex items-center justify-between gap-3 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20 px-4 py-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <UserPlus className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                        <p className="text-sm text-blue-700 dark:text-blue-300">
+                          <span className="font-medium">{form.patient_name.trim()}</span>{" "}
+                          isn&apos;t saved yet. Save them so you can quick-select next time?
+                        </p>
+                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        disabled={savingDependent}
+                        onClick={handleSaveAsDependent}
+                        className="shrink-0 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900"
+                      >
+                        {savingDependent ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" />
+                        ) : (
+                          <UserPlus className="h-3.5 w-3.5 mr-1.5" />
+                        )}
+                        Save
+                      </Button>
+                    </div>
+                  )}
 
                   <div className="space-y-2">
                     <Label>Account Type *</Label>
@@ -576,8 +718,8 @@ export function ExpenseFormPage({ expense, profile }: ExpenseFormPageProps) {
                     folder="receipt"
                     label="Receipt"
                     description="Proof of purchase — the most important document for IRS audits"
-                    value={form.receipt_url}
-                    onChange={(url) => setForm({ ...form, receipt_url: url })}
+                    value={form.receipt_urls}
+                    onChange={(urls) => setForm({ ...form, receipt_urls: urls })}
                     required
                   />
 
@@ -585,24 +727,24 @@ export function ExpenseFormPage({ expense, profile }: ExpenseFormPageProps) {
                     folder="eob"
                     label="EOB (Explanation of Benefits)"
                     description="From your insurance — proves the expense was medical"
-                    value={form.eob_url}
-                    onChange={(url) => setForm({ ...form, eob_url: url })}
+                    value={form.eob_urls}
+                    onChange={(urls) => setForm({ ...form, eob_urls: urls })}
                   />
 
                   <FileUpload
                     folder="invoice"
                     label="Invoice / Bill"
                     description="From the provider — details services and cost"
-                    value={form.invoice_url}
-                    onChange={(url) => setForm({ ...form, invoice_url: url })}
+                    value={form.invoice_urls}
+                    onChange={(urls) => setForm({ ...form, invoice_urls: urls })}
                   />
 
                   <FileUpload
                     folder="cc-statement"
                     label="Credit Card Statement"
                     description="Proves you paid out-of-pocket (not with HSA debit card)"
-                    value={form.credit_card_statement_url}
-                    onChange={(url) => setForm({ ...form, credit_card_statement_url: url })}
+                    value={form.credit_card_statement_urls}
+                    onChange={(urls) => setForm({ ...form, credit_card_statement_urls: urls })}
                   />
                 </div>
 
@@ -652,36 +794,36 @@ export function ExpenseFormPage({ expense, profile }: ExpenseFormPageProps) {
 
                   {/* Doc status badges */}
                   <div className="flex flex-wrap gap-2 pt-3 border-t">
-                    {form.receipt_url ? (
+                    {form.receipt_urls.length > 0 ? (
                       <span className="inline-flex items-center gap-1 rounded-md bg-purple-100 dark:bg-purple-900/30 px-2 py-0.5 text-xs font-medium text-purple-700 dark:text-purple-300">
-                        <Check className="h-3 w-3" /> Receipt
+                        <Check className="h-3 w-3" /> Receipt ({form.receipt_urls.length})
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                         ✕ Receipt
                       </span>
                     )}
-                    {form.eob_url ? (
+                    {form.eob_urls.length > 0 ? (
                       <span className="inline-flex items-center gap-1 rounded-md bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300">
-                        <Check className="h-3 w-3" /> EOB
+                        <Check className="h-3 w-3" /> EOB ({form.eob_urls.length})
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                         ✕ EOB
                       </span>
                     )}
-                    {form.invoice_url ? (
+                    {form.invoice_urls.length > 0 ? (
                       <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                        <Check className="h-3 w-3" /> Invoice
+                        <Check className="h-3 w-3" /> Invoice ({form.invoice_urls.length})
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                         ✕ Invoice
                       </span>
                     )}
-                    {form.credit_card_statement_url ? (
+                    {form.credit_card_statement_urls.length > 0 ? (
                       <span className="inline-flex items-center gap-1 rounded-md bg-orange-100 dark:bg-orange-900/30 px-2 py-0.5 text-xs font-medium text-orange-700 dark:text-orange-300">
-                        <Check className="h-3 w-3" /> CC Stmt
+                        <Check className="h-3 w-3" /> CC Stmt ({form.credit_card_statement_urls.length})
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">

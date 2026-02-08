@@ -17,10 +17,10 @@ export interface Expense {
   claim_type: ClaimType;
   payment_method: string;
   notes: string | null;
-  eob_url: string | null;
-  invoice_url: string | null;
-  receipt_url: string | null;
-  credit_card_statement_url: string | null;
+  eob_urls: string[];
+  invoice_urls: string[];
+  receipt_urls: string[];
+  credit_card_statement_urls: string[];
   created_at: string;
   updated_at: string;
   // IRS audit readiness fields (per HRMorning / IRS guidance)
@@ -34,6 +34,17 @@ export interface Profile {
   first_name: string;
   last_name: string;
   date_of_birth: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Dependent {
+  id: string;
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  date_of_birth: string | null;
+  relationship: Exclude<PatientRelationship, "self">;
   created_at: string;
   updated_at: string;
 }
@@ -179,10 +190,10 @@ export interface ExpenseFormData {
   claim_type: ClaimType;
   payment_method: string;
   notes: string | null;
-  eob_url: string | null;
-  invoice_url: string | null;
-  receipt_url: string | null;
-  credit_card_statement_url: string | null;
+  eob_urls: string[];
+  invoice_urls: string[];
+  receipt_urls: string[];
+  credit_card_statement_urls: string[];
   tax_year: number;
 }
 
@@ -244,9 +255,9 @@ export const IRS_RULES = {
  * Per HRMorning: account holders face a 20% penalty + income tax on any HSA
  * purchases they cannot prove were for qualified medical expenses.
  */
-export function isAuditReady(expense: Pick<Expense, "receipt_url" | "eob_url" | "invoice_url">): boolean {
+export function isAuditReady(expense: Pick<Expense, "receipt_urls" | "eob_urls" | "invoice_urls">): boolean {
   // At minimum, need a receipt. EOB or invoice provides secondary proof.
-  return !!(expense.receipt_url && (expense.eob_url || expense.invoice_url));
+  return !!(expense.receipt_urls.length > 0 && (expense.eob_urls.length > 0 || expense.invoice_urls.length > 0));
 }
 
 /**

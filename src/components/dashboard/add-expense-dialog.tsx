@@ -67,10 +67,10 @@ const emptyForm: ExpenseFormData = {
   claim_type: "new",
   payment_method: "credit_card",
   notes: null,
-  eob_url: null,
-  invoice_url: null,
-  receipt_url: null,
-  credit_card_statement_url: null,
+  eob_urls: [],
+  invoice_urls: [],
+  receipt_urls: [],
+  credit_card_statement_urls: [],
   tax_year: new Date().getFullYear(),
 };
 
@@ -95,11 +95,11 @@ export function AddExpenseDialog({
   const currentAuditReady = useMemo(
     () =>
       isAuditReady({
-        receipt_url: form.receipt_url,
-        eob_url: form.eob_url,
-        invoice_url: form.invoice_url,
+        receipt_urls: form.receipt_urls,
+        eob_urls: form.eob_urls,
+        invoice_urls: form.invoice_urls,
       }),
-    [form.receipt_url, form.eob_url, form.invoice_url]
+    [form.receipt_urls, form.eob_urls, form.invoice_urls]
   );
 
   useEffect(() => {
@@ -121,10 +121,10 @@ export function AddExpenseDialog({
         claim_type: expense.claim_type,
         payment_method: expense.payment_method,
         notes: expense.notes,
-        eob_url: expense.eob_url,
-        invoice_url: expense.invoice_url,
-        receipt_url: expense.receipt_url,
-        credit_card_statement_url: expense.credit_card_statement_url,
+        eob_urls: expense.eob_urls ?? [],
+        invoice_urls: expense.invoice_urls ?? [],
+        receipt_urls: expense.receipt_urls ?? [],
+        credit_card_statement_urls: expense.credit_card_statement_urls ?? [],
         tax_year: expense.tax_year ?? new Date(expense.date_of_service).getFullYear(),
       });
     } else {
@@ -545,8 +545,8 @@ export function AddExpenseDialog({
                   folder="receipt"
                   label="Receipt"
                   description="Proof of purchase — the most important document for IRS audits"
-                  value={form.receipt_url}
-                  onChange={(url) => setForm({ ...form, receipt_url: url })}
+                  value={form.receipt_urls}
+                  onChange={(urls) => setForm({ ...form, receipt_urls: urls })}
                   required
                 />
 
@@ -554,24 +554,24 @@ export function AddExpenseDialog({
                   folder="eob"
                   label="EOB (Explanation of Benefits)"
                   description="From your insurance — proves the expense was medical"
-                  value={form.eob_url}
-                  onChange={(url) => setForm({ ...form, eob_url: url })}
+                  value={form.eob_urls}
+                  onChange={(urls) => setForm({ ...form, eob_urls: urls })}
                 />
 
                 <FileUpload
                   folder="invoice"
                   label="Invoice / Bill"
                   description="From the provider — details services and cost"
-                  value={form.invoice_url}
-                  onChange={(url) => setForm({ ...form, invoice_url: url })}
+                  value={form.invoice_urls}
+                  onChange={(urls) => setForm({ ...form, invoice_urls: urls })}
                 />
 
                 <FileUpload
                   folder="cc-statement"
                   label="Credit Card Statement"
                   description="Proves you paid out-of-pocket (not with HSA debit card)"
-                  value={form.credit_card_statement_url}
-                  onChange={(url) => setForm({ ...form, credit_card_statement_url: url })}
+                  value={form.credit_card_statement_urls}
+                  onChange={(urls) => setForm({ ...form, credit_card_statement_urls: urls })}
                 />
               </div>
 
@@ -625,36 +625,36 @@ export function AddExpenseDialog({
 
                 {/* Doc status badges */}
                 <div className="flex flex-wrap gap-2 pt-2 border-t">
-                  {form.receipt_url ? (
+                  {form.receipt_urls.length > 0 ? (
                     <span className="inline-flex items-center gap-1 rounded-md bg-purple-100 dark:bg-purple-900/30 px-2 py-0.5 text-xs font-medium text-purple-700 dark:text-purple-300">
-                      <Check className="h-3 w-3" /> Receipt
+                      <Check className="h-3 w-3" /> Receipt ({form.receipt_urls.length})
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                       ✕ Receipt
                     </span>
                   )}
-                  {form.eob_url ? (
+                  {form.eob_urls.length > 0 ? (
                     <span className="inline-flex items-center gap-1 rounded-md bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-300">
-                      <Check className="h-3 w-3" /> EOB
+                      <Check className="h-3 w-3" /> EOB ({form.eob_urls.length})
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                       ✕ EOB
                     </span>
                   )}
-                  {form.invoice_url ? (
+                  {form.invoice_urls.length > 0 ? (
                     <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                      <Check className="h-3 w-3" /> Invoice
+                      <Check className="h-3 w-3" /> Invoice ({form.invoice_urls.length})
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                       ✕ Invoice
                     </span>
                   )}
-                  {form.credit_card_statement_url ? (
+                  {form.credit_card_statement_urls.length > 0 ? (
                     <span className="inline-flex items-center gap-1 rounded-md bg-orange-100 dark:bg-orange-900/30 px-2 py-0.5 text-xs font-medium text-orange-700 dark:text-orange-300">
-                      <Check className="h-3 w-3" /> CC Stmt
+                      <Check className="h-3 w-3" /> CC Stmt ({form.credit_card_statement_urls.length})
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
