@@ -86,19 +86,24 @@ function formatCompact(value: number): string {
 function MilestoneLabel({
   viewBox,
   point,
+  isLast,
 }: {
   viewBox?: { x?: number; y?: number };
   point: ProjectionPoint;
+  isLast?: boolean;
 }) {
   if (!viewBox?.x) return null;
   const x = viewBox.x;
+  const anchor = isLast ? "end" : "middle";
+  const dx = isLast ? -4 : 0;
 
   return (
     <g>
       <text
         x={x}
+        dx={dx}
         y={10}
-        textAnchor="middle"
+        textAnchor={anchor}
         fontSize={10}
         fontWeight={600}
         fill="#64748B"
@@ -108,8 +113,9 @@ function MilestoneLabel({
       </text>
       <text
         x={x}
+        dx={dx}
         y={24}
-        textAnchor="middle"
+        textAnchor={anchor}
         fontSize={10}
         fontWeight={600}
         fill="#059669"
@@ -125,9 +131,13 @@ export function SavingsChart({ data }: SavingsChartProps) {
   const labelInterval = data.length <= 10 ? 1 : data.length <= 20 ? 2 : 5;
   const timeHorizon = data.length > 0 ? data[data.length - 1].year : 0;
   const quadrantInterval = Math.max(1, Math.round(timeHorizon / 4));
-  const milestones = [1, 2, 3, 4]
-    .map((n) => data.find((p) => p.year === quadrantInterval * n))
-    .filter((p): p is ProjectionPoint => p != null && p.year < timeHorizon);
+  const finalPoint = data.length > 0 ? data[data.length - 1] : null;
+  const milestones = [
+    ...[1, 2, 3, 4]
+      .map((n) => data.find((p) => p.year === quadrantInterval * n))
+      .filter((p): p is ProjectionPoint => p != null && p.year < timeHorizon),
+    ...(finalPoint ? [finalPoint] : []),
+  ];
 
   return (
     <div className="w-full h-[320px]">
@@ -195,14 +205,14 @@ export function SavingsChart({ data }: SavingsChartProps) {
             animationEasing="ease-in-out"
             name="HSA Balance"
           />
-          {milestones.map((point) => (
+          {milestones.map((point, i) => (
             <ReferenceLine
               key={point.year}
               x={point.label}
               stroke="#94A3B8"
               strokeDasharray="4 4"
               strokeOpacity={0.6}
-              label={<MilestoneLabel point={point} />}
+              label={<MilestoneLabel point={point} isLast={i === milestones.length - 1} />}
             />
           ))}
         </AreaChart>
