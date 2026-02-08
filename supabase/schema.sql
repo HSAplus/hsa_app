@@ -129,6 +129,8 @@ create table if not exists public.profiles (
   time_horizon_years integer not null default 20,
   federal_tax_bracket decimal(4,1) not null default 22.0,
   state_tax_rate decimal(4,1) not null default 5.0,
+  coverage_type text not null default 'individual',
+  contribution_increase_rate decimal(5,2) not null default 0.00,
   onboarding_completed boolean not null default false,
   created_at timestamptz default now() not null,
   updated_at timestamptz default now() not null

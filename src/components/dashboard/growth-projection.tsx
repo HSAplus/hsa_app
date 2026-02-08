@@ -137,6 +137,7 @@ export function GrowthProjection({ profile, loading }: GrowthProjectionProps) {
     () => ({
       initialBalance: profile?.current_hsa_balance ?? 0,
       annualContribution: profile?.annual_contribution ?? 4150,
+      contributionIncreaseRate: profile?.contribution_increase_rate ?? 0,
       expectedReturn: profile?.expected_annual_return ?? 7,
       timeHorizon: profile?.time_horizon_years ?? 20,
       taxBracket: profile?.federal_tax_bracket ?? 22,

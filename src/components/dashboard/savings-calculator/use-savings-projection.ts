@@ -26,6 +26,7 @@ export function useSavingsProjection(inputs: CalculatorInputs) {
     const {
       initialBalance,
       annualContribution,
+      contributionIncreaseRate,
       expectedReturn,
       timeHorizon,
       taxBracket,
@@ -33,6 +34,7 @@ export function useSavingsProjection(inputs: CalculatorInputs) {
     } = inputs;
 
     const rate = expectedReturn / 100;
+    const increaseRate = (contributionIncreaseRate ?? 0) / 100;
     const combinedTaxRate = (taxBracket + stateTaxRate) / 100;
     const capitalGainsRate = 0.15;
     const currentYear = new Date().getFullYear();
@@ -44,25 +46,33 @@ export function useSavingsProjection(inputs: CalculatorInputs) {
 
     // Taxable: post-tax contributions, growth taxed annually at cap gains
     let taxableBalance = initialBalance;
-    const taxableContribution = annualContribution * (1 - combinedTaxRate);
+
+    let cumulativeContributions = initialBalance;
+    let cumulativeTaxSavings = 0;
 
     for (let y = 0; y <= timeHorizon; y++) {
-      const totalContributions = initialBalance + annualContribution * y;
-      const taxSavingsCumulative = annualContribution * combinedTaxRate * y;
+      // Contribution for this year grows by the increase rate each year
+      const yearContribution = y === 0 ? 0 : annualContribution * Math.pow(1 + increaseRate, y - 1);
+      if (y > 0) {
+        cumulativeContributions += yearContribution;
+        cumulativeTaxSavings += yearContribution * combinedTaxRate;
+      }
 
       projectionData.push({
         year: y,
         label: `${currentYear + y}`,
         balance: Math.round(hsaBalance),
-        totalContributions: Math.round(totalContributions),
-        totalGrowth: Math.round(hsaBalance - totalContributions),
-        taxSavingsCumulative: Math.round(taxSavingsCumulative),
+        totalContributions: Math.round(cumulativeContributions),
+        totalGrowth: Math.round(hsaBalance - cumulativeContributions),
+        taxSavingsCumulative: Math.round(cumulativeTaxSavings),
         taxableEquivalent: Math.round(taxableBalance),
       });
 
       // Grow for next year
-      hsaBalance = hsaBalance * (1 + rate) + annualContribution;
+      const nextYearContribution = annualContribution * Math.pow(1 + increaseRate, y);
+      hsaBalance = hsaBalance * (1 + rate) + nextYearContribution;
       // Taxable: growth taxed annually
+      const taxableContribution = nextYearContribution * (1 - combinedTaxRate);
       const taxableGrowth = taxableBalance * rate;
       const afterTaxGrowth = taxableGrowth * (1 - capitalGainsRate);
       taxableBalance = taxableBalance + afterTaxGrowth + taxableContribution;

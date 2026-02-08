@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getContributionLimit, type CoverageType } from "@/lib/hsa-constants";
 
 export async function login(formData: FormData) {
   const supabase = await createClient();
@@ -113,9 +114,15 @@ export async function updateProfile(formData: FormData) {
   const lastName = (formData.get("lastName") as string)?.trim() || "";
   const dateOfBirth = (formData.get("dateOfBirth") as string) || null;
   const hsaBalance = parseFloat(formData.get("hsaBalance") as string) || 0;
-  const annualContribution = parseFloat(formData.get("annualContribution") as string) || 0;
+  const coverageType = ((formData.get("coverageType") as string) || "individual") as CoverageType;
+  const maxContribution = getContributionLimit(coverageType);
+  const annualContribution = Math.min(
+    parseFloat(formData.get("annualContribution") as string) || 0,
+    maxContribution
+  );
   const expectedAnnualReturn = parseFloat(formData.get("expectedAnnualReturn") as string) || 7;
   const timeHorizonYears = parseInt(formData.get("timeHorizonYears") as string, 10) || 20;
+  const contributionIncreaseRate = parseFloat(formData.get("contributionIncreaseRate") as string) || 0;
   const federalBracket = parseFloat(formData.get("federalBracket") as string) || 22;
   const stateTaxRate = parseFloat(formData.get("stateTaxRate") as string) || 5;
 
@@ -125,7 +132,9 @@ export async function updateProfile(formData: FormData) {
     middle_name: middleName,
     last_name: lastName,
     current_hsa_balance: hsaBalance,
+    coverage_type: coverageType,
     annual_contribution: annualContribution,
+    contribution_increase_rate: contributionIncreaseRate,
     expected_annual_return: expectedAnnualReturn,
     time_horizon_years: timeHorizonYears,
     federal_tax_bracket: federalBracket,

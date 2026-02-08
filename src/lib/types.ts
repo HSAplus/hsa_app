@@ -41,6 +41,8 @@ export interface Profile {
   time_horizon_years: number;       // e.g. 20 means reimburse in 20 years
   federal_tax_bracket: number;      // e.g. 22.0 means 22%
   state_tax_rate: number;           // e.g. 5.0 means 5%
+  coverage_type: "individual" | "family";
+  contribution_increase_rate: number; // annual % increase (e.g. 5 means +5%/yr)
   onboarding_completed: boolean;
   created_at: string;
   updated_at: string;
