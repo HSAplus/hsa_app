@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Expense } from "@/lib/types";
 import { isAuditReady, getRetentionStatus } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +38,8 @@ import {
   ShieldCheck,
   ShieldAlert,
   AlertTriangle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -94,6 +96,8 @@ export function ExpenseTable({
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [filterAccount, setFilterAccount] = useState<string>("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 20;
 
   const filteredExpenses = expenses.filter((expense) => {
     const matchesSearch =
@@ -111,6 +115,18 @@ export function ExpenseTable({
 
     return matchesSearch && matchesCategory && matchesStatus && matchesAccount;
   });
+
+  // Reset to page 1 when filters/search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, filterCategory, filterStatus, filterAccount]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredExpenses.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedExpenses = filteredExpenses.slice(
+    (safePage - 1) * PAGE_SIZE,
+    safePage * PAGE_SIZE
+  );
 
   return (
     <Card>
@@ -203,7 +219,7 @@ export function ExpenseTable({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredExpenses.map((expense) => (
+                {paginatedExpenses.map((expense) => (
                   <TableRow key={expense.id}>
                     <TableCell className="whitespace-nowrap">
                       {format(new Date(expense.date_of_service), "MMM d, yyyy")}
@@ -365,6 +381,37 @@ export function ExpenseTable({
                 ))}
               </TableBody>
             </Table>
+            {/* Pagination */}
+            {filteredExpenses.length > PAGE_SIZE && (
+              <div className="flex items-center justify-between pt-4 border-t mt-4">
+                <p className="text-sm text-muted-foreground">
+                  Showing {(safePage - 1) * PAGE_SIZE + 1}–{Math.min(safePage * PAGE_SIZE, filteredExpenses.length)} of {filteredExpenses.length} expenses
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={safePage <= 1}
+                    onClick={() => setCurrentPage(safePage - 1)}
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Previous
+                  </Button>
+                  <span className="text-sm font-medium px-2">
+                    {safePage} / {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={safePage >= totalPages}
+                    onClick={() => setCurrentPage(safePage + 1)}
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </CardContent>

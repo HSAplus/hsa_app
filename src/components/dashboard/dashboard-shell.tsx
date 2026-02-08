@@ -14,6 +14,7 @@ import type { Expense, DashboardStats, Profile } from "@/lib/types";
 import { StatsCards } from "./stats-cards";
 import { ExpenseTable } from "./expense-table";
 import { OnboardingDialog } from "./onboarding-dialog";
+import { GrowthProjection } from "./growth-projection";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -207,6 +208,10 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
             onDelete={handleDelete}
             onMarkReimbursed={handleMarkReimbursed}
           />
+        </div>
+
+        <div className="mt-8">
+          <GrowthProjection profile={profile} loading={loading} />
         </div>
       </main>
     </div>
