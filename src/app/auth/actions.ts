@@ -118,9 +118,6 @@ export async function updateProfile(formData: FormData) {
   const timeHorizonYears = parseInt(formData.get("timeHorizonYears") as string, 10) || 20;
   const federalBracket = parseFloat(formData.get("federalBracket") as string) || 22;
   const stateTaxRate = parseFloat(formData.get("stateTaxRate") as string) || 5;
-  const newEmail = formData.get("email") as string;
-  const newPassword = formData.get("newPassword") as string;
-  const confirmPassword = formData.get("confirmPassword") as string;
 
   // Update profiles table
   const profileUpdates: Record<string, string | number | null> = {
@@ -150,9 +147,33 @@ export async function updateProfile(formData: FormData) {
 
   // Update auth user metadata
   const displayName = `${firstName} ${lastName}`.trim();
-  const authUpdates: { data?: { display_name: string; first_name: string; last_name: string }; email?: string; password?: string } = {
+  const { error } = await supabase.auth.updateUser({
     data: { display_name: displayName, first_name: firstName, last_name: lastName },
-  };
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/", "layout");
+  return { success: true };
+}
+
+export async function updateLoginSettings(formData: FormData) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Not authenticated" };
+  }
+
+  const newEmail = formData.get("email") as string;
+  const newPassword = formData.get("newPassword") as string;
+  const confirmPassword = formData.get("confirmPassword") as string;
+
+  const authUpdates: { email?: string; password?: string } = {};
 
   if (newEmail && newEmail !== user.email) {
     authUpdates.email = newEmail;
@@ -168,6 +189,10 @@ export async function updateProfile(formData: FormData) {
     authUpdates.password = newPassword;
   }
 
+  if (!authUpdates.email && !authUpdates.password) {
+    return { error: "No changes to save" };
+  }
+
   const { error } = await supabase.auth.updateUser(authUpdates);
 
   if (error) {
@@ -177,6 +202,6 @@ export async function updateProfile(formData: FormData) {
   revalidatePath("/", "layout");
   return {
     success: true,
-    emailChanged: !!(newEmail && newEmail !== user.email),
+    emailChanged: !!authUpdates.email,
   };
 }

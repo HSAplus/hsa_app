@@ -23,7 +23,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Plus, RefreshCw, UserCog, Calculator } from "lucide-react";
+import { LogOut, Plus, RefreshCw, UserCog, Calculator, KeyRound } from "lucide-react";
 import Image from "next/image";
 import { Toaster, toast } from "sonner";
 import Link from "next/link";
@@ -174,6 +174,12 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
                   <Link href="/dashboard/profile" className="cursor-pointer">
                     <UserCog className="mr-2 h-4 w-4" />
                     Profile Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/login-settings" className="cursor-pointer">
+                    <KeyRound className="mr-2 h-4 w-4" />
+                    Login Settings
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem

@@ -7,13 +7,13 @@ import { updateProfile } from "@/app/auth/actions";
 import { addDependent, updateDependent, deleteDependent } from "@/app/dashboard/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, Loader2, User as UserIcon, Mail, Lock, Shield, CalendarDays, Users, Plus, Pencil, Trash2, TrendingUp } from "lucide-react";
+import { ArrowLeft, Loader2, User as UserIcon, Shield, CalendarDays, Users, Plus, Pencil, Trash2, TrendingUp } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
@@ -30,7 +30,6 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
   const [middleName, setMiddleName] = useState(profile?.middle_name || "");
   const [lastName, setLastName] = useState(profile?.last_name || "");
   const [dateOfBirth, setDateOfBirth] = useState(profile?.date_of_birth || "");
-  const [email, setEmail] = useState(user.email || "");
   const [hsaBalance, setHsaBalance] = useState(
     profile?.current_hsa_balance?.toString() || "0"
   );
@@ -49,9 +48,6 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
   const [stateTaxRate, setStateTaxRate] = useState(
     profile?.state_tax_rate?.toString() || "5"
   );
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
   // Dependents state
   const [dependentsList, setDependentsList] = useState<Dependent[]>(initialDependents);
   const [depDialogOpen, setDepDialogOpen] = useState(false);
@@ -168,28 +164,19 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
     formData.set("middleName", middleName);
     formData.set("lastName", lastName);
     formData.set("dateOfBirth", dateOfBirth);
-    formData.set("email", email);
     formData.set("hsaBalance", hsaBalance);
     formData.set("annualContribution", annualContribution);
     formData.set("expectedAnnualReturn", expectedAnnualReturn);
     formData.set("timeHorizonYears", timeHorizonYears);
     formData.set("federalBracket", federalBracket);
     formData.set("stateTaxRate", stateTaxRate);
-    formData.set("newPassword", newPassword);
-    formData.set("confirmPassword", confirmPassword);
 
     const result = await updateProfile(formData);
 
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success(
-        result.emailChanged
-          ? "Profile updated. Check your new email to confirm the change."
-          : "Profile updated successfully"
-      );
-      setNewPassword("");
-      setConfirmPassword("");
+      toast.success("Profile updated successfully");
     }
 
     setSaving(false);
@@ -546,127 +533,6 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                   ))}
                 </div>
               )}
-            </CardContent>
-          </Card>
-
-          {/* Email */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Mail className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <CardTitle className="text-base">Email Address</CardTitle>
-                  <CardDescription>
-                    {isOAuthUser
-                      ? "Your email is managed by your OAuth provider"
-                      : "Change your email address"}
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  disabled={isOAuthUser}
-                />
-                {!isOAuthUser && (
-                  <p className="text-xs text-muted-foreground">
-                    You&apos;ll receive a confirmation email at the new address.
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Change Password */}
-          {!isOAuthUser && (
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Lock className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <CardTitle className="text-base">Change Password</CardTitle>
-                    <CardDescription>
-                      Leave blank to keep your current password
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="newPassword">New Password</Label>
-                    <Input
-                      id="newPassword"
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="••••••••"
-                      minLength={6}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm Password</Label>
-                    <Input
-                      id="confirmPassword"
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="••••••••"
-                      minLength={6}
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          <Separator />
-
-          {/* Account Info (read-only) */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <CardTitle className="text-base">Account Info</CardTitle>
-                  <CardDescription>Read-only account details</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Created</p>
-                  <p className="font-medium mt-0.5">
-                    {user.created_at
-                      ? new Date(user.created_at).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })
-                      : "—"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Last Sign In</p>
-                  <p className="font-medium mt-0.5">
-                    {user.last_sign_in_at
-                      ? new Date(user.last_sign_in_at).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })
-                      : "—"}
-                  </p>
-                </div>
-              </div>
             </CardContent>
           </Card>
 
