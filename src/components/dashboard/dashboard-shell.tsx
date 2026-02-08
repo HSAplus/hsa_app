@@ -12,6 +12,7 @@ import {
 } from "@/app/dashboard/actions";
 import type { Expense, DashboardStats, Profile } from "@/lib/types";
 import { StatsCards } from "./stats-cards";
+import { SavingsCalculator } from "./savings-calculator/savings-calculator";
 import { ExpenseTable } from "./expense-table";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -181,6 +182,10 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
         </div>
 
         <StatsCards stats={stats} loading={loading} />
+
+        <div className="mt-8">
+          <SavingsCalculator />
+        </div>
 
         <div className="mt-8">
           <ExpenseTable
