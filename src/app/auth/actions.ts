@@ -30,7 +30,7 @@ export async function signup(formData: FormData) {
   const firstName = (formData.get("firstName") as string)?.trim() || "";
   const lastName = (formData.get("lastName") as string)?.trim() || "";
 
-  const { data: authData, error } = await supabase.auth.signUp({
+  const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -46,30 +46,8 @@ export async function signup(formData: FormData) {
     redirect("/signup?error=" + encodeURIComponent(error.message));
   }
 
-  // Save first/last name to the profiles table and initialize storage folders
-  if (authData.user) {
-    const userId = authData.user.id;
-
-    // Update profile with first/last name (trigger already created the row)
-    await supabase
-      .from("profiles")
-      .update({ first_name: firstName, last_name: lastName })
-      .eq("id", userId);
-
-    // Initialize the user's document folders in Supabase Storage.
-    const folders = ["receipt", "eob", "invoice", "cc-statement"];
-    const placeholder = new Blob([""], { type: "text/plain" });
-
-    await Promise.allSettled(
-      folders.map((folder) =>
-        supabase.storage
-          .from("hsa-documents")
-          .upload(`${userId}/${folder}/.keep`, placeholder, {
-            upsert: true,
-          })
-      )
-    );
-  }
+  // Profile row + storage folders are created by the DB trigger (handle_new_user)
+  // which fires on auth.users insert. No need to duplicate that work here.
 
   revalidatePath("/", "layout");
   redirect("/signup?message=Check your email to confirm your account");

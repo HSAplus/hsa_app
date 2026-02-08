@@ -10,40 +10,8 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      // Initialize user's document folders on first OAuth login
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user) {
-        // Update profile with name from OAuth provider (e.g. Google)
-        const fullName = user.user_metadata?.full_name || "";
-        const firstName = user.user_metadata?.first_name || fullName.split(" ")[0] || "";
-        const lastName = user.user_metadata?.last_name || fullName.split(" ").slice(1).join(" ") || "";
-
-        await supabase
-          .from("profiles")
-          .upsert({
-            id: user.id,
-            email: user.email,
-            first_name: firstName,
-            last_name: lastName,
-          }, { onConflict: "id" });
-
-        // Initialize user's document folders
-        const folders = ["receipt", "eob", "invoice", "cc-statement"];
-        const placeholder = new Blob([""], { type: "text/plain" });
-
-        await Promise.allSettled(
-          folders.map((folder) =>
-            supabase.storage
-              .from("hsa-documents")
-              .upload(`${user.id}/${folder}/.keep`, placeholder, {
-                upsert: true,
-              })
-          )
-        );
-      }
+      // Profile row + storage folders are created by the DB trigger (handle_new_user)
+      // which fires on auth.users insert. No need to duplicate that work here.
 
       const forwardedHost = request.headers.get("x-forwarded-host");
       const isLocalEnv = process.env.NODE_ENV === "development";
