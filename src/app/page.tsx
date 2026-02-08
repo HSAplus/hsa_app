@@ -103,9 +103,9 @@ export default async function Home() {
               </h1>
 
               <p className="mt-7 text-lg text-[#64748B] leading-relaxed max-w-lg">
-                Track medical expenses, project investment growth, manage family
-                dependents, and stay IRS audit-ready. One app for your entire
-                HSA strategy.
+                Track medical expenses, sync your HSA balance, compare what-if
+                scenarios, and get weekly or monthly email digests. One app for
+                your entire HSA strategy.
               </p>
 
               <div className="mt-10 flex flex-col sm:flex-row items-start gap-3">
@@ -170,12 +170,13 @@ export default async function Home() {
           </div>
 
           {/* Stats strip */}
-          <div className="mt-20 mx-auto max-w-2xl">
-            <div className="grid grid-cols-3 divide-x divide-[#E2E8F0]">
+          <div className="mt-20 mx-auto max-w-3xl">
+            <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-[#E2E8F0]">
               {[
                 { value: "3", label: "Account types supported" },
                 { value: "7 yr", label: "Retention tracking" },
                 { value: "100%", label: "Audit-ready records" },
+                { value: "Sync", label: "HSA balance via Plaid" },
               ].map((stat) => (
                 <div key={stat.label} className="text-center px-4 py-2">
                   <p className="text-2xl font-bold font-mono text-[#0F172A]">
@@ -233,7 +234,8 @@ export default async function Home() {
                     "Auto audit-readiness scoring",
                     "Reimbursement status & date tracking",
                     "7-year retention alerts",
-                    "Eligible expense verification",
+                    "Recurring expense templates",
+                    "Annual tax summary & CSV export",
                     "Category and expense type tagging",
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-2.5 text-sm text-[#475569]">
@@ -260,11 +262,11 @@ export default async function Home() {
               <ul className="space-y-3">
                 {[
                   "Balance & contribution tracking",
-                  "Expected return projections",
-                  "Interactive growth charts",
-                  "Federal & state tax bracket settings",
+                  "Reimbursement strategy optimizer",
+                  "What-if scenario comparison (up to 4)",
+                  "HSA balance sync via Plaid",
+                  "Expected return & contribution increase",
                   "Savings calculator (no sign-up needed)",
-                  "Unreimbursed expense growth tracking",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2.5 text-sm text-[#475569]">
                     <CheckCircle2 className="h-4 w-4 text-[#059669] mt-0.5 shrink-0" />
@@ -291,8 +293,9 @@ export default async function Home() {
                   "Spouse, children & domestic partner profiles",
                   "Patient-level expense attribution",
                   "HSA, LPFSA, and HCFSA support",
-                  "Per-account balance breakdowns",
-                  "Guided 3-step onboarding",
+                  "IRS contribution limits table (multi-year)",
+                  "55+ catch-up contribution support",
+                  "Weekly or monthly email digest",
                   "Secure profile & settings management",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2.5 text-sm text-[#475569]">
@@ -340,22 +343,22 @@ export default async function Home() {
                   {
                     icon: TrendingUp,
                     title: "Growth projections",
-                    desc: "Interactive charts with custom time horizons and return rates",
+                    desc: "Charts with milestones, contribution increase, and time horizon",
                   },
                   {
                     icon: Calculator,
-                    title: "Tax savings",
-                    desc: "See exact savings based on your federal and state brackets",
+                    title: "What-if scenarios",
+                    desc: "Compare up to 4 scenarios side-by-side with different assumptions",
                   },
                   {
                     icon: Wallet,
-                    title: "Balance tracking",
-                    desc: "Monitor contributions, growth, and expected returns",
+                    title: "Balance sync",
+                    desc: "Connect your HSA via Plaid and keep your balance up to date",
                   },
                   {
                     icon: Clock,
-                    title: "Long-term strategy",
-                    desc: "Plan 20+ years ahead with configurable parameters",
+                    title: "Reimbursement strategy",
+                    desc: "See which expenses have the most growth potential if you wait",
                   },
                 ].map((item) => (
                   <div key={item.title}>
@@ -645,8 +648,8 @@ export default async function Home() {
             <span className="gradient-text">tax-free wealth</span>
           </h2>
           <p className="mt-5 text-white/60 text-lg max-w-md mx-auto leading-relaxed">
-            Set up in minutes with guided onboarding. Track expenses, manage
-            dependents, and project your HSA growth.
+            Set up in minutes. Sync your HSA, track expenses, compare scenarios,
+            and get weekly or monthly email digests.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link href="/signup">

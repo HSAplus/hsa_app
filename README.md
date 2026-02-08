@@ -67,6 +67,15 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 3. Add the environment variables in the Vercel dashboard
 4. Deploy!
 
+### 6. Email digest (optional)
+
+To send weekly/monthly HSA summary emails via [Resend](https://resend.com):
+
+1. Add to `.env.local`: `RESEND_API_KEY`, `RESEND_FROM_EMAIL` (e.g. `HSA Plus <noreply@yourdomain.com>`), `CRON_SECRET`, and `NEXT_PUBLIC_APP_URL`.
+2. Run the migration: `supabase db push` or run `supabase/migrations/add_email_digest.sql` in the Supabase SQL Editor.
+3. Users enable the digest and choose frequency in **Profile → Email Digest**.
+4. To run the digest on a schedule, call `GET /api/digest` with header `Authorization: Bearer YOUR_CRON_SECRET` (e.g. daily). The API sends weekly digests on Mondays and monthly on the 1st. You can use [cron-job.org](https://cron-job.org), GitHub Actions, or another cron that supports custom headers; Vercel Cron does not add the secret header, so use an external scheduler.
+
 ## Database Schema
 
 The `expenses` table includes:
