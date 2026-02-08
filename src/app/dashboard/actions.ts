@@ -459,3 +459,301 @@ export async function deleteFile(
     return { error: "Failed to delete file" };
   }
 }
+
+// ────────────────────────────────────────────────
+// Expense Templates
+// ────────────────────────────────────────────────
+
+export async function getExpenseTemplates() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("expense_templates")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("name");
+
+  if (error) {
+    console.error("Error fetching templates:", error);
+    return [];
+  }
+
+  return (data ?? []) as import("@/lib/types").ExpenseTemplate[];
+}
+
+export async function addExpenseTemplate(
+  templateData: import("@/lib/types").ExpenseTemplateFormData
+): Promise<{ error?: string; template?: import("@/lib/types").ExpenseTemplate }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { data, error } = await supabase
+    .from("expense_templates")
+    .insert({ user_id: user.id, ...templateData })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error adding template:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  return { template: data as import("@/lib/types").ExpenseTemplate };
+}
+
+export async function updateExpenseTemplate(
+  id: string,
+  templateData: Partial<import("@/lib/types").ExpenseTemplateFormData>
+): Promise<{ error?: string; template?: import("@/lib/types").ExpenseTemplate }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { data, error } = await supabase
+    .from("expense_templates")
+    .update({ ...templateData, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error updating template:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  return { template: data as import("@/lib/types").ExpenseTemplate };
+}
+
+export async function deleteExpenseTemplate(
+  id: string
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { error } = await supabase
+    .from("expense_templates")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("Error deleting template:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  return {};
+}
+
+export async function getExpenseTemplateById(
+  id: string
+): Promise<import("@/lib/types").ExpenseTemplate | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from("expense_templates")
+    .select("*")
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .single();
+
+  if (error) {
+    console.error("Error fetching template:", error);
+    return null;
+  }
+
+  return data as import("@/lib/types").ExpenseTemplate;
+}
+
+// ────────────────────────────────────────────────
+// Plaid HSA Integration
+// ────────────────────────────────────────────────
+
+export async function createPlaidLinkToken(): Promise<{ linkToken?: string; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  try {
+    const { createLinkToken } = await import("@/lib/plaid");
+    const linkToken = await createLinkToken(user.id);
+    return { linkToken };
+  } catch (err) {
+    console.error("Error creating link token:", err);
+    return { error: "Failed to initialize connection. Check Plaid credentials." };
+  }
+}
+
+export async function connectHsaAccount(
+  publicToken: string,
+  metadata: { institution?: { name?: string; institution_id?: string }; account?: { id?: string; name?: string } }
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  try {
+    const { exchangePublicToken, getBalance } = await import("@/lib/plaid");
+    const { accessToken, itemId } = await exchangePublicToken(publicToken);
+
+    const accountId = metadata.account?.id ?? null;
+    const balance = await getBalance(accessToken, accountId);
+
+    // Upsert connection (one per user)
+    const { error: connError } = await supabase
+      .from("hsa_connections")
+      .upsert(
+        {
+          user_id: user.id,
+          plaid_item_id: itemId,
+          plaid_access_token: accessToken,
+          institution_name: metadata.institution?.name ?? "",
+          institution_id: metadata.institution?.institution_id ?? "",
+          account_id: accountId,
+          account_name: metadata.account?.name ?? null,
+          last_synced_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id" }
+      );
+
+    if (connError) {
+      console.error("Error saving connection:", connError);
+      return { error: connError.message };
+    }
+
+    // Update profile balance
+    await supabase
+      .from("profiles")
+      .update({
+        current_hsa_balance: balance,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", user.id);
+
+    revalidatePath("/dashboard");
+    return {};
+  } catch (err) {
+    console.error("Error connecting HSA:", err);
+    return { error: "Failed to connect account" };
+  }
+}
+
+export async function syncHsaBalance(): Promise<{ balance?: number; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { data: conn } = await supabase
+    .from("hsa_connections")
+    .select("*")
+    .eq("user_id", user.id)
+    .single();
+
+  if (!conn) return { error: "No HSA connection found" };
+
+  try {
+    const { getBalance } = await import("@/lib/plaid");
+    const balance = await getBalance(conn.plaid_access_token, conn.account_id);
+
+    await supabase
+      .from("hsa_connections")
+      .update({ last_synced_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+      .eq("id", conn.id);
+
+    await supabase
+      .from("profiles")
+      .update({ current_hsa_balance: balance, updated_at: new Date().toISOString() })
+      .eq("id", user.id);
+
+    revalidatePath("/dashboard");
+    return { balance };
+  } catch (err) {
+    console.error("Error syncing balance:", err);
+    return { error: "Failed to sync balance" };
+  }
+}
+
+export async function disconnectHsaAccount(): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { data: conn } = await supabase
+    .from("hsa_connections")
+    .select("*")
+    .eq("user_id", user.id)
+    .single();
+
+  if (!conn) return { error: "No HSA connection found" };
+
+  try {
+    const { removeItem } = await import("@/lib/plaid");
+    await removeItem(conn.plaid_access_token);
+  } catch {
+    // If Plaid removal fails, still remove from our DB
+  }
+
+  const { error } = await supabase
+    .from("hsa_connections")
+    .delete()
+    .eq("id", conn.id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/dashboard");
+  return {};
+}
+
+export async function getHsaConnection(): Promise<import("@/lib/types").HsaConnection | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const { data } = await supabase
+    .from("hsa_connections")
+    .select("*")
+    .eq("user_id", user.id)
+    .single();
+
+  return (data as import("@/lib/types").HsaConnection) ?? null;
+}

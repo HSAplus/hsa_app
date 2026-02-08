@@ -59,6 +59,42 @@ export interface Dependent {
   updated_at: string;
 }
 
+export type TemplateFrequency = "weekly" | "monthly" | "quarterly" | "annually" | "as_needed";
+
+export interface ExpenseTemplate {
+  id: string;
+  user_id: string;
+  name: string;
+  description: string;
+  amount: number;
+  provider: string;
+  patient_name: string;
+  patient_relationship: PatientRelationship;
+  account_type: AccountType;
+  category: ExpenseCategory;
+  expense_type: string;
+  payment_method: string;
+  frequency: TemplateFrequency;
+  created_at: string;
+  updated_at: string;
+}
+
+export type ExpenseTemplateFormData = Omit<ExpenseTemplate, "id" | "user_id" | "created_at" | "updated_at">;
+
+export interface HsaConnection {
+  id: string;
+  user_id: string;
+  plaid_item_id: string;
+  plaid_access_token: string;
+  institution_name: string;
+  institution_id: string;
+  account_id: string | null;
+  account_name: string | null;
+  last_synced_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export type AccountType = "hsa" | "lpfsa" | "hcfsa";
 
 export type PatientRelationship =

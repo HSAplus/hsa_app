@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { Expense, ExpenseCategory, ExpenseFormData, Profile, Dependent } from "@/lib/types";
 import { ELIGIBLE_EXPENSES, IRS_RULES, isAuditReady } from "@/lib/types";
-import { addExpense, updateExpense, addDependent } from "@/app/dashboard/actions";
+import { addExpense, updateExpense, addDependent, getExpenseTemplateById } from "@/app/dashboard/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -86,6 +86,7 @@ const categoryLabel: Record<string, string> = {
 
 export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFormPageProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Auto-populate patient_name with profile name when creating a new expense
   const profileFullName = profile
@@ -103,6 +104,30 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
   const [savingDependent, setSavingDependent] = useState(false);
 
   const isEditing = !!expense;
+
+  // Pre-fill form from template if ?template=id is present
+  useEffect(() => {
+    const templateId = searchParams.get("template");
+    if (templateId && !isEditing) {
+      getExpenseTemplateById(templateId).then((t) => {
+        if (t) {
+          setForm((prev) => ({
+            ...prev,
+            description: t.description,
+            amount: t.amount,
+            provider: t.provider,
+            patient_name: t.patient_name || prev.patient_name,
+            patient_relationship: t.patient_relationship,
+            account_type: t.account_type,
+            category: t.category,
+            expense_type: t.expense_type,
+            payment_method: t.payment_method,
+          }));
+          toast.info(`Loaded template: ${t.name}`);
+        }
+      });
+    }
+  }, [searchParams, isEditing]);
 
   const eligibleTypes = useMemo(
     () => ELIGIBLE_EXPENSES[form.category] || [],

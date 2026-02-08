@@ -15,6 +15,7 @@ import { StatsCards } from "./stats-cards";
 import { ExpenseTable } from "./expense-table";
 import { OnboardingDialog } from "./onboarding-dialog";
 import { GrowthProjection } from "./growth-projection";
+import { ExpenseTemplates } from "./expense-templates";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -223,6 +224,10 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
             onDelete={handleDelete}
             onMarkReimbursed={handleMarkReimbursed}
           />
+        </div>
+
+        <div className="mt-8">
+          <ExpenseTemplates />
         </div>
 
         <div className="mt-8">

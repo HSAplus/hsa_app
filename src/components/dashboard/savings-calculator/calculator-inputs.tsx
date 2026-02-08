@@ -22,6 +22,11 @@ export function CalculatorInputsPanel({
   onChange,
 }: CalculatorInputsProps) {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [isCatchUp, setIsCatchUp] = useState(false);
+
+  const currentYear = new Date().getFullYear() as keyof typeof HSA_LIMITS;
+  const limits = HSA_LIMITS[currentYear] ?? HSA_LIMITS[2026];
+  const contributionMax = limits.family + (isCatchUp ? limits.catchUp55 : 0);
 
   const update = (key: keyof CalculatorInputs, value: number) => {
     onChange({ ...inputs, [key]: value });
@@ -72,7 +77,7 @@ export function CalculatorInputsPanel({
               variant="secondary"
               className="text-[10px] px-1.5 py-0 bg-[#059669]/10 text-[#059669] border border-[#059669]/20"
             >
-              Max ${HSA_LIMITS[2025].family.toLocaleString()}
+              Max ${contributionMax.toLocaleString()}
             </Badge>
           </div>
           <div className="relative">
@@ -88,7 +93,7 @@ export function CalculatorInputsPanel({
                   Math.max(
                     0,
                     Math.min(
-                      HSA_LIMITS[2025].family,
+                      contributionMax,
                       Number(e.target.value) || 0
                     )
                   )
@@ -102,9 +107,24 @@ export function CalculatorInputsPanel({
           value={[inputs.annualContribution]}
           onValueChange={([v]) => update("annualContribution", v)}
           min={0}
-          max={HSA_LIMITS[2025].family}
+          max={contributionMax}
           step={50}
         />
+        <label className="flex items-center gap-1.5 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={isCatchUp}
+            onChange={(e) => {
+              setIsCatchUp(e.target.checked);
+              const newMax = limits.family + (e.target.checked ? limits.catchUp55 : 0);
+              if (inputs.annualContribution > newMax) {
+                update("annualContribution", newMax);
+              }
+            }}
+            className="h-3 w-3 rounded border-[#E2E8F0] text-[#059669] focus:ring-[#059669]"
+          />
+          <span className="text-[10px] text-[#64748B]">Age 55+ catch-up (+${limits.catchUp55.toLocaleString()})</span>
+        </label>
       </div>
 
       {/* Expected Return */}

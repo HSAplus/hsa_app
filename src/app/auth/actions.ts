@@ -115,7 +115,7 @@ export async function updateProfile(formData: FormData) {
   const dateOfBirth = (formData.get("dateOfBirth") as string) || null;
   const hsaBalance = parseFloat(formData.get("hsaBalance") as string) || 0;
   const coverageType = ((formData.get("coverageType") as string) || "individual") as CoverageType;
-  const maxContribution = getContributionLimit(coverageType);
+  const maxContribution = getContributionLimit(coverageType, dateOfBirth);
   const annualContribution = Math.min(
     parseFloat(formData.get("annualContribution") as string) || 0,
     maxContribution

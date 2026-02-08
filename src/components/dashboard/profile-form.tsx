@@ -3,7 +3,8 @@
 import { useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import type { Profile, Dependent, PatientRelationship } from "@/lib/types";
-import { getContributionLimit, type CoverageType } from "@/lib/hsa-constants";
+import { getContributionLimit, isCatchUpEligible, type CoverageType } from "@/lib/hsa-constants";
+import { HsaConnectionWidget } from "./hsa-connection";
 import { updateProfile } from "@/app/auth/actions";
 import { addDependent, updateDependent, deleteDependent } from "@/app/dashboard/actions";
 import { Button } from "@/components/ui/button";
@@ -289,7 +290,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                       type="button"
                       onClick={() => {
                         setCoverageType(type);
-                        const newMax = getContributionLimit(type);
+                        const newMax = getContributionLimit(type, dateOfBirth);
                         if (parseFloat(annualContribution) > newMax) {
                           setAnnualContribution(newMax.toString());
                         }
@@ -305,6 +306,9 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                   ))}
                 </div>
               </div>
+
+              {/* Plaid HSA connection */}
+              <HsaConnectionWidget onBalanceUpdate={(balance) => setHsaBalance(balance.toString())} />
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -322,13 +326,13 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                       id="annualContribution"
                       type="number"
                       min="0"
-                      max={getContributionLimit(coverageType)}
+                      max={getContributionLimit(coverageType, dateOfBirth)}
                       step="50"
                       value={annualContribution}
                       onChange={(e) => {
                         const val = Math.min(
                           Math.max(0, parseFloat(e.target.value) || 0),
-                          getContributionLimit(coverageType)
+                          getContributionLimit(coverageType, dateOfBirth)
                         );
                         setAnnualContribution(val.toString());
                       }}
@@ -337,7 +341,10 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                     />
                   </div>
                   <p className="text-[11px] text-[#94A3B8]">
-                    {new Date().getFullYear()} {coverageType} max: ${getContributionLimit(coverageType).toLocaleString()}
+                    {new Date().getFullYear()} {coverageType} max: ${getContributionLimit(coverageType, dateOfBirth).toLocaleString()}
+                    {isCatchUpEligible(dateOfBirth) && (
+                      <span className="text-[#059669] font-medium"> (incl. $1,000 catch-up 55+)</span>
+                    )}
                   </p>
                   <div className="space-y-1.5 pt-2">
                     <div className="flex items-center justify-between">

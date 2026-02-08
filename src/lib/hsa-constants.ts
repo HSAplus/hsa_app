@@ -28,10 +28,30 @@ export const DEFAULT_CALCULATOR_INPUTS: CalculatorInputs = {
 
 export type CoverageType = "individual" | "family";
 
-export function getContributionLimit(coverageType: CoverageType): number {
+export function getContributionLimit(
+  coverageType: CoverageType,
+  dateOfBirth?: string | null
+): number {
   const currentYear = new Date().getFullYear() as keyof typeof HSA_LIMITS;
   const limits = HSA_LIMITS[currentYear] ?? HSA_LIMITS[2026];
-  return coverageType === "family" ? limits.family : limits.individual;
+  let max = coverageType === "family" ? limits.family : limits.individual;
+  if (dateOfBirth) {
+    const age = Math.floor(
+      (Date.now() - new Date(dateOfBirth + "T00:00:00").getTime()) /
+        (365.25 * 24 * 60 * 60 * 1000)
+    );
+    if (age >= 55) max += limits.catchUp55;
+  }
+  return max;
+}
+
+export function isCatchUpEligible(dateOfBirth?: string | null): boolean {
+  if (!dateOfBirth) return false;
+  const age = Math.floor(
+    (Date.now() - new Date(dateOfBirth + "T00:00:00").getTime()) /
+      (365.25 * 24 * 60 * 60 * 1000)
+  );
+  return age >= 55;
 }
 
 export function formatCurrency(value: number): string {
