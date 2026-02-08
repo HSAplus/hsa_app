@@ -6,7 +6,7 @@ import type { Profile, Dependent, PatientRelationship } from "@/lib/types";
 import { getContributionLimit, isCatchUpEligible, type CoverageType } from "@/lib/hsa-constants";
 import { HsaConnectionWidget } from "./hsa-connection";
 import { updateProfile } from "@/app/auth/actions";
-import { addDependent, updateDependent, deleteDependent } from "@/app/dashboard/actions";
+import { addDependent, updateDependent, deleteDependent, sendTestDigest } from "@/app/dashboard/actions";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, Loader2, Shield, Users, Plus, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Loader2, Shield, Users, Plus, Pencil, Trash2, Mail, Send } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
@@ -67,6 +67,13 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
   const [depRelationship, setDepRelationship] = useState<Exclude<PatientRelationship, "self">>("spouse");
   const [depSaving, setDepSaving] = useState(false);
   const [depDeleting, setDepDeleting] = useState<string | null>(null);
+  const [emailDigestEnabled, setEmailDigestEnabled] = useState(
+    profile?.email_digest_enabled ?? false
+  );
+  const [emailDigestFrequency, setEmailDigestFrequency] = useState<"weekly" | "monthly">(
+    profile?.email_digest_frequency ?? "monthly"
+  );
+  const [sendingTest, setSendingTest] = useState(false);
 
   const displayName = `${firstName} ${lastName}`.trim();
 
@@ -181,6 +188,8 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
     formData.set("stateTaxRate", stateTaxRate);
     formData.set("coverageType", coverageType);
     formData.set("contributionIncreaseRate", increasePercent.toString());
+    formData.set("emailDigestEnabled", emailDigestEnabled.toString());
+    formData.set("emailDigestFrequency", emailDigestFrequency);
 
     const result = await updateProfile(formData);
 
@@ -542,6 +551,104 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                 ))}
               </div>
             )}
+          </section>
+
+          <Separator className="bg-[#F1F5F9]" />
+
+          {/* Email Digest */}
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-sm font-semibold text-[#0F172A] font-sans flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-[#64748B]" />
+                  Email Digest
+                </h2>
+                <p className="text-xs text-[#94A3B8] mt-0.5">Get periodic summaries of your HSA activity</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {/* Enable toggle */}
+              <div className="flex items-center justify-between p-3 rounded-lg border border-[#E2E8F0]">
+                <div>
+                  <p className="text-sm font-medium text-[#0F172A]">Enable email digest</p>
+                  <p className="text-xs text-[#94A3B8] mt-0.5">
+                    Receive a summary of expenses, balances, and growth projections
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setEmailDigestEnabled(!emailDigestEnabled)}
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                    emailDigestEnabled ? "bg-[#059669]" : "bg-[#E2E8F0]"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform shadow-sm ${
+                      emailDigestEnabled ? "translate-x-4.5" : "translate-x-0.5"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* Frequency */}
+              {emailDigestEnabled && (
+                <>
+                  <div className="space-y-2">
+                    <Label className="text-[13px] text-[#475569]">Frequency</Label>
+                    <div className="inline-flex rounded-lg border border-[#E2E8F0] p-0.5 bg-[#F8FAFC]">
+                      {(["weekly", "monthly"] as const).map((freq) => (
+                        <button
+                          key={freq}
+                          type="button"
+                          onClick={() => setEmailDigestFrequency(freq)}
+                          className={`px-4 py-1.5 text-[13px] font-medium rounded-md transition-all ${
+                            emailDigestFrequency === freq
+                              ? "bg-white text-[#0F172A] shadow-sm"
+                              : "text-[#94A3B8] hover:text-[#64748B]"
+                          }`}
+                        >
+                          {freq === "weekly" ? "Weekly (Mondays)" : "Monthly (1st)"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Send test */}
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-[#F8FAFC] border border-[#F1F5F9]">
+                    <div className="flex-1">
+                      <p className="text-[12px] text-[#64748B]">
+                        Send a test email to <span className="font-medium text-[#0F172A]">{user.email}</span>
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={sendingTest}
+                      onClick={async () => {
+                        setSendingTest(true);
+                        const result = await sendTestDigest();
+                        if (result.error) {
+                          toast.error(result.error);
+                        } else {
+                          toast.success("Test digest sent! Check your inbox.");
+                        }
+                        setSendingTest(false);
+                      }}
+                      className="h-7 text-[11px] px-3"
+                    >
+                      {sendingTest ? (
+                        <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                      ) : (
+                        <Send className="h-3 w-3 mr-1" />
+                      )}
+                      Send test
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
           </section>
 
           {/* Save Button */}

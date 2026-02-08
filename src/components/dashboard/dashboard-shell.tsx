@@ -16,6 +16,10 @@ import { ExpenseTable } from "./expense-table";
 import { OnboardingDialog } from "./onboarding-dialog";
 import { GrowthProjection } from "./growth-projection";
 import { ExpenseTemplates } from "./expense-templates";
+import { ReimbursementOptimizer } from "./reimbursement-optimizer";
+import { TaxSummary } from "./tax-summary";
+import { IrsLimitsTable } from "./irs-limits-table";
+import { ScenarioComparison } from "./scenario-comparison";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -227,11 +231,27 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
         </div>
 
         <div className="mt-8">
+          <ReimbursementOptimizer expenses={expenses} profile={profile} />
+        </div>
+
+        <div className="mt-8">
           <ExpenseTemplates />
         </div>
 
         <div className="mt-8">
+          <TaxSummary expenses={expenses} />
+        </div>
+
+        <div className="mt-8">
           <GrowthProjection profile={profile} loading={loading} />
+        </div>
+
+        <div className="mt-8">
+          <ScenarioComparison profile={profile} />
+        </div>
+
+        <div className="mt-8">
+          <IrsLimitsTable />
         </div>
       </main>
     </div>

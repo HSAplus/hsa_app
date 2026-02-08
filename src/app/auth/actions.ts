@@ -125,9 +125,11 @@ export async function updateProfile(formData: FormData) {
   const contributionIncreaseRate = parseFloat(formData.get("contributionIncreaseRate") as string) || 0;
   const federalBracket = parseFloat(formData.get("federalBracket") as string) || 22;
   const stateTaxRate = parseFloat(formData.get("stateTaxRate") as string) || 5;
+  const emailDigestEnabled = formData.get("emailDigestEnabled") === "true";
+  const emailDigestFrequency = (formData.get("emailDigestFrequency") as string) || "monthly";
 
   // Update profiles table
-  const profileUpdates: Record<string, string | number | null> = {
+  const profileUpdates: Record<string, string | number | boolean | null> = {
     first_name: firstName,
     middle_name: middleName,
     last_name: lastName,
@@ -139,6 +141,8 @@ export async function updateProfile(formData: FormData) {
     time_horizon_years: timeHorizonYears,
     federal_tax_bracket: federalBracket,
     state_tax_rate: stateTaxRate,
+    email_digest_enabled: emailDigestEnabled,
+    email_digest_frequency: emailDigestFrequency,
     updated_at: new Date().toISOString(),
   };
   if (dateOfBirth) {

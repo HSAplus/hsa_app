@@ -741,6 +741,98 @@ export async function disconnectHsaAccount(): Promise<{ error?: string }> {
   return {};
 }
 
+export async function sendTestDigest(): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const profile = await getProfile();
+  if (!profile) return { error: "Profile not found" };
+
+  const expenses = await getExpenses();
+
+  try {
+    const { resend, EMAIL_FROM } = await import("@/lib/resend");
+    const { DigestEmail } = await import("@/lib/email-templates/digest");
+    const ReactDOMServer = await import("react-dom/server");
+
+    const now = new Date();
+    const periodLabel = now.toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
+    });
+
+    const totalExpenses = expenses.reduce((sum, e) => sum + e.amount, 0);
+    const totalReimbursed = expenses
+      .filter((e) => e.reimbursed)
+      .reduce((sum, e) => sum + (e.reimbursed_amount ?? e.amount), 0);
+    const pendingReimbursement = totalExpenses - totalReimbursed;
+
+    const annualReturn = profile.expected_annual_return ?? 7;
+    const timeHorizon = profile.time_horizon_years ?? 20;
+
+    const { calculateExpectedReturn, isAuditReady: checkAudit } = await import(
+      "@/lib/types"
+    );
+    const { extraGrowth } = calculateExpectedReturn(
+      expenses,
+      annualReturn,
+      timeHorizon
+    );
+
+    const auditReadyCount = expenses.filter((e) => checkAudit(e)).length;
+    const auditReadyPct =
+      expenses.length > 0
+        ? Math.round((auditReadyCount / expenses.length) * 100)
+        : 100;
+
+    const topExpenses = expenses.slice(0, 5).map((e) => ({
+      description: e.description,
+      amount: e.amount,
+      date: new Date(e.date_of_service + "T00:00:00").toLocaleDateString(
+        "en-US",
+        { month: "short", day: "numeric" }
+      ),
+    }));
+
+    const element = DigestEmail({
+      firstName: profile.first_name || "there",
+      periodLabel,
+      hsaBalance: profile.current_hsa_balance ?? 0,
+      totalExpenses,
+      pendingReimbursement,
+      newExpenseCount: expenses.filter(
+        (e) =>
+          new Date(e.created_at) >=
+          new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+      ).length,
+      reimbursedThisPeriod: 0,
+      projectedGrowth: extraGrowth,
+      timeHorizon,
+      annualReturn,
+      auditReadyPct,
+      topExpenses,
+    });
+
+    const html = ReactDOMServer.renderToStaticMarkup(element);
+
+    await resend.emails.send({
+      from: EMAIL_FROM,
+      to: profile.email,
+      subject: `[Test] Your HSA Plus ${periodLabel} Summary`,
+      html,
+    });
+
+    return {};
+  } catch (err) {
+    console.error("Error sending test digest:", err);
+    return { error: "Failed to send test email. Check Resend configuration." };
+  }
+}
+
 export async function getHsaConnection(): Promise<import("@/lib/types").HsaConnection | null> {
   const supabase = await createClient();
   const {

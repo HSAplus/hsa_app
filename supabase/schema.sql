@@ -131,6 +131,9 @@ create table if not exists public.profiles (
   state_tax_rate decimal(4,1) not null default 5.0,
   coverage_type text not null default 'individual',
   contribution_increase_rate decimal(5,2) not null default 0.00,
+  email_digest_enabled boolean not null default false,
+  email_digest_frequency text not null default 'monthly'
+    check (email_digest_frequency in ('weekly', 'monthly')),
   onboarding_completed boolean not null default false,
   created_at timestamptz default now() not null,
   updated_at timestamptz default now() not null

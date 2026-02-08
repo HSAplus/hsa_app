@@ -43,6 +43,8 @@ export interface Profile {
   state_tax_rate: number;           // e.g. 5.0 means 5%
   coverage_type: "individual" | "family";
   contribution_increase_rate: number; // annual % increase (e.g. 5 means +5%/yr)
+  email_digest_enabled: boolean;
+  email_digest_frequency: "weekly" | "monthly";
   onboarding_completed: boolean;
   created_at: string;
   updated_at: string;
