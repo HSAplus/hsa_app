@@ -46,8 +46,11 @@ export function HsaConnectionWidget({ onBalanceUpdate }: HsaConnectionProps) {
   };
 
   const onPlaidSuccess = useCallback(
-    async (publicToken: string, metadata: { institution?: { name?: string; institution_id?: string }; account?: { id?: string; name?: string } }) => {
-      const result = await connectHsaAccount(publicToken, metadata);
+    async (publicToken: string, metadata: { institution?: { name?: string; institution_id?: string } | null; account?: { id?: string; name?: string } }) => {
+      const result = await connectHsaAccount(publicToken, {
+        institution: metadata.institution ?? undefined,
+        account: metadata.account,
+      });
       if (result.error) {
         toast.error(result.error);
       } else {
