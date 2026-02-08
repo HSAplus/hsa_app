@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Heart } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
+import Image from "next/image";
+import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 
 export default async function SignUpPage({
   searchParams,
@@ -18,9 +20,7 @@ export default async function SignUpPage({
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
           <div className="flex justify-center mb-2">
-            <div className="rounded-full bg-emerald-100 dark:bg-emerald-900/30 p-3">
-              <Heart className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
-            </div>
+            <Image src="/logo.png" alt="HSA Plus" width={120} height={80} className="rounded-lg" />
           </div>
           <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
           <CardDescription>
@@ -38,7 +38,36 @@ export default async function SignUpPage({
               {params.message}
             </div>
           )}
+          <GoogleSignInButton />
+          <div className="relative my-6">
+            <Separator />
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-xs text-muted-foreground">
+              or continue with email
+            </span>
+          </div>
           <form className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  placeholder="John"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  placeholder="Doe"
+                  required
+                />
+              </div>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -60,7 +89,7 @@ export default async function SignUpPage({
                 required
               />
             </div>
-            <Button formAction={signup} className="w-full" size="lg">
+            <Button formAction={signup} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white" size="lg">
               Create Account
             </Button>
           </form>

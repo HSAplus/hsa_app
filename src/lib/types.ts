@@ -28,6 +28,16 @@ export interface Expense {
   audit_ready: boolean; // Whether all required documentation is attached
 }
 
+export interface Profile {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  date_of_birth: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export type AccountType = "hsa" | "lpfsa" | "hcfsa";
 
 export type PatientRelationship =

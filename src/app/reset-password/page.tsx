@@ -1,14 +1,11 @@
-import { login } from "@/app/auth/actions";
+import { resetPassword } from "@/app/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import Link from "next/link";
 import Image from "next/image";
-import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 
-export default async function LoginPage({
+export default async function ResetPasswordPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string; message?: string }>;
@@ -22,9 +19,9 @@ export default async function LoginPage({
           <div className="flex justify-center mb-2">
             <Image src="/logo.png" alt="HSA Plus" width={120} height={80} className="rounded-lg" />
           </div>
-          <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
+          <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
           <CardDescription>
-            Sign in to your HSA Plus account
+            Enter your new password below
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -38,55 +35,34 @@ export default async function LoginPage({
               {params.message}
             </div>
           )}
-          <GoogleSignInButton />
-          <div className="relative my-6">
-            <Separator />
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-xs text-muted-foreground">
-              or continue with email
-            </span>
-          </div>
           <form className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="you@example.com"
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="/forgot-password"
-                  className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline"
-                >
-                  Forgot password?
-                </Link>
-              </div>
+              <Label htmlFor="password">New Password</Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
                 placeholder="••••••••"
+                minLength={6}
+                required
+                autoFocus
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder="••••••••"
+                minLength={6}
                 required
               />
             </div>
-            <Button formAction={login} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white" size="lg">
-              Sign In
+            <Button formAction={resetPassword} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white" size="lg">
+              Update Password
             </Button>
           </form>
-          <div className="mt-6 text-center text-sm text-muted-foreground">
-            Don&apos;t have an account?{" "}
-            <Link
-              href="/signup"
-              className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium"
-            >
-              Sign Up
-            </Link>
-          </div>
         </CardContent>
       </Card>
     </div>

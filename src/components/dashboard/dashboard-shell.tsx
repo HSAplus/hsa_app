@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { signout } from "@/app/auth/actions";
 import {
@@ -9,10 +10,9 @@ import {
   deleteExpense,
   markAsReimbursed,
 } from "@/app/dashboard/actions";
-import type { Expense, DashboardStats } from "@/lib/types";
+import type { Expense, DashboardStats, Profile } from "@/lib/types";
 import { StatsCards } from "./stats-cards";
 import { ExpenseTable } from "./expense-table";
-import { AddExpenseDialog } from "./add-expense-dialog";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -21,14 +21,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Heart, LogOut, Plus, RefreshCw } from "lucide-react";
+import { LogOut, Plus, RefreshCw, UserCog } from "lucide-react";
+import Image from "next/image";
 import { Toaster, toast } from "sonner";
+import Link from "next/link";
 
 interface DashboardShellProps {
   user: User;
+  profile: Profile | null;
 }
 
-export function DashboardShell({ user }: DashboardShellProps) {
+export function DashboardShell({ user, profile }: DashboardShellProps) {
+  const router = useRouter();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
     totalExpenses: 0,
@@ -40,8 +44,6 @@ export function DashboardShell({ user }: DashboardShellProps) {
     retentionAlerts: 0,
   });
   const [loading, setLoading] = useState(true);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -84,24 +86,18 @@ export function DashboardShell({ user }: DashboardShellProps) {
   };
 
   const handleEdit = (expense: Expense) => {
-    setEditingExpense(expense);
-    setDialogOpen(true);
+    router.push(`/dashboard/expenses/${expense.id}/edit`);
   };
 
-  const handleDialogClose = () => {
-    setDialogOpen(false);
-    setEditingExpense(null);
-  };
+  const profileName = profile
+    ? `${profile.first_name} ${profile.last_name}`.trim()
+    : "";
 
-  const handleSaved = () => {
-    handleDialogClose();
-    loadData();
-    toast.success(editingExpense ? "Expense updated" : "Expense added");
-  };
-
-  const initials = user.email
-    ? user.email.substring(0, 2).toUpperCase()
-    : "U";
+  const initials = profile?.first_name && profile?.last_name
+    ? `${profile.first_name[0]}${profile.last_name[0]}`.toUpperCase()
+    : user.email
+      ? user.email.substring(0, 2).toUpperCase()
+      : "U";
 
   return (
     <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950">
@@ -111,9 +107,7 @@ export function DashboardShell({ user }: DashboardShellProps) {
       <header className="sticky top-0 z-50 w-full border-b bg-white/80 dark:bg-gray-950/80 backdrop-blur supports-backdrop-filter:bg-white/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <div className="rounded-lg bg-emerald-100 dark:bg-emerald-900/30 p-1.5">
-              <Heart className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-            </div>
+            <Image src="/logo.png" alt="HSA Plus" width={72} height={48} className="rounded-lg" />
             <span className="text-lg font-bold">HSA Plus</span>
           </div>
 
@@ -130,14 +124,13 @@ export function DashboardShell({ user }: DashboardShellProps) {
 
             <Button
               size="sm"
-              onClick={() => {
-                setEditingExpense(null);
-                setDialogOpen(true);
-              }}
+              asChild
               className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Expense
+              <Link href="/dashboard/expenses/new">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Expense
+              </Link>
             </Button>
 
             <DropdownMenu>
@@ -153,10 +146,18 @@ export function DashboardShell({ user }: DashboardShellProps) {
               <DropdownMenuContent align="end" className="w-56">
                 <div className="flex items-center gap-2 p-2">
                   <div className="flex flex-col space-y-0.5">
-                    <p className="text-sm font-medium">{user.email}</p>
-                    <p className="text-xs text-muted-foreground">HSA Account</p>
+                    {profileName && (
+                      <p className="text-sm font-medium">{profileName}</p>
+                    )}
+                    <p className={`text-xs ${profileName ? "text-muted-foreground" : "text-sm font-medium"}`}>{user.email}</p>
                   </div>
                 </div>
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/profile" className="cursor-pointer">
+                    <UserCog className="mr-2 h-4 w-4" />
+                    Profile Settings
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => signout()}
                   className="text-destructive cursor-pointer"
@@ -191,13 +192,6 @@ export function DashboardShell({ user }: DashboardShellProps) {
           />
         </div>
       </main>
-
-      <AddExpenseDialog
-        open={dialogOpen}
-        onClose={handleDialogClose}
-        onSaved={handleSaved}
-        expense={editingExpense}
-      />
     </div>
   );
 }

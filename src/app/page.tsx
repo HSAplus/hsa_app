@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Heart,
@@ -29,9 +30,7 @@ export default async function Home() {
       <header className="border-b bg-white/80 dark:bg-gray-950/80 backdrop-blur">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-2">
-            <div className="rounded-lg bg-emerald-100 dark:bg-emerald-900/30 p-1.5">
-              <Heart className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-            </div>
+            <Image src="/logo.png" alt="HSA Plus" width={72} height={48} className="rounded-lg" />
             <span className="text-lg font-bold">HSA Plus</span>
           </div>
           <div className="flex items-center gap-3">

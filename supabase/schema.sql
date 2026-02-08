@@ -118,13 +118,20 @@ create trigger trg_compute_audit_ready
 create table if not exists public.profiles (
   id uuid references auth.users(id) on delete cascade primary key,
   email text,
-  created_at timestamptz default now() not null
+  first_name text not null default '',
+  last_name text not null default '',
+  date_of_birth date,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null
 );
 
 alter table public.profiles enable row level security;
 
 create policy "Users can view their own profile"
   on public.profiles for select using (auth.uid() = id);
+
+create policy "Users can insert their own profile"
+  on public.profiles for insert with check (auth.uid() = id);
 
 create policy "Users can update their own profile"
   on public.profiles for update using (auth.uid() = id);
@@ -136,9 +143,14 @@ create policy "Users can update their own profile"
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  -- Create profile row
-  insert into public.profiles (id, email)
-  values (new.id, new.email);
+  -- Create profile row (extract name from metadata if available, e.g. Google OAuth)
+  insert into public.profiles (id, email, first_name, last_name)
+  values (
+    new.id,
+    new.email,
+    coalesce(new.raw_user_meta_data ->> 'first_name', split_part(coalesce(new.raw_user_meta_data ->> 'full_name', ''), ' ', 1), ''),
+    coalesce(new.raw_user_meta_data ->> 'last_name', nullif(substring(coalesce(new.raw_user_meta_data ->> 'full_name', '') from position(' ' in coalesce(new.raw_user_meta_data ->> 'full_name', '')) + 1), ''), '')
+  );
 
   -- Initialize storage folders with a .keep placeholder
   -- This ensures the folder structure exists before the user uploads

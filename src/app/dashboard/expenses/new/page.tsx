@@ -1,11 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { DashboardShell } from "@/components/dashboard/dashboard-shell";
+import { ExpenseFormPage } from "@/components/dashboard/expense-form-page";
 import { getProfile } from "@/app/dashboard/actions";
 
-export default async function DashboardPage() {
+export default async function NewExpensePage() {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -16,5 +15,5 @@ export default async function DashboardPage() {
 
   const profile = await getProfile();
 
-  return <DashboardShell user={user} profile={profile} />;
+  return <ExpenseFormPage profile={profile} />;
 }

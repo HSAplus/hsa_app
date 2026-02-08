@@ -16,6 +16,21 @@ export async function GET(request: Request) {
       } = await supabase.auth.getUser();
 
       if (user) {
+        // Update profile with name from OAuth provider (e.g. Google)
+        const fullName = user.user_metadata?.full_name || "";
+        const firstName = user.user_metadata?.first_name || fullName.split(" ")[0] || "";
+        const lastName = user.user_metadata?.last_name || fullName.split(" ").slice(1).join(" ") || "";
+
+        await supabase
+          .from("profiles")
+          .upsert({
+            id: user.id,
+            email: user.email,
+            first_name: firstName,
+            last_name: lastName,
+          }, { onConflict: "id" });
+
+        // Initialize user's document folders
         const folders = ["receipt", "eob", "invoice", "cc-statement"];
         const placeholder = new Blob([""], { type: "text/plain" });
 

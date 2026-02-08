@@ -2,8 +2,53 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import type { Expense, ExpenseFormData, DashboardStats } from "@/lib/types";
+import type { Expense, ExpenseFormData, DashboardStats, Profile } from "@/lib/types";
 import { isAuditReady, getRetentionStatus } from "@/lib/types";
+
+export async function getProfile(): Promise<Profile | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (error) {
+    console.error("Error fetching profile:", error);
+    return null;
+  }
+
+  return data as Profile;
+}
+
+export async function getExpenseById(id: string): Promise<Expense | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from("expenses")
+    .select("*")
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .single();
+
+  if (error) {
+    console.error("Error fetching expense:", error);
+    return null;
+  }
+
+  return data as Expense;
+}
 
 export async function getExpenses(): Promise<Expense[]> {
   const supabase = await createClient();
