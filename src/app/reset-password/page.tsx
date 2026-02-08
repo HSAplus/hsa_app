@@ -1,6 +1,5 @@
 import { resetPassword } from "@/app/auth/actions";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
@@ -13,58 +12,43 @@ export default async function ResetPasswordPage({
   const params = await searchParams;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 via-white to-emerald-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center space-y-2">
-          <div className="flex justify-center mb-2">
-            <Image src="/logo.png" alt="HSA Plus" width={120} height={80} className="rounded-lg" />
+    <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] p-4">
+      <div className="w-full max-w-sm">
+        <div className="flex justify-center mb-6">
+          <Image src="/logo.png" alt="HSA Plus" width={72} height={48} className="rounded-lg" />
+        </div>
+        <h1 className="text-2xl tracking-tight text-[#0F172A] text-center font-sans font-bold">
+          Reset password
+        </h1>
+        <p className="mt-1.5 text-sm text-[#64748B] text-center mb-8">
+          Enter your new password below
+        </p>
+
+        {params.error && (
+          <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+            {params.error}
           </div>
-          <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
-          <CardDescription>
-            Enter your new password below
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {params.error && (
-            <div className="mb-4 rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive">
-              {params.error}
-            </div>
-          )}
-          {params.message && (
-            <div className="mb-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 p-3 text-sm text-emerald-700 dark:text-emerald-400">
-              {params.message}
-            </div>
-          )}
-          <form className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="password">New Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="••••••••"
-                minLength={6}
-                required
-                autoFocus
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                minLength={6}
-                required
-              />
-            </div>
-            <Button formAction={resetPassword} className="w-full bg-emerald-600 hover:bg-emerald-700 text-white" size="lg">
-              Update Password
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+        )}
+        {params.message && (
+          <div className="mb-4 rounded-lg bg-[#059669]/5 border border-[#059669]/20 px-4 py-3 text-sm text-[#059669]">
+            {params.message}
+          </div>
+        )}
+
+        <form className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-sm">New password</Label>
+            <Input id="password" name="password" type="password" placeholder="••••••••" minLength={6} required autoFocus />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword" className="text-sm">Confirm password</Label>
+            <Input id="confirmPassword" name="confirmPassword" type="password" placeholder="••••••••" minLength={6} required />
+          </div>
+          <Button formAction={resetPassword} className="w-full">
+            Update password
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }

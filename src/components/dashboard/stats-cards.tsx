@@ -1,7 +1,6 @@
 "use client";
 
 import type { DashboardStats } from "@/lib/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, TrendingUp, Clock, Wallet, Sprout, PiggyBank } from "lucide-react";
 
 interface StatsCardsProps {
@@ -12,80 +11,71 @@ interface StatsCardsProps {
 export function StatsCards({ stats, loading }: StatsCardsProps) {
   const cards = [
     {
-      title: "Current HSA Balance",
+      title: "HSA Balance",
       value: `$${stats.currentHsaBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
-      description: "Your current HSA account balance",
+      description: "Current account balance",
       icon: PiggyBank,
-      color: "text-indigo-600 dark:text-indigo-400",
-      bg: "bg-indigo-100 dark:bg-indigo-900/30",
     },
     {
       title: "Total Out-of-Pocket",
       value: `$${stats.totalExpenses.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
       description: `${stats.expenseCount} expense${stats.expenseCount !== 1 ? "s" : ""} tracked`,
       icon: DollarSign,
-      color: "text-blue-600 dark:text-blue-400",
-      bg: "bg-blue-100 dark:bg-blue-900/30",
     },
     {
-      title: "Reimbursed (Y)",
+      title: "Reimbursed",
       value: `$${stats.totalReimbursed.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
-      description: "Total claimed from HSA/LPFSA/HCFSA",
+      description: "Claimed from HSA / LPFSA / HCFSA",
       icon: TrendingUp,
-      color: "text-emerald-600 dark:text-emerald-400",
-      bg: "bg-emerald-100 dark:bg-emerald-900/30",
     },
     {
-      title: "Pending (N)",
+      title: "Pending",
       value: `$${stats.pendingReimbursement.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
-      description: "Available to reimburse later — let HSA grow!",
+      description: "Available to reimburse later",
       icon: Clock,
-      color: "text-amber-600 dark:text-amber-400",
-      bg: "bg-amber-100 dark:bg-amber-900/30",
     },
     {
       title: "By Account",
       value: `$${stats.byAccount.hsa.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
       description: `HSA $${stats.byAccount.hsa.toFixed(0)} · LPFSA $${stats.byAccount.lpfsa.toFixed(0)} · HCFSA $${stats.byAccount.hcfsa.toFixed(0)}`,
       icon: Wallet,
-      color: "text-purple-600 dark:text-purple-400",
-      bg: "bg-purple-100 dark:bg-purple-900/30",
     },
     {
       title: "Expected Return",
       value: `$${stats.expectedReturn.extraGrowth.toLocaleString("en-US", { minimumFractionDigits: 2 })}`,
-      description: `Based on ${stats.expectedReturn.annualReturn}% return over ${stats.expectedReturn.timeHorizonYears} yrs — from receipts you saved`,
+      description: `${stats.expectedReturn.annualReturn}% return · ${stats.expectedReturn.timeHorizonYears} yr horizon`,
       icon: Sprout,
-      color: "text-teal-600 dark:text-teal-400",
-      bg: "bg-teal-100 dark:bg-teal-900/30",
     },
   ];
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {cards.map((card) => (
-        <Card key={card.title} className="relative overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+        <div
+          key={card.title}
+          className="group rounded-xl border border-[#E2E8F0] bg-white p-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[13px] font-medium text-[#64748B]">
               {card.title}
-            </CardTitle>
-            <div className={`rounded-lg p-2 ${card.bg}`}>
-              <card.icon className={`h-4 w-4 ${card.color}`} />
+            </p>
+            <div className="rounded-lg p-1.5 bg-gradient-to-br from-[#059669] to-[#34d399]">
+              <card.icon className="h-3.5 w-3.5 text-white" />
             </div>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="h-8 w-24 animate-pulse rounded bg-muted" />
-            ) : (
-              <>
-                <div className="text-2xl font-bold">{card.value}</div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {card.description}
-                </p>
-              </>
-            )}
-          </CardContent>
-        </Card>
+          </div>
+          {loading ? (
+            <div className="h-7 w-28 animate-pulse rounded bg-[#F1F5F9]" />
+          ) : (
+            <>
+              <p className="text-2xl font-semibold font-mono tabular-nums text-[#0F172A]">
+                {card.value}
+              </p>
+              <p className="text-xs text-[#94A3B8] mt-1">
+                {card.description}
+              </p>
+            </>
+          )}
+        </div>
       ))}
     </div>
   );

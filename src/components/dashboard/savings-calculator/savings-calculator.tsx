@@ -34,12 +34,12 @@ export function SavingsCalculator() {
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <div>
             <div className="flex items-center gap-2">
-              <CardTitle className="text-xl">
+              <CardTitle className="text-xl font-sans">
                 HSA Savings Projections
               </CardTitle>
               <Badge
                 variant="secondary"
-                className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
+                className="bg-[#059669]/10 text-[#059669] border border-[#059669]/20"
               >
                 Calculator
               </Badge>
@@ -48,8 +48,8 @@ export function SavingsCalculator() {
               See how your HSA can grow tax-free over time
             </CardDescription>
           </div>
-          <div className="rounded-lg p-2 bg-emerald-100 dark:bg-emerald-900/30">
-            <Calculator className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+          <div className="rounded-lg p-2 bg-gradient-to-br from-[#059669] to-[#34d399]">
+            <Calculator className="h-5 w-5 text-white" />
           </div>
         </CardHeader>
         <CardContent>

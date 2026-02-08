@@ -35,31 +35,31 @@ export function ComparisonBars({
       sublabel: "Tax-free contributions, growth & withdrawals",
       value: last.balance,
       barColor:
-        "bg-gradient-to-r from-emerald-500 to-emerald-400 dark:from-emerald-600 dark:to-emerald-400",
+        "bg-gradient-to-r from-[#059669] to-[#34d399]",
     },
     {
       label: "Taxable Brokerage",
       sublabel: `Post-tax contributions, ${inputs.taxBracket + inputs.stateTaxRate}% taxed growth`,
       value: last.taxableEquivalent,
       barColor:
-        "bg-gradient-to-r from-slate-400 to-slate-300 dark:from-slate-600 dark:to-slate-500",
+        "bg-gradient-to-r from-[#94A3B8] to-[#CBD5E1]",
     },
   ];
 
   return (
     <div className="space-y-8">
       {/* Info text */}
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-[#64748B]">
         Comparison after{" "}
-        <span className="font-semibold text-foreground">
+        <span className="font-semibold text-[#0F172A]">
           {inputs.timeHorizon} years
         </span>{" "}
         contributing{" "}
-        <span className="font-semibold text-foreground">
+        <span className="font-semibold text-[#0F172A]">
           {formatCurrency(inputs.annualContribution)}/yr
         </span>{" "}
         at{" "}
-        <span className="font-semibold text-foreground">
+        <span className="font-semibold text-[#0F172A]">
           {inputs.expectedReturn}% return
         </span>
       </p>
@@ -76,16 +76,16 @@ export function ComparisonBars({
           >
             <div className="flex items-baseline justify-between">
               <div>
-                <span className="text-sm font-medium">{row.label}</span>
-                <p className="text-[11px] text-muted-foreground">
+                <span className="text-sm font-medium text-[#0F172A]">{row.label}</span>
+                <p className="text-[11px] text-[#94A3B8]">
                   {row.sublabel}
                 </p>
               </div>
-              <span className="text-sm font-mono font-bold">
+              <span className="text-sm font-mono font-bold text-[#0F172A]">
                 {formatCurrency(row.value)}
               </span>
             </div>
-            <div className="h-4 rounded-full bg-muted overflow-hidden">
+            <div className="h-4 rounded-full bg-[#F1F5F9] overflow-hidden">
               <div
                 className={`h-full rounded-full ${row.barColor}`}
                 style={{
@@ -104,44 +104,46 @@ export function ComparisonBars({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.4, duration: 0.4 }}
-        className="rounded-xl border-2 border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/30 p-5 animate-pulse-glow"
+        className="rounded-xl p-[2px] bg-gradient-to-br from-[#059669] to-[#34d399] animate-pulse-glow"
       >
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-          <div>
-            <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
-              HSA Triple-Tax Advantage
-            </p>
-            <p className="text-xs text-emerald-600/80 dark:text-emerald-400/70 mt-0.5">
-              You keep more by using your HSA as an investment vehicle
-            </p>
+        <div className="rounded-[calc(12px-2px)] bg-white p-5">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <p className="text-sm font-semibold text-[#0F172A]">
+                HSA Triple-Tax Advantage
+              </p>
+              <p className="text-xs text-[#64748B] mt-0.5">
+                You keep more by using your HSA as an investment vehicle
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-2xl font-bold font-mono gradient-text">
+                +{formatCurrency(summary.hsaAdvantage)}
+              </p>
+              <Badge className="bg-[#059669]/10 text-[#059669] border border-[#059669]/20 text-xs mt-1">
+                +{advantagePct}% more
+              </Badge>
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-2xl font-bold font-mono text-emerald-700 dark:text-emerald-300">
-              +{formatCurrency(summary.hsaAdvantage)}
-            </p>
-            <Badge className="bg-emerald-200 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200 text-xs mt-1">
-              +{advantagePct}% more
-            </Badge>
-          </div>
-        </div>
 
-        {/* Breakdown */}
-        <div className="mt-4 pt-4 border-t border-emerald-200 dark:border-emerald-800 grid grid-cols-2 gap-3">
-          <div>
-            <p className="text-[11px] text-emerald-600/70 dark:text-emerald-400/60">
-              Tax-free contributions
-            </p>
-            <p className="text-sm font-mono font-semibold text-emerald-700 dark:text-emerald-300">
-              {formatCurrency(summary.totalTaxSavings)}
-            </p>
-          </div>
-          <div>
-            <p className="text-[11px] text-emerald-600/70 dark:text-emerald-400/60">
-              Tax-free growth
-            </p>
-            <p className="text-sm font-mono font-semibold text-emerald-700 dark:text-emerald-300">
-              {formatCurrency(summary.totalGrowth)}
-            </p>
+          {/* Breakdown */}
+          <div className="mt-4 pt-4 border-t border-[#F1F5F9] grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-[11px] text-[#94A3B8]">
+                Tax-free contributions
+              </p>
+              <p className="text-sm font-mono font-semibold text-[#0F172A]">
+                {formatCurrency(summary.totalTaxSavings)}
+              </p>
+            </div>
+            <div>
+              <p className="text-[11px] text-[#94A3B8]">
+                Tax-free growth
+              </p>
+              <p className="text-sm font-mono font-semibold text-[#0F172A]">
+                {formatCurrency(summary.totalGrowth)}
+              </p>
+            </div>
           </div>
         </div>
       </motion.div>

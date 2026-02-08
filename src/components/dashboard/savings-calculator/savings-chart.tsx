@@ -33,16 +33,16 @@ function CustomTooltip({
   );
 
   return (
-    <div className="rounded-lg border bg-card p-3 shadow-lg text-card-foreground">
-      <p className="text-xs font-medium text-muted-foreground mb-2">
+    <div className="rounded-lg border border-[#E2E8F0] bg-white p-3 shadow-lg">
+      <p className="text-xs font-medium font-mono text-[#94A3B8] mb-2">
         Year {label}
       </p>
       <div className="space-y-1">
         {balance && (
           <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-emerald-500" />
-            <span className="text-xs">HSA Balance:</span>
-            <span className="text-xs font-mono font-semibold ml-auto">
+            <div className="h-2 w-2 rounded-full bg-[#059669]" />
+            <span className="text-xs text-[#64748B]">HSA Balance:</span>
+            <span className="text-xs font-mono font-semibold ml-auto text-[#0F172A]">
               {formatCurrency(balance.value)}
             </span>
           </div>
@@ -50,17 +50,17 @@ function CustomTooltip({
         {contributions && (
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-blue-500" />
-            <span className="text-xs">Contributions:</span>
-            <span className="text-xs font-mono font-semibold ml-auto">
+            <span className="text-xs text-[#64748B]">Contributions:</span>
+            <span className="text-xs font-mono font-semibold ml-auto text-[#0F172A]">
               {formatCurrency(contributions.value)}
             </span>
           </div>
         )}
         {balance && contributions && (
-          <div className="flex items-center gap-2 pt-1 border-t">
-            <div className="h-2 w-2 rounded-full bg-amber-500" />
-            <span className="text-xs">Growth:</span>
-            <span className="text-xs font-mono font-semibold ml-auto text-emerald-600 dark:text-emerald-400">
+          <div className="flex items-center gap-2 pt-1 border-t border-[#F1F5F9]">
+            <div className="h-2 w-2 rounded-full bg-[#34d399]" />
+            <span className="text-xs text-[#64748B]">Growth:</span>
+            <span className="text-xs font-mono font-semibold ml-auto text-[#059669]">
               {formatCurrency(balance.value - contributions.value)}
             </span>
           </div>
@@ -77,7 +77,6 @@ function formatYAxisTick(value: number): string {
 }
 
 export function SavingsChart({ data }: SavingsChartProps) {
-  // Show every Nth label to avoid crowding
   const labelInterval = data.length <= 10 ? 1 : data.length <= 20 ? 2 : 5;
 
   return (
@@ -89,49 +88,22 @@ export function SavingsChart({ data }: SavingsChartProps) {
         >
           <defs>
             <linearGradient id="gradientBalance" x1="0" y1="0" x2="0" y2="1">
-              <stop
-                offset="5%"
-                stopColor="rgb(16, 185, 129)"
-                stopOpacity={0.3}
-              />
-              <stop
-                offset="95%"
-                stopColor="rgb(16, 185, 129)"
-                stopOpacity={0.02}
-              />
+              <stop offset="5%" stopColor="#059669" stopOpacity={0.2} />
+              <stop offset="95%" stopColor="#059669" stopOpacity={0.02} />
             </linearGradient>
-            <linearGradient
-              id="gradientContributions"
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="1"
-            >
-              <stop
-                offset="5%"
-                stopColor="rgb(59, 130, 246)"
-                stopOpacity={0.12}
-              />
-              <stop
-                offset="95%"
-                stopColor="rgb(59, 130, 246)"
-                stopOpacity={0.02}
-              />
+            <linearGradient id="gradientContributions" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="rgb(59, 130, 246)" stopOpacity={0.1} />
+              <stop offset="95%" stopColor="rgb(59, 130, 246)" stopOpacity={0.02} />
             </linearGradient>
           </defs>
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="currentColor"
-            opacity={0.07}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" opacity={0.5} />
           <XAxis
             dataKey="label"
             tick={{ fontSize: 11 }}
             tickLine={false}
             axisLine={false}
             interval={labelInterval}
-            stroke="currentColor"
-            opacity={0.4}
+            stroke="#94A3B8"
           />
           <YAxis
             tickFormatter={formatYAxisTick}
@@ -139,13 +111,12 @@ export function SavingsChart({ data }: SavingsChartProps) {
             tickLine={false}
             axisLine={false}
             width={55}
-            stroke="currentColor"
-            opacity={0.4}
+            stroke="#94A3B8"
           />
           <Tooltip
             content={<CustomTooltip />}
             cursor={{
-              stroke: "rgb(16, 185, 129)",
+              stroke: "#059669",
               strokeWidth: 1,
               strokeDasharray: "4 4",
               opacity: 0.4,
@@ -166,7 +137,7 @@ export function SavingsChart({ data }: SavingsChartProps) {
           <Area
             type="monotone"
             dataKey="balance"
-            stroke="rgb(16, 185, 129)"
+            stroke="#059669"
             fill="url(#gradientBalance)"
             strokeWidth={2.5}
             isAnimationActive={true}

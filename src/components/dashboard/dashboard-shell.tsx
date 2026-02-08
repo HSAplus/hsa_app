@@ -21,6 +21,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOut, Plus, RefreshCw, UserCog, Calculator, KeyRound } from "lucide-react";
@@ -104,38 +105,39 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
       : "U";
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950">
+    <div className="min-h-screen bg-[#FAFAFA]">
       <Toaster richColors position="top-right" />
 
       {/* First-login onboarding popup */}
       <OnboardingDialog profile={profile} onComplete={loadData} />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-white/80 dark:bg-gray-950/80 backdrop-blur supports-backdrop-filter:bg-white/60">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-2">
-            <Image src="/logo.png" alt="HSA Plus" width={72} height={48} className="rounded-lg" />
-            <span className="text-lg font-bold">HSA Plus</span>
+      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0] bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+          <div className="flex items-center gap-2.5">
+            <Image src="/logo.png" alt="HSA Plus" width={56} height={37} className="rounded-lg" />
+            <span className="text-base font-semibold tracking-tight">HSA Plus</span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={loadData}
               disabled={loading}
+              className="text-[#64748B] h-8 px-2.5"
             >
-              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
-              Refresh
+              <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
             </Button>
 
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               asChild
+              className="text-[#64748B] h-8 hidden sm:inline-flex"
             >
               <Link href="/calculator">
-                <Calculator className="h-4 w-4 mr-2" />
+                <Calculator className="h-3.5 w-3.5 mr-1.5" />
                 Calculator
               </Link>
             </Button>
@@ -143,19 +145,18 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
             <Button
               size="sm"
               asChild
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
             >
               <Link href="/dashboard/expenses/new">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Expense
+                <Plus className="h-3.5 w-3.5 mr-1.5" />
+                Add expense
               </Link>
             </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full ml-1">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300 text-xs">
+                    <AvatarFallback className="bg-gradient-to-br from-[#059669] to-[#34d399] text-white text-xs font-medium">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
@@ -170,21 +171,29 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
                     <p className={`text-xs ${profileName ? "text-muted-foreground" : "text-sm font-medium"}`}>{user.email}</p>
                   </div>
                 </div>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard/profile" className="cursor-pointer">
                     <UserCog className="mr-2 h-4 w-4" />
-                    Profile Settings
+                    Profile settings
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/dashboard/login-settings" className="cursor-pointer">
                     <KeyRound className="mr-2 h-4 w-4" />
-                    Login Settings
+                    Login settings
                   </Link>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild className="sm:hidden">
+                  <Link href="/calculator" className="cursor-pointer">
+                    <Calculator className="mr-2 h-4 w-4" />
+                    Calculator
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => signout()}
-                  className="text-destructive cursor-pointer"
+                  className="text-red-600 cursor-pointer"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign out
@@ -196,10 +205,10 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="mx-auto max-w-6xl px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl tracking-tight text-[#0F172A]">Dashboard</h1>
+          <p className="text-sm text-[#64748B] mt-1">
             Track your medical expenses and HSA reimbursements
           </p>
         </div>

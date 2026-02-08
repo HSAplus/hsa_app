@@ -34,22 +34,16 @@ export function ProjectionSummary({ summary }: ProjectionSummaryProps) {
       label: "Projected Balance",
       value: summary.projectedBalance,
       icon: TrendingUp,
-      color: "text-emerald-600 dark:text-emerald-400",
-      bg: "bg-emerald-100 dark:bg-emerald-900/30",
     },
     {
       label: "Tax Savings",
       value: summary.totalTaxSavings,
       icon: PiggyBank,
-      color: "text-blue-600 dark:text-blue-400",
-      bg: "bg-blue-100 dark:bg-blue-900/30",
     },
     {
       label: "Investment Growth",
       value: summary.totalGrowth,
       icon: Sparkles,
-      color: "text-amber-600 dark:text-amber-400",
-      bg: "bg-amber-100 dark:bg-amber-900/30",
     },
   ];
 
@@ -62,12 +56,12 @@ export function ProjectionSummary({ summary }: ProjectionSummaryProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.1, duration: 0.3 }}
         >
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-            <div className={`rounded-lg p-2 ${card.bg}`}>
-              <card.icon className={`h-4 w-4 ${card.color}`} />
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-[#F8FAFC] border border-[#F1F5F9]">
+            <div className="rounded-lg p-2 bg-gradient-to-br from-[#059669] to-[#34d399]">
+              <card.icon className="h-4 w-4 text-white" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[11px] text-muted-foreground">{card.label}</p>
+              <p className="text-[11px] text-[#94A3B8]">{card.label}</p>
               <AnimatedValue
                 value={card.value}
                 className="text-lg font-bold font-mono"

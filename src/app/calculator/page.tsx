@@ -17,33 +17,35 @@ export default async function CalculatorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950">
+    <div className="min-h-screen bg-[#FAFAFA]">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-white/80 dark:bg-gray-950/80 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0] bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <Image src="/logo.png" alt="HSA Plus" width={72} height={48} className="rounded-lg" />
-              <span className="text-lg font-bold">HSA Plus</span>
+            <Link href="/dashboard" className="flex items-center gap-2.5">
+              <Image src="/logo.png" alt="HSA Plus" width={56} height={37} className="rounded-lg" />
+              <span className="text-base font-semibold tracking-tight">HSA Plus</span>
             </Link>
-            <span className="text-muted-foreground">/</span>
-            <span className="font-medium">Calculator</span>
+            <span className="text-[#E2E8F0]">/</span>
+            <span className="text-sm font-medium text-[#64748B]">Calculator</span>
           </div>
 
-          <Button variant="outline" size="sm" asChild>
+          <Button variant="ghost" size="sm" asChild className="text-[13px] text-[#64748B] h-8">
             <Link href="/dashboard">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Dashboard
+              <ArrowLeft className="h-3.5 w-3.5 mr-1.5" />
+              Dashboard
             </Link>
           </Button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="mx-auto max-w-6xl px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">HSA Savings Calculator</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl tracking-tight text-[#0F172A]">
+            HSA Savings Calculator
+          </h1>
+          <p className="text-sm text-[#64748B] mt-1">
             Project how your HSA can grow tax-free over time
           </p>
         </div>

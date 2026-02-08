@@ -215,8 +215,8 @@ export function OnboardingDialog({ profile, onComplete }: OnboardingDialogProps)
           {[1, 2, 3].map((s) => (
             <div
               key={s}
-              className={`h-2 w-10 rounded-full transition-colors ${
-                step >= s ? "bg-emerald-500" : "bg-muted"
+              className={`h-1.5 w-10 rounded-full transition-colors ${
+                step >= s ? "bg-gradient-to-r from-[#059669] to-[#34d399]" : "bg-[#E2E8F0]"
               }`}
             />
           ))}
@@ -226,10 +226,10 @@ export function OnboardingDialog({ profile, onComplete }: OnboardingDialogProps)
         {step === 1 && (
           <>
             <DialogHeader className="text-center sm:text-center">
-              <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-                <PartyPopper className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+              <div className="mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#059669] to-[#34d399]">
+                <PartyPopper className="h-5 w-5 text-white" />
               </div>
-              <DialogTitle className="text-xl">Welcome to HSA Plus!</DialogTitle>
+              <DialogTitle className="text-lg font-semibold">Welcome to HSA Plus!</DialogTitle>
               <DialogDescription>
                 Let&apos;s get your profile set up. This only takes a moment.
               </DialogDescription>
@@ -291,8 +291,7 @@ export function OnboardingDialog({ profile, onComplete }: OnboardingDialogProps)
               <Button
                 onClick={handleNextToStep2}
                 disabled={!firstName.trim() || !lastName.trim()}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white mt-2"
-                size="lg"
+                className="w-full mt-2 h-10"
               >
                 Next
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -305,10 +304,10 @@ export function OnboardingDialog({ profile, onComplete }: OnboardingDialogProps)
         {step === 2 && (
           <>
             <DialogHeader className="text-center sm:text-center">
-              <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
-                <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              <div className="mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#059669] to-[#34d399]">
+                <Users className="h-5 w-5 text-white" />
               </div>
-              <DialogTitle className="text-xl">Add Dependents</DialogTitle>
+              <DialogTitle className="text-lg font-semibold">Add Dependents</DialogTitle>
               <DialogDescription>
                 Add family members covered under your plan. You can skip this
                 and add them later in Profile Settings.
@@ -415,7 +414,7 @@ export function OnboardingDialog({ profile, onComplete }: OnboardingDialogProps)
                     <Button
                       type="button"
                       size="sm"
-                      className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                      className="flex-1"
                       disabled={!depFirstName.trim() || !depLastName.trim()}
                       onClick={handleAddDependent}
                     >
@@ -437,15 +436,14 @@ export function OnboardingDialog({ profile, onComplete }: OnboardingDialogProps)
 
               {/* Navigation */}
               <div className="flex gap-3 pt-2">
-                <Button type="button" variant="outline" onClick={handleBackToStep1} className="flex-1" size="lg">
+                <Button type="button" variant="outline" onClick={handleBackToStep1} className="flex-1 h-10">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Back
                 </Button>
                 <Button
                   type="button"
                   onClick={handleNextToStep3}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
-                  size="lg"
+                  className="flex-1 h-10"
                 >
                   Next
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -459,10 +457,10 @@ export function OnboardingDialog({ profile, onComplete }: OnboardingDialogProps)
         {step === 3 && (
           <>
             <DialogHeader className="text-center sm:text-center">
-              <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-teal-100 dark:bg-teal-900/30">
-                <TrendingUp className="h-6 w-6 text-teal-600 dark:text-teal-400" />
+              <div className="mx-auto mb-2 flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#059669] to-[#34d399]">
+                <TrendingUp className="h-5 w-5 text-white" />
               </div>
-              <DialogTitle className="text-xl">HSA Investment Settings</DialogTitle>
+              <DialogTitle className="text-lg font-semibold">HSA Investment Settings</DialogTitle>
               <DialogDescription>
                 Set your investment parameters and tax info to project HSA growth.
               </DialogDescription>
@@ -491,7 +489,7 @@ export function OnboardingDialog({ profile, onComplete }: OnboardingDialogProps)
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Label htmlFor="ob-contribution">Annual Contribution</Label>
-                  <Badge variant="secondary" className="text-xs bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+                  <Badge variant="secondary" className="text-xs bg-[#059669]/10 text-[#059669] border border-[#059669]/20">
                     Max $8,550
                   </Badge>
                 </div>
@@ -595,7 +593,7 @@ export function OnboardingDialog({ profile, onComplete }: OnboardingDialogProps)
 
               {/* Navigation */}
               <div className="flex gap-3 pt-2">
-                <Button type="button" variant="outline" onClick={handleBackToStep2} className="flex-1" size="lg">
+                <Button type="button" variant="outline" onClick={handleBackToStep2} className="flex-1 h-10">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Back
                 </Button>
@@ -603,8 +601,7 @@ export function OnboardingDialog({ profile, onComplete }: OnboardingDialogProps)
                   type="button"
                   onClick={handleFinish}
                   disabled={saving}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
-                  size="lg"
+                  className="flex-1 h-10"
                 >
                   {saving ? (
                     <>

@@ -252,26 +252,26 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950" onKeyDown={handleKeyDown}>
+    <div className="min-h-screen bg-[#FAFAFA]" onKeyDown={handleKeyDown}>
       <Toaster richColors position="top-right" />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-white/80 dark:bg-gray-950/80 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0] bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <Image src="/logo.png" alt="HSA Plus" width={72} height={48} className="rounded-lg" />
-              <span className="text-lg font-bold">HSA Plus</span>
+            <Link href="/dashboard" className="flex items-center gap-2.5">
+              <Image src="/logo.png" alt="HSA Plus" width={56} height={37} className="rounded-lg" />
+              <span className="text-base font-semibold tracking-tight">HSA Plus</span>
             </Link>
-            <span className="text-muted-foreground">/</span>
-            <span className="font-medium">
+            <span className="text-[#E2E8F0]">/</span>
+            <span className="text-sm font-medium text-[#64748B]">
               {isEditing ? "Edit Expense" : "New Expense"}
             </span>
           </div>
 
-          <Button variant="ghost" size="sm" asChild>
+          <Button variant="ghost" size="sm" asChild className="text-[13px] text-[#64748B] h-8">
             <Link href="/dashboard">
-              <X className="h-4 w-4 mr-1" />
+              <X className="h-3.5 w-3.5 mr-1" />
               Cancel
             </Link>
           </Button>
@@ -279,8 +279,8 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
       </header>
 
       {/* Progress Steps */}
-      <div className="border-b bg-white dark:bg-gray-950">
-        <div className="container mx-auto px-4 py-4">
+      <div className="border-b border-[#F1F5F9]">
+        <div className="mx-auto max-w-6xl px-6 py-3">
           <div className="max-w-2xl mx-auto relative">
             {/* Connector lines */}
             <div className="absolute top-1/2 -translate-y-1/2 left-[12.5%] right-[12.5%]">
@@ -289,7 +289,7 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                   <div key={`line-${i}`} className="flex-1">
                     <div
                       className={`h-px w-full ${
-                        step > s.id ? "bg-emerald-400" : "bg-border"
+                        step > s.id ? "bg-gradient-to-r from-[#059669] to-[#34d399]" : "bg-[#E2E8F0]"
                       }`}
                     />
                   </div>
@@ -311,19 +311,19 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                         if (s.id < step) setStep(s.id);
                       }}
                       className={`
-                        inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-medium transition-all whitespace-nowrap
+                        inline-flex items-center justify-center gap-1.5 rounded-full px-3.5 py-1.5 text-[11px] font-medium transition-all whitespace-nowrap
                         ${isActive
-                          ? "bg-emerald-600 text-white shadow-sm"
+                          ? "bg-gradient-to-r from-[#059669] to-[#34d399] text-white shadow-accent"
                           : isComplete
-                            ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200"
-                            : "bg-muted text-muted-foreground"
+                            ? "bg-[#059669]/10 text-[#059669] hover:bg-[#059669]/15"
+                            : "bg-[#F1F5F9] text-[#94A3B8]"
                         }
                       `}
                     >
                       {isComplete ? (
-                        <Check className="h-3.5 w-3.5 shrink-0" />
+                        <Check className="h-3 w-3 shrink-0" />
                       ) : (
-                        <StepIcon className="h-3.5 w-3.5 shrink-0" />
+                        <StepIcon className="h-3 w-3 shrink-0" />
                       )}
                       <span className="hidden sm:inline">{s.title}</span>
                     </button>
@@ -336,13 +336,13 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
       </div>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
+      <main className="container mx-auto px-6 py-8 max-w-2xl">
         {/* Step Title */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
             {STEPS[step - 1].title}
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Step {step} of 4 &mdash; {STEPS[step - 1].description}
           </p>
         </div>
@@ -926,12 +926,12 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
         <div className="flex items-center justify-between mt-6 pb-8">
           <div>
             {step > 1 ? (
-              <Button type="button" variant="outline" onClick={handleBack}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
+              <Button type="button" variant="ghost" onClick={handleBack} className="text-[13px] text-gray-500 h-9">
+                <ArrowLeft className="h-3.5 w-3.5 mr-1.5" />
                 Back
               </Button>
             ) : (
-              <Button type="button" variant="outline" asChild>
+              <Button type="button" variant="ghost" asChild className="text-[13px] text-gray-500 h-9">
                 <Link href="/dashboard">Cancel</Link>
               </Button>
             )}
@@ -943,8 +943,8 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
               {STEPS.map((s) => (
                 <div
                   key={s.id}
-                  className={`h-2 w-2 rounded-full ${
-                    step >= s.id ? "bg-emerald-500" : "bg-muted-foreground/30"
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    step >= s.id ? "bg-[#059669]" : "bg-[#E2E8F0]"
                   }`}
                 />
               ))}
@@ -955,19 +955,19 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                 type="button"
                 onClick={handleNext}
                 disabled={!canProceed()}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="h-9 text-[13px]"
               >
                 Next
-                <ArrowRight className="h-4 w-4 ml-2" />
+                <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
               </Button>
             ) : (
               <Button
                 type="button"
                 onClick={handleSubmit}
                 disabled={saving}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                className="h-9 text-[13px]"
               >
-                {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {saving && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
                 {isEditing ? "Update Expense" : "Save Expense"}
               </Button>
             )}

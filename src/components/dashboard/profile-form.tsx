@@ -6,14 +6,13 @@ import type { Profile, Dependent, PatientRelationship } from "@/lib/types";
 import { updateProfile } from "@/app/auth/actions";
 import { addDependent, updateDependent, deleteDependent } from "@/app/dashboard/actions";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, Loader2, User as UserIcon, Shield, CalendarDays, Users, Plus, Pencil, Trash2, TrendingUp } from "lucide-react";
+import { ArrowLeft, Loader2, Shield, Users, Plus, Pencil, Trash2 } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
@@ -48,7 +47,6 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
   const [stateTaxRate, setStateTaxRate] = useState(
     profile?.state_tax_rate?.toString() || "5"
   );
-  // Dependents state
   const [dependentsList, setDependentsList] = useState<Dependent[]>(initialDependents);
   const [depDialogOpen, setDepDialogOpen] = useState(false);
   const [editingDependent, setEditingDependent] = useState<Dependent | null>(null);
@@ -183,368 +181,239 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950">
+    <div className="min-h-screen bg-[#FAFAFA]">
       <Toaster richColors position="top-right" />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-white/80 dark:bg-gray-950/80 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0] bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <Image src="/logo.png" alt="HSA Plus" width={72} height={48} className="rounded-lg" />
-              <span className="text-lg font-bold">HSA Plus</span>
+            <Link href="/dashboard" className="flex items-center gap-2.5">
+              <Image src="/logo.png" alt="HSA Plus" width={56} height={37} className="rounded-lg" />
+              <span className="text-base font-semibold tracking-tight">HSA Plus</span>
             </Link>
-            <span className="text-muted-foreground">/</span>
-            <span className="font-medium">Profile</span>
+            <span className="text-[#E2E8F0]">/</span>
+            <span className="text-sm font-medium text-[#64748B]">Profile</span>
           </div>
 
-          <Button variant="outline" size="sm" asChild>
+          <Button variant="ghost" size="sm" asChild className="text-[13px] text-[#64748B] h-8">
             <Link href="/dashboard">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Dashboard
+              <ArrowLeft className="h-3.5 w-3.5 mr-1.5" />
+              Dashboard
             </Link>
           </Button>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold tracking-tight">Profile Settings</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your account information and preferences
-          </p>
+      <main className="mx-auto px-6 py-8 max-w-2xl">
+        {/* Profile header */}
+        <div className="flex items-center gap-4 mb-8">
+          <Avatar className="h-14 w-14">
+            <AvatarFallback className="bg-gradient-to-br from-[#059669] to-[#34d399] text-white text-lg font-medium">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h1 className="text-xl font-semibold tracking-tight text-[#0F172A] font-sans">
+              {displayName || "Profile Settings"}
+            </h1>
+            <p className="text-sm text-[#64748B]">
+              {user.email}
+              {isOAuthUser && (
+                <span className="inline-flex items-center gap-1 ml-2 text-xs text-[#94A3B8]">
+                  <Shield className="h-3 w-3" />
+                  {user.app_metadata?.provider === "google" ? "Google" : user.app_metadata?.provider}
+                </span>
+              )}
+            </p>
+          </div>
         </div>
 
-        {/* Profile Avatar Card */}
-        <Card className="mb-6">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-16 w-16">
-                <AvatarFallback className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300 text-xl font-bold">
-                  {initials}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h2 className="text-lg font-semibold">
-                  {displayName || user.email}
-                </h2>
-                <p className="text-sm text-muted-foreground">{user.email}</p>
-                {isOAuthUser && (
-                  <div className="flex items-center gap-1.5 mt-1">
-                    <Shield className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">
-                      Signed in with {user.app_metadata?.provider === "google" ? "Google" : user.app_metadata?.provider}
-                    </span>
-                  </div>
-                )}
+        <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Personal Information */}
+          <section>
+            <h2 className="text-sm font-semibold text-[#0F172A] mb-4 font-sans">Personal information</h2>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName" className="text-[13px] text-[#475569]">First name</Label>
+                  <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="John" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName" className="text-[13px] text-[#475569]">Last name</Label>
+                  <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Doe" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="middleName" className="text-[13px] text-[#475569]">
+                    Middle name <span className="text-[#94A3B8]">(optional)</span>
+                  </Label>
+                  <Input id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)} placeholder="Michael" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="dateOfBirth" className="text-[13px] text-[#475569]">Date of birth</Label>
+                  <Input id="dateOfBirth" type="date" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />
+                </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </section>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Personal Information */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <UserIcon className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <CardTitle className="text-base">Personal Information</CardTitle>
-                  <CardDescription>Update your name and personal details</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <Separator className="bg-[#F1F5F9]" />
+
+          {/* HSA Investment Settings */}
+          <section>
+            <h2 className="text-sm font-semibold text-[#0F172A] mb-1 font-sans">HSA investment settings</h2>
+            <p className="text-xs text-[#94A3B8] mb-4">Used to project growth from delaying reimbursement</p>
+            <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="John"
-                  />
+                  <Label htmlFor="hsaBalance" className="text-[13px] text-[#475569]">Current HSA balance</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8] text-sm">$</span>
+                    <Input id="hsaBalance" type="number" min="0" step="100" value={hsaBalance} onChange={(e) => setHsaBalance(e.target.value)} className="pl-7" placeholder="0" />
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    placeholder="Doe"
-                  />
+                  <Label htmlFor="annualContribution" className="text-[13px] text-[#475569]">Annual contribution</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8] text-sm">$</span>
+                    <Input id="annualContribution" type="number" min="0" max="8550" step="50" value={annualContribution} onChange={(e) => setAnnualContribution(e.target.value)} className="pl-7" placeholder="4150" />
+                  </div>
+                  <p className="text-[11px] text-[#94A3B8]">2026 family max: $8,550</p>
                 </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="expectedAnnualReturn" className="text-[13px] text-[#475569]">Expected annual return</Label>
+                  <div className="relative">
+                    <Input id="expectedAnnualReturn" type="number" step="0.5" min="0" max="30" value={expectedAnnualReturn} onChange={(e) => setExpectedAnnualReturn(e.target.value)} className="pr-7" placeholder="7" />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] text-sm">%</span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="timeHorizonYears" className="text-[13px] text-[#475569]">Time horizon</Label>
+                  <div className="relative">
+                    <Input id="timeHorizonYears" type="number" step="1" min="1" max="50" value={timeHorizonYears} onChange={(e) => setTimeHorizonYears(e.target.value)} className="pr-9" placeholder="20" />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] text-sm">yrs</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <Separator className="bg-[#F1F5F9]" />
+
+          {/* Tax Settings */}
+          <section>
+            <h2 className="text-sm font-semibold text-[#0F172A] mb-4 font-sans">Tax settings</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="federalBracket" className="text-[13px] text-[#475569]">Federal tax bracket</Label>
+                <Select value={federalBracket} onValueChange={setFederalBracket}>
+                  <SelectTrigger id="federalBracket">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["10", "12", "22", "24", "32", "35", "37"].map((b) => (
+                      <SelectItem key={b} value={b}>{b}%</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="middleName">
-                  Middle Name <span className="text-xs text-muted-foreground">(optional)</span>
-                </Label>
-                <Input
-                  id="middleName"
-                  value={middleName}
-                  onChange={(e) => setMiddleName(e.target.value)}
-                  placeholder="Michael"
-                />
+                <Label htmlFor="stateTaxRate" className="text-[13px] text-[#475569]">State tax rate</Label>
+                <div className="relative">
+                  <Input id="stateTaxRate" type="number" min="0" max="15" step="0.1" value={stateTaxRate} onChange={(e) => setStateTaxRate(e.target.value)} className="pr-7" placeholder="5" />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] text-sm">%</span>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
-          {/* Date of Birth */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <CalendarDays className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <CardTitle className="text-base">Date of Birth</CardTitle>
-                  <CardDescription>Used for age-related eligibility</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2 max-w-xs">
-                <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                <Input
-                  id="dateOfBirth"
-                  type="date"
-                  value={dateOfBirth}
-                  onChange={(e) => setDateOfBirth(e.target.value)}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* HSA Investment Parameters */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <CardTitle className="text-base">HSA Investment Settings</CardTitle>
-                  <CardDescription>
-                    Used to project how much your HSA grows by delaying reimbursement
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="hsaBalance">Current HSA Balance</Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
-                    <Input
-                      id="hsaBalance"
-                      type="number"
-                      min="0"
-                      step="100"
-                      value={hsaBalance}
-                      onChange={(e) => setHsaBalance(e.target.value)}
-                      className="pl-7"
-                      placeholder="0"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="annualContribution">Annual Contribution</Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
-                    <Input
-                      id="annualContribution"
-                      type="number"
-                      min="0"
-                      max="8550"
-                      step="50"
-                      value={annualContribution}
-                      onChange={(e) => setAnnualContribution(e.target.value)}
-                      className="pl-7"
-                      placeholder="4150"
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    2026 family max: $8,550
-                  </p>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="expectedAnnualReturn">Expected Annual Return</Label>
-                  <div className="relative">
-                    <Input
-                      id="expectedAnnualReturn"
-                      type="number"
-                      step="0.5"
-                      min="0"
-                      max="30"
-                      value={expectedAnnualReturn}
-                      onChange={(e) => setExpectedAnnualReturn(e.target.value)}
-                      className="pr-7"
-                      placeholder="7"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">%</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Average S&amp;P 500 return is ~7-10% after inflation
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="timeHorizonYears">Time Horizon</Label>
-                  <div className="relative">
-                    <Input
-                      id="timeHorizonYears"
-                      type="number"
-                      step="1"
-                      min="1"
-                      max="50"
-                      value={timeHorizonYears}
-                      onChange={(e) => setTimeHorizonYears(e.target.value)}
-                      className="pr-9"
-                      placeholder="20"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">yrs</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    How many years before you plan to reimburse from HSA
-                  </p>
-                </div>
-              </div>
-              <Separator />
-              <p className="text-sm font-medium text-muted-foreground">Tax Settings</p>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="federalBracket">Federal Tax Bracket</Label>
-                  <Select value={federalBracket} onValueChange={setFederalBracket}>
-                    <SelectTrigger id="federalBracket">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {["10", "12", "22", "24", "32", "35", "37"].map((b) => (
-                        <SelectItem key={b} value={b}>{b}%</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="stateTaxRate">State Tax Rate</Label>
-                  <div className="relative">
-                    <Input
-                      id="stateTaxRate"
-                      type="number"
-                      min="0"
-                      max="15"
-                      step="0.1"
-                      value={stateTaxRate}
-                      onChange={(e) => setStateTaxRate(e.target.value)}
-                      className="pr-7"
-                      placeholder="5"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">%</span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <Separator className="bg-[#F1F5F9]" />
 
           {/* Dependents */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Users className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <CardTitle className="text-base">Dependents</CardTitle>
-                    <CardDescription>
-                      Manage family members covered under your plan
-                    </CardDescription>
-                  </div>
-                </div>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={openAddDependent}
-                  className="shrink-0"
-                >
-                  <Plus className="h-4 w-4 mr-1" />
-                  Add
-                </Button>
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-sm font-semibold text-[#0F172A] font-sans">Dependents</h2>
+                <p className="text-xs text-[#94A3B8] mt-0.5">Family members covered under your plan</p>
               </div>
-            </CardHeader>
-            <CardContent>
-              {dependentsList.length === 0 ? (
-                <div className="text-center py-6 text-muted-foreground">
-                  <Users className="h-10 w-10 mx-auto mb-2 opacity-40" />
-                  <p className="text-sm">No dependents added yet</p>
-                  <p className="text-xs mt-1">
-                    Add family members so you can quickly select them when filing expenses
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {dependentsList.map((dep) => (
-                    <div
-                      key={dep.id}
-                      className="flex items-center justify-between p-3 rounded-lg border bg-gray-50/50 dark:bg-gray-900/50"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-9 w-9">
-                          <AvatarFallback className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 text-xs font-bold">
-                            {dep.first_name[0]}{dep.last_name[0]}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="text-sm font-medium">
-                            {dep.first_name} {dep.last_name}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {relationshipLabels[dep.relationship]}
-                            {dep.date_of_birth && (
-                              <> · Born {new Date(dep.date_of_birth + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</>
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() => openEditDependent(dep)}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
-                          disabled={depDeleting === dep.id}
-                          onClick={() => handleDeleteDependent(dep.id)}
-                        >
-                          {depDeleting === dep.id ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-3.5 w-3.5" />
+              <Button type="button" size="sm" variant="outline" onClick={openAddDependent} className="h-8 text-[13px]">
+                <Plus className="h-3.5 w-3.5 mr-1.5" />
+                Add
+              </Button>
+            </div>
+
+            {dependentsList.length === 0 ? (
+              <div className="text-center py-8 rounded-xl border border-dashed border-[#E2E8F0]">
+                <Users className="h-8 w-8 mx-auto mb-2 text-[#E2E8F0]" />
+                <p className="text-sm text-[#64748B]">No dependents added</p>
+                <p className="text-xs text-[#94A3B8] mt-0.5">
+                  Add family members for quick selection when filing expenses
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {dependentsList.map((dep) => (
+                  <div
+                    key={dep.id}
+                    className="flex items-center justify-between p-3 rounded-lg border border-[#E2E8F0]"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback className="bg-[#F1F5F9] text-[#475569] text-[11px] font-medium">
+                          {dep.first_name[0]}{dep.last_name[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium text-[#0F172A]">
+                          {dep.first_name} {dep.last_name}
+                        </p>
+                        <p className="text-xs text-[#94A3B8]">
+                          {relationshipLabels[dep.relationship]}
+                          {dep.date_of_birth && (
+                            <> &middot; {new Date(dep.date_of_birth + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</>
                           )}
-                        </Button>
+                        </p>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    <div className="flex items-center gap-1">
+                      <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-[#94A3B8] hover:text-[#64748B]" onClick={() => openEditDependent(dep)}>
+                        <Pencil className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-[#94A3B8] hover:text-red-500"
+                        disabled={depDeleting === dep.id}
+                        onClick={() => handleDeleteDependent(dep.id)}
+                      >
+                        {depDeleting === dep.id ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-3 w-3" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
 
           {/* Save Button */}
-          <div className="flex justify-end pb-8">
+          <div className="flex justify-end pb-8 pt-4">
             <Button
               type="submit"
               disabled={saving}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="h-9 px-6 text-[13px]"
             >
-              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save Changes
+              {saving && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+              Save changes
             </Button>
           </div>
         </form>
@@ -554,8 +423,8 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
       <Dialog open={depDialogOpen} onOpenChange={setDepDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>
-              {editingDependent ? "Edit Dependent" : "Add Dependent"}
+            <DialogTitle className="text-lg font-sans">
+              {editingDependent ? "Edit dependent" : "Add dependent"}
             </DialogTitle>
             <DialogDescription>
               {editingDependent
@@ -566,30 +435,17 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
           <div className="space-y-4 py-2">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="depFirstName">First Name</Label>
-                <Input
-                  id="depFirstName"
-                  value={depFirstName}
-                  onChange={(e) => setDepFirstName(e.target.value)}
-                  placeholder="Jane"
-                />
+                <Label htmlFor="depFirstName" className="text-[13px]">First name</Label>
+                <Input id="depFirstName" value={depFirstName} onChange={(e) => setDepFirstName(e.target.value)} placeholder="Jane" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="depLastName">Last Name</Label>
-                <Input
-                  id="depLastName"
-                  value={depLastName}
-                  onChange={(e) => setDepLastName(e.target.value)}
-                  placeholder="Doe"
-                />
+                <Label htmlFor="depLastName" className="text-[13px]">Last name</Label>
+                <Input id="depLastName" value={depLastName} onChange={(e) => setDepLastName(e.target.value)} placeholder="Doe" />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="depRelationship">Relationship</Label>
-              <Select
-                value={depRelationship}
-                onValueChange={(v) => setDepRelationship(v as Exclude<PatientRelationship, "self">)}
-              >
+              <Label htmlFor="depRelationship" className="text-[13px]">Relationship</Label>
+              <Select value={depRelationship} onValueChange={(v) => setDepRelationship(v as Exclude<PatientRelationship, "self">)}>
                 <SelectTrigger id="depRelationship">
                   <SelectValue />
                 </SelectTrigger>
@@ -601,30 +457,23 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="depDob">Date of Birth (optional)</Label>
-              <Input
-                id="depDob"
-                type="date"
-                value={depDob}
-                onChange={(e) => setDepDob(e.target.value)}
-              />
+              <Label htmlFor="depDob" className="text-[13px]">
+                Date of birth <span className="text-[#94A3B8]">(optional)</span>
+              </Label>
+              <Input id="depDob" type="date" value={depDob} onChange={(e) => setDepDob(e.target.value)} />
             </div>
           </div>
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setDepDialogOpen(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => setDepDialogOpen(false)} className="h-9 text-[13px]">
               Cancel
             </Button>
             <Button
               type="button"
               disabled={depSaving}
               onClick={handleSaveDependent}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="h-9 text-[13px]"
             >
-              {depSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {depSaving && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
               {editingDependent ? "Update" : "Add"}
             </Button>
           </DialogFooter>

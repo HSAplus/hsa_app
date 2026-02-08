@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import type { Profile } from "@/lib/types";
 import { formatCurrency } from "@/lib/hsa-constants";
 import { useSavingsProjection } from "./savings-calculator/use-savings-projection";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, PiggyBank, Sparkles } from "lucide-react";
 import {
   AreaChart,
@@ -38,34 +37,34 @@ function CustomTooltip({
   );
 
   return (
-    <div className="rounded-lg border bg-card p-3 shadow-lg text-card-foreground">
-      <p className="text-xs font-medium text-muted-foreground mb-2">
+    <div className="rounded-lg border border-[#E2E8F0] bg-white p-3 shadow-lg">
+      <p className="text-[11px] font-medium font-mono text-[#94A3B8] mb-2">
         Year {label}
       </p>
-      <div className="space-y-1">
+      <div className="space-y-1.5">
         {balance && (
           <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-emerald-500" />
-            <span className="text-xs">HSA Balance:</span>
-            <span className="text-xs font-mono font-semibold ml-auto">
+            <div className="h-1.5 w-1.5 rounded-full bg-[#059669]" />
+            <span className="text-[11px] text-[#64748B]">Balance</span>
+            <span className="text-[11px] font-medium tabular-nums font-mono text-[#0F172A] ml-auto">
               {formatCurrency(balance.value)}
             </span>
           </div>
         )}
         {contributions && (
           <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-blue-500" />
-            <span className="text-xs">Contributions:</span>
-            <span className="text-xs font-mono font-semibold ml-auto">
+            <div className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+            <span className="text-[11px] text-[#64748B]">Contributions</span>
+            <span className="text-[11px] font-medium tabular-nums font-mono text-[#0F172A] ml-auto">
               {formatCurrency(contributions.value)}
             </span>
           </div>
         )}
         {balance && contributions && (
-          <div className="flex items-center gap-2 pt-1 border-t">
-            <div className="h-2 w-2 rounded-full bg-amber-500" />
-            <span className="text-xs">Growth:</span>
-            <span className="text-xs font-mono font-semibold ml-auto text-emerald-600 dark:text-emerald-400">
+          <div className="flex items-center gap-2 pt-1 border-t border-[#F1F5F9]">
+            <div className="h-1.5 w-1.5 rounded-full bg-[#34d399]" />
+            <span className="text-[11px] text-[#64748B]">Growth</span>
+            <span className="text-[11px] font-medium tabular-nums font-mono text-[#059669] ml-auto">
               {formatCurrency(balance.value - contributions.value)}
             </span>
           </div>
@@ -108,61 +107,50 @@ export function GrowthProjection({ profile, loading }: GrowthProjectionProps) {
       label: "Projected Balance",
       value: summary.projectedBalance,
       icon: TrendingUp,
-      color: "text-emerald-600 dark:text-emerald-400",
-      bg: "bg-emerald-50 dark:bg-emerald-900/20",
-      border: "border-emerald-200 dark:border-emerald-800",
     },
     {
       label: "Tax Savings",
       value: summary.totalTaxSavings,
       icon: PiggyBank,
-      color: "text-blue-600 dark:text-blue-400",
-      bg: "bg-blue-50 dark:bg-blue-900/20",
-      border: "border-blue-200 dark:border-blue-800",
     },
     {
       label: "Investment Growth",
       value: summary.totalGrowth,
       icon: Sparkles,
-      color: "text-amber-600 dark:text-amber-400",
-      bg: "bg-amber-50 dark:bg-amber-900/20",
-      border: "border-amber-200 dark:border-amber-800",
     },
   ];
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">Growth Projection</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[320px] animate-pulse rounded bg-muted" />
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-24 animate-pulse rounded-lg bg-muted" />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="rounded-xl border border-[#E2E8F0] bg-white p-6">
+        <div className="h-5 w-40 animate-pulse rounded bg-[#F1F5F9] mb-6" />
+        <div className="h-[300px] animate-pulse rounded bg-[#F8FAFC]" />
+        <div className="grid grid-cols-3 gap-4 mt-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-16 animate-pulse rounded-lg bg-[#F8FAFC]" />
+          ))}
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
+    <div className="rounded-xl border border-[#E2E8F0] bg-white shadow-sm">
+      {/* Header */}
+      <div className="px-6 py-4 border-b border-[#F1F5F9]">
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-xl">Growth Projection</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              Based on {inputs.expectedReturn}% annual return over {inputs.timeHorizon} years with {formatCurrency(inputs.annualContribution)}/yr contribution
-            </p>
-          </div>
+          <h2 className="text-base font-semibold text-[#0F172A] font-sans">
+            Growth Projection
+          </h2>
+          <span className="text-xs font-mono text-[#94A3B8]">
+            {inputs.expectedReturn}% return &middot; {inputs.timeHorizon} yrs &middot; {formatCurrency(inputs.annualContribution)}/yr
+          </span>
         </div>
-      </CardHeader>
-      <CardContent>
-        {/* Chart */}
-        <div className="w-full h-[320px]">
+      </div>
+
+      {/* Chart */}
+      <div className="px-6 pt-6">
+        <div className="w-full h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={projectionData}
@@ -170,23 +158,22 @@ export function GrowthProjection({ profile, loading }: GrowthProjectionProps) {
             >
               <defs>
                 <linearGradient id="dashGradientBalance" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="rgb(16, 185, 129)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="rgb(16, 185, 129)" stopOpacity={0.02} />
+                  <stop offset="5%" stopColor="#059669" stopOpacity={0.15} />
+                  <stop offset="95%" stopColor="#059669" stopOpacity={0.01} />
                 </linearGradient>
                 <linearGradient id="dashGradientContributions" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="rgb(59, 130, 246)" stopOpacity={0.12} />
-                  <stop offset="95%" stopColor="rgb(59, 130, 246)" stopOpacity={0.02} />
+                  <stop offset="5%" stopColor="rgb(59, 130, 246)" stopOpacity={0.08} />
+                  <stop offset="95%" stopColor="rgb(59, 130, 246)" stopOpacity={0.01} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.07} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" opacity={0.5} />
               <XAxis
                 dataKey="label"
                 tick={{ fontSize: 11 }}
                 tickLine={false}
                 axisLine={false}
                 interval={labelInterval}
-                stroke="currentColor"
-                opacity={0.4}
+                stroke="#94A3B8"
               />
               <YAxis
                 tickFormatter={formatYAxisTick}
@@ -194,22 +181,21 @@ export function GrowthProjection({ profile, loading }: GrowthProjectionProps) {
                 tickLine={false}
                 axisLine={false}
                 width={55}
-                stroke="currentColor"
-                opacity={0.4}
+                stroke="#94A3B8"
               />
               <Tooltip
                 content={<CustomTooltip />}
                 cursor={{
-                  stroke: "rgb(16, 185, 129)",
+                  stroke: "#059669",
                   strokeWidth: 1,
                   strokeDasharray: "4 4",
-                  opacity: 0.4,
+                  opacity: 0.3,
                 }}
               />
               <Area
                 type="monotone"
                 dataKey="totalContributions"
-                stroke="rgb(59, 130, 246)"
+                stroke="rgb(147, 197, 253)"
                 fill="url(#dashGradientContributions)"
                 strokeWidth={1.5}
                 strokeDasharray="5 5"
@@ -221,9 +207,9 @@ export function GrowthProjection({ profile, loading }: GrowthProjectionProps) {
               <Area
                 type="monotone"
                 dataKey="balance"
-                stroke="rgb(16, 185, 129)"
+                stroke="#059669"
                 fill="url(#dashGradientBalance)"
-                strokeWidth={2.5}
+                strokeWidth={2}
                 isAnimationActive={true}
                 animationDuration={800}
                 animationEasing="ease-in-out"
@@ -232,27 +218,26 @@ export function GrowthProjection({ profile, loading }: GrowthProjectionProps) {
             </AreaChart>
           </ResponsiveContainer>
         </div>
+      </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-          {summaryCards.map((card) => (
-            <div
-              key={card.label}
-              className={`flex items-center gap-3 rounded-xl border p-4 ${card.bg} ${card.border}`}
-            >
-              <div className={`rounded-lg p-2.5 ${card.bg}`}>
-                <card.icon className={`h-5 w-5 ${card.color}`} />
+      {/* Summary */}
+      <div className="grid grid-cols-3 divide-x divide-[#F1F5F9] border-t border-[#F1F5F9]">
+        {summaryCards.map((card) => (
+          <div key={card.label} className="px-6 py-4">
+            <div className="flex items-center gap-1.5 mb-1">
+              <div className="rounded p-0.5 bg-gradient-to-br from-[#059669] to-[#34d399]">
+                <card.icon className="h-3 w-3 text-white" />
               </div>
-              <div>
-                <p className="text-xs text-muted-foreground">{card.label}</p>
-                <p className="text-xl font-bold font-mono">
-                  {formatCurrency(card.value)}
-                </p>
-              </div>
+              <p className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">
+                {card.label}
+              </p>
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+            <p className="text-lg font-semibold tabular-nums font-mono text-[#0F172A]">
+              {formatCurrency(card.value)}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

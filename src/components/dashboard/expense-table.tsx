@@ -5,7 +5,6 @@ import type { Expense } from "@/lib/types";
 import { isAuditReady, getRetentionStatus } from "@/lib/types";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -62,17 +61,6 @@ const categoryLabels: Record<string, string> = {
   other: "Other",
 };
 
-const categoryColors: Record<string, string> = {
-  medical: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",
-  dental: "bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300",
-  vision: "bg-violet-100 text-violet-800 dark:bg-violet-900/30 dark:text-violet-300",
-  prescription: "bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-300",
-  mental_health: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
-  hearing: "bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300",
-  preventive_care: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
-  other: "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300",
-};
-
 const accountLabels: Record<string, string> = {
   hsa: "HSA",
   lpfsa: "LPFSA",
@@ -80,9 +68,9 @@ const accountLabels: Record<string, string> = {
 };
 
 const accountColors: Record<string, string> = {
-  hsa: "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300",
-  lpfsa: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300",
-  hcfsa: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300",
+  hsa: "bg-[#059669]/10 text-[#059669] border-[#059669]/20",
+  lpfsa: "bg-blue-50 text-blue-700 border-blue-200/50",
+  hcfsa: "bg-violet-50 text-violet-700 border-violet-200/50",
 };
 
 export function ExpenseTable({
@@ -116,7 +104,6 @@ export function ExpenseTable({
     return matchesSearch && matchesCategory && matchesStatus && matchesAccount;
   });
 
-  // Reset to page 1 when filters/search change
   useEffect(() => {
     setCurrentPage(1);
   }, [search, filterCategory, filterStatus, filterAccount]);
@@ -128,73 +115,85 @@ export function ExpenseTable({
     safePage * PAGE_SIZE
   );
 
+  const docCount = (expense: Expense) => {
+    return (
+      (expense.receipt_urls?.length || 0) +
+      (expense.eob_urls?.length || 0) +
+      (expense.invoice_urls?.length || 0) +
+      (expense.credit_card_statement_urls?.length || 0)
+    );
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <CardTitle className="text-xl">Expenses</CardTitle>
+    <div className="rounded-xl border border-[#E2E8F0] bg-white shadow-sm">
+      {/* Header */}
+      <div className="px-5 py-4 border-b border-[#F1F5F9]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h2 className="text-base font-semibold text-[#0F172A] font-sans">Expenses</h2>
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#94A3B8]" />
               <Input
-                placeholder="Search expenses..."
+                placeholder="Search..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 w-full sm:w-50"
+                className="pl-8 h-8 w-full sm:w-44 text-[13px]"
               />
             </div>
             <Select value={filterCategory} onValueChange={setFilterCategory}>
-              <SelectTrigger className="w-full sm:w-37.5">
+              <SelectTrigger className="h-8 w-full sm:w-32 text-[13px]">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="all">All categories</SelectItem>
                 <SelectItem value="medical">Medical</SelectItem>
                 <SelectItem value="dental">Dental</SelectItem>
                 <SelectItem value="vision">Vision</SelectItem>
                 <SelectItem value="prescription">Prescription</SelectItem>
                 <SelectItem value="mental_health">Mental Health</SelectItem>
                 <SelectItem value="hearing">Hearing</SelectItem>
-                <SelectItem value="preventive_care">Preventive Care</SelectItem>
+                <SelectItem value="preventive_care">Preventive</SelectItem>
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
             <Select value={filterAccount} onValueChange={setFilterAccount}>
-              <SelectTrigger className="w-full sm:w-37.5">
+              <SelectTrigger className="h-8 w-full sm:w-28 text-[13px]">
                 <SelectValue placeholder="Account" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Accounts</SelectItem>
+                <SelectItem value="all">All accounts</SelectItem>
                 <SelectItem value="hsa">HSA</SelectItem>
                 <SelectItem value="lpfsa">LPFSA</SelectItem>
                 <SelectItem value="hcfsa">HCFSA</SelectItem>
               </SelectContent>
             </Select>
             <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-full sm:w-37.5">
+              <SelectTrigger className="h-8 w-full sm:w-28 text-[13px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="all">All status</SelectItem>
                 <SelectItem value="reimbursed">Reimbursed</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+
+      {/* Table body */}
+      <div className="px-1">
         {loading ? (
-          <div className="space-y-3">
+          <div className="space-y-2 p-4">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-12 animate-pulse rounded bg-muted" />
+              <div key={i} className="h-10 animate-pulse rounded bg-[#F1F5F9]" />
             ))}
           </div>
         ) : filteredExpenses.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <FileText className="h-12 w-12 text-muted-foreground/50 mb-4" />
-            <h3 className="text-lg font-medium">No expenses found</h3>
-            <p className="text-sm text-muted-foreground mt-1">
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <FileText className="h-10 w-10 text-[#E2E8F0] mb-3" />
+            <p className="text-sm font-medium text-[#0F172A]">No expenses found</p>
+            <p className="text-xs text-[#94A3B8] mt-1">
               {expenses.length === 0
                 ? "Add your first expense to get started"
                 : "Try adjusting your filters"}
@@ -204,157 +203,115 @@ export function ExpenseTable({
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Patient</TableHead>
-                  <TableHead>Provider</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Account</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                  <TableHead>Reimbursed</TableHead>
-                  <TableHead>Audit</TableHead>
-                  <TableHead>Docs</TableHead>
-                  <TableHead className="w-12.5"></TableHead>
+                <TableRow className="border-[#F1F5F9] hover:bg-transparent">
+                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Date</TableHead>
+                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Description</TableHead>
+                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Patient</TableHead>
+                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Provider</TableHead>
+                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Category</TableHead>
+                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Acct</TableHead>
+                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono text-right">Amount</TableHead>
+                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono text-center">Status</TableHead>
+                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono text-center">Audit</TableHead>
+                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono text-center">Docs</TableHead>
+                  <TableHead className="w-10"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {paginatedExpenses.map((expense) => (
-                  <TableRow key={expense.id}>
-                    <TableCell className="whitespace-nowrap">
+                  <TableRow
+                    key={expense.id}
+                    className="border-[#F8FAFC] hover:bg-[#F8FAFC]"
+                  >
+                    <TableCell className="whitespace-nowrap text-[13px] text-[#64748B] tabular-nums font-mono">
                       {format(new Date(expense.date_of_service), "MMM d, yyyy")}
                     </TableCell>
-                    <TableCell className="font-medium max-w-50 truncate">
+                    <TableCell className="text-[13px] font-medium text-[#0F172A] max-w-48 truncate">
                       {expense.description}
                     </TableCell>
-                    <TableCell className="text-muted-foreground text-sm">
+                    <TableCell className="text-[13px] text-[#64748B]">
                       {expense.patient_name}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
+                    <TableCell className="text-[13px] text-[#64748B]">
                       {expense.provider}
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className={categoryColors[expense.category]}
-                      >
+                      <span className="text-[11px] font-medium text-[#475569]">
                         {categoryLabels[expense.category]}
-                      </Badge>
+                      </span>
                     </TableCell>
                     <TableCell>
                       <Badge
                         variant="secondary"
-                        className={accountColors[expense.account_type] || ""}
+                        className={`text-[10px] font-medium border ${accountColors[expense.account_type] || "bg-[#F1F5F9] text-[#475569]"}`}
                       >
                         {accountLabels[expense.account_type] || expense.account_type}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right font-mono font-medium">
+                    <TableCell className="text-right text-[13px] font-medium tabular-nums font-mono text-[#0F172A]">
                       ${expense.amount.toFixed(2)}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">
                       {expense.reimbursed ? (
-                        <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
-                          <CheckCircle className="h-3 w-3 mr-1" />
-                          Y
-                        </Badge>
+                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#059669]">
+                          <CheckCircle className="h-3 w-3" />
+                          Yes
+                        </span>
                       ) : (
-                        <Badge variant="outline" className="text-amber-600 border-amber-300">
-                          N
-                        </Badge>
+                        <span className="text-[11px] font-medium text-[#94A3B8]">
+                          No
+                        </span>
                       )}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">
                       {(() => {
                         const auditOk = isAuditReady(expense);
                         const taxYear = expense.tax_year ?? new Date(expense.date_of_service).getFullYear();
                         const retention = getRetentionStatus(taxYear);
                         if (retention === "critical") {
                           return (
-                            <div className="flex items-center gap-1" title={`Tax year ${taxYear} — past 7-year retention limit!`}>
-                              <AlertTriangle className="h-4 w-4 text-red-500" />
-                            </div>
+                            <span title={`Tax year ${taxYear} — past 7-year retention limit!`}>
+                              <AlertTriangle className="h-3.5 w-3.5 text-red-500 mx-auto" />
+                            </span>
                           );
                         }
                         if (retention === "warning") {
                           return (
-                            <div className="flex items-center gap-1" title={`Tax year ${taxYear} — approaching 7-year limit`}>
-                              <AlertTriangle className="h-4 w-4 text-orange-500" />
-                            </div>
+                            <span title={`Tax year ${taxYear} — approaching 7-year limit`}>
+                              <AlertTriangle className="h-3.5 w-3.5 text-amber-500 mx-auto" />
+                            </span>
                           );
                         }
                         return auditOk ? (
-                          <span title="Audit ready ✓">
-                            <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                          <span title="Audit ready">
+                            <ShieldCheck className="h-3.5 w-3.5 text-[#059669] mx-auto" />
                           </span>
                         ) : (
                           <span title="Missing documentation">
-                            <ShieldAlert className="h-4 w-4 text-amber-500" />
+                            <ShieldAlert className="h-3.5 w-3.5 text-[#E2E8F0] mx-auto" />
                           </span>
                         );
                       })()}
                     </TableCell>
-                    <TableCell>
-                      <div className="flex gap-1.5">
-                        {expense.receipt_urls?.length > 0 && (
-                          <a
-                            href={expense.receipt_urls[0]}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-0.5 rounded-md bg-purple-100 dark:bg-purple-900/30 px-1.5 py-0.5 text-[10px] font-medium text-purple-700 dark:text-purple-300 hover:opacity-80 transition-opacity"
-                          >
-                            <FileText className="h-3 w-3" />
-                            RCT{expense.receipt_urls.length > 1 ? ` ×${expense.receipt_urls.length}` : ""}
-                          </a>
-                        )}
-                        {expense.eob_urls?.length > 0 && (
-                          <a
-                            href={expense.eob_urls[0]}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-0.5 rounded-md bg-blue-100 dark:bg-blue-900/30 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 dark:text-blue-300 hover:opacity-80 transition-opacity"
-                          >
-                            <FileText className="h-3 w-3" />
-                            EOB{expense.eob_urls.length > 1 ? ` ×${expense.eob_urls.length}` : ""}
-                          </a>
-                        )}
-                        {expense.invoice_urls?.length > 0 && (
-                          <a
-                            href={expense.invoice_urls[0]}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/30 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300 hover:opacity-80 transition-opacity"
-                          >
-                            <FileText className="h-3 w-3" />
-                            INV{expense.invoice_urls.length > 1 ? ` ×${expense.invoice_urls.length}` : ""}
-                          </a>
-                        )}
-                        {expense.credit_card_statement_urls?.length > 0 && (
-                          <a
-                            href={expense.credit_card_statement_urls[0]}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-0.5 rounded-md bg-orange-100 dark:bg-orange-900/30 px-1.5 py-0.5 text-[10px] font-medium text-orange-700 dark:text-orange-300 hover:opacity-80 transition-opacity"
-                          >
-                            <FileText className="h-3 w-3" />
-                            CC{expense.credit_card_statement_urls.length > 1 ? ` ×${expense.credit_card_statement_urls.length}` : ""}
-                          </a>
-                        )}
-                        {(!expense.receipt_urls || expense.receipt_urls.length === 0) && (!expense.eob_urls || expense.eob_urls.length === 0) && (!expense.invoice_urls || expense.invoice_urls.length === 0) && (!expense.credit_card_statement_urls || expense.credit_card_statement_urls.length === 0) && (
-                          <span className="text-xs text-muted-foreground">—</span>
-                        )}
-                      </div>
+                    <TableCell className="text-center">
+                      {docCount(expense) > 0 ? (
+                        <span className="text-[11px] font-medium text-[#64748B] tabular-nums font-mono">
+                          {docCount(expense)}
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-[#E2E8F0]">&mdash;</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreHorizontal className="h-4 w-4" />
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-[#94A3B8] hover:text-[#64748B]">
+                            <MoreHorizontal className="h-3.5 w-3.5" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => onEdit(expense)}>
-                            <Pencil className="mr-2 h-4 w-4" />
+                            <Pencil className="mr-2 h-3.5 w-3.5" />
                             Edit
                           </DropdownMenuItem>
                           {!expense.reimbursed && (
@@ -363,15 +320,15 @@ export function ExpenseTable({
                                 onMarkReimbursed(expense.id, expense.amount)
                               }
                             >
-                              <CheckCircle className="mr-2 h-4 w-4" />
-                              Mark Reimbursed
+                              <CheckCircle className="mr-2 h-3.5 w-3.5" />
+                              Mark reimbursed
                             </DropdownMenuItem>
                           )}
                           <DropdownMenuItem
                             onClick={() => onDelete(expense.id)}
-                            className="text-destructive"
+                            className="text-red-600"
                           >
-                            <Trash2 className="mr-2 h-4 w-4" />
+                            <Trash2 className="mr-2 h-3.5 w-3.5" />
                             Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -381,40 +338,41 @@ export function ExpenseTable({
                 ))}
               </TableBody>
             </Table>
-            {/* Pagination */}
-            {filteredExpenses.length > PAGE_SIZE && (
-              <div className="flex items-center justify-between pt-4 border-t mt-4">
-                <p className="text-sm text-muted-foreground">
-                  Showing {(safePage - 1) * PAGE_SIZE + 1}–{Math.min(safePage * PAGE_SIZE, filteredExpenses.length)} of {filteredExpenses.length} expenses
-                </p>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={safePage <= 1}
-                    onClick={() => setCurrentPage(safePage - 1)}
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    Previous
-                  </Button>
-                  <span className="text-sm font-medium px-2">
-                    {safePage} / {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={safePage >= totalPages}
-                    onClick={() => setCurrentPage(safePage + 1)}
-                  >
-                    Next
-                    <ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </div>
-              </div>
-            )}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+
+      {/* Pagination */}
+      {filteredExpenses.length > PAGE_SIZE && (
+        <div className="flex items-center justify-between px-5 py-3 border-t border-[#F1F5F9]">
+          <p className="text-xs text-[#94A3B8] tabular-nums font-mono">
+            {(safePage - 1) * PAGE_SIZE + 1}&ndash;{Math.min(safePage * PAGE_SIZE, filteredExpenses.length)} of {filteredExpenses.length}
+          </p>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={safePage <= 1}
+              onClick={() => setCurrentPage(safePage - 1)}
+              className="h-7 px-2 text-[13px]"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </Button>
+            <span className="text-xs text-[#64748B] px-2 tabular-nums font-mono">
+              {safePage} / {totalPages}
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={safePage >= totalPages}
+              onClick={() => setCurrentPage(safePage + 1)}
+              className="h-7 px-2 text-[13px]"
+            >
+              <ChevronRight className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

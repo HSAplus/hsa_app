@@ -32,11 +32,11 @@ export function CalculatorInputsPanel({
       {/* Initial Balance */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label className="text-xs font-medium text-muted-foreground">
+          <Label className="text-xs font-medium text-[#64748B]">
             Current HSA Balance
           </Label>
           <div className="relative">
-            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-[#94A3B8]">
               $
             </span>
             <Input
@@ -65,18 +65,18 @@ export function CalculatorInputsPanel({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <Label className="text-xs font-medium text-muted-foreground">
+            <Label className="text-xs font-medium text-[#64748B]">
               Annual Contribution
             </Label>
             <Badge
               variant="secondary"
-              className="text-[10px] px-1.5 py-0 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
+              className="text-[10px] px-1.5 py-0 bg-[#059669]/10 text-[#059669] border border-[#059669]/20"
             >
               Max ${HSA_LIMITS[2025].family.toLocaleString()}
             </Badge>
           </div>
           <div className="relative">
-            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-[#94A3B8]">
               $
             </span>
             <Input
@@ -95,7 +95,7 @@ export function CalculatorInputsPanel({
                 )
               }
               className="h-7 w-24 pl-5 text-xs text-right font-mono"
-            />
+              />
           </div>
         </div>
         <Slider
@@ -110,7 +110,7 @@ export function CalculatorInputsPanel({
       {/* Expected Return */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label className="text-xs font-medium text-muted-foreground">
+          <Label className="text-xs font-medium text-[#64748B]">
             Expected Annual Return
           </Label>
           <div className="relative">
@@ -125,7 +125,7 @@ export function CalculatorInputsPanel({
               }
               className="h-7 w-16 text-xs text-right font-mono pr-5"
             />
-            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#94A3B8]">
               %
             </span>
           </div>
@@ -142,7 +142,7 @@ export function CalculatorInputsPanel({
       {/* Time Horizon */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label className="text-xs font-medium text-muted-foreground">
+          <Label className="text-xs font-medium text-[#64748B]">
             Time Horizon
           </Label>
           <div className="flex items-center gap-1">
@@ -157,7 +157,7 @@ export function CalculatorInputsPanel({
               }
               className="h-7 w-14 text-xs text-right font-mono"
             />
-            <span className="text-xs text-muted-foreground">yrs</span>
+            <span className="text-xs text-[#94A3B8]">yrs</span>
           </div>
         </div>
         <Slider
@@ -172,7 +172,7 @@ export function CalculatorInputsPanel({
       {/* Advanced Toggle */}
       <button
         onClick={() => setShowAdvanced(!showAdvanced)}
-        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-full"
+        className="flex items-center gap-1 text-xs text-[#64748B] hover:text-[#0F172A] transition-colors w-full"
       >
         {showAdvanced ? (
           <ChevronUp className="h-3 w-3" />
@@ -187,7 +187,7 @@ export function CalculatorInputsPanel({
           {/* Federal Tax Bracket */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-xs font-medium text-muted-foreground">
+              <Label className="text-xs font-medium text-[#64748B]">
                 Federal Tax Bracket
               </Label>
               <select
@@ -195,7 +195,7 @@ export function CalculatorInputsPanel({
                 onChange={(e) =>
                   update("taxBracket", Number(e.target.value))
                 }
-                className="h-7 rounded-md border border-input bg-transparent px-2 text-xs font-mono"
+                className="h-7 rounded-lg border border-[#E2E8F0] bg-transparent px-2 text-xs font-mono"
               >
                 {FEDERAL_TAX_BRACKETS.map((b) => (
                   <option key={b} value={b}>
@@ -209,7 +209,7 @@ export function CalculatorInputsPanel({
           {/* State Tax Rate */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-xs font-medium text-muted-foreground">
+              <Label className="text-xs font-medium text-[#64748B]">
                 State Tax Rate
               </Label>
               <div className="relative">
@@ -224,7 +224,7 @@ export function CalculatorInputsPanel({
                   }
                   className="h-7 w-16 text-xs text-right font-mono pr-5"
                 />
-                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#94A3B8]">
                   %
                 </span>
               </div>
