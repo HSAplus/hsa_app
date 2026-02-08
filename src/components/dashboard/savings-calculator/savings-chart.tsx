@@ -7,6 +7,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
+  ReferenceLine,
   ResponsiveContainer,
 } from "recharts";
 import type { ProjectionPoint } from "./use-savings-projection";
@@ -76,15 +77,64 @@ function formatYAxisTick(value: number): string {
   return `$${value}`;
 }
 
+function formatCompact(value: number): string {
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}k`;
+  return `$${value}`;
+}
+
+function MilestoneLabel({
+  viewBox,
+  point,
+}: {
+  viewBox?: { x?: number; y?: number };
+  point: ProjectionPoint;
+}) {
+  if (!viewBox?.x) return null;
+  const x = viewBox.x;
+
+  return (
+    <g>
+      <text
+        x={x}
+        y={10}
+        textAnchor="middle"
+        fontSize={10}
+        fontWeight={600}
+        fill="#64748B"
+        fontFamily="ui-monospace, monospace"
+      >
+        Yr {point.year}
+      </text>
+      <text
+        x={x}
+        y={24}
+        textAnchor="middle"
+        fontSize={10}
+        fontWeight={600}
+        fill="#059669"
+        fontFamily="ui-monospace, monospace"
+      >
+        +{formatCompact(point.totalGrowth)}
+      </text>
+    </g>
+  );
+}
+
 export function SavingsChart({ data }: SavingsChartProps) {
   const labelInterval = data.length <= 10 ? 1 : data.length <= 20 ? 2 : 5;
+  const timeHorizon = data.length > 0 ? data[data.length - 1].year : 0;
+  const quadrantInterval = Math.max(1, Math.round(timeHorizon / 4));
+  const milestones = [1, 2, 3, 4]
+    .map((n) => data.find((p) => p.year === quadrantInterval * n))
+    .filter((p): p is ProjectionPoint => p != null && p.year < timeHorizon);
 
   return (
     <div className="w-full h-[320px]">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={data}
-          margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          margin={{ top: 32, right: 10, left: 0, bottom: 0 }}
         >
           <defs>
             <linearGradient id="gradientBalance" x1="0" y1="0" x2="0" y2="1">
@@ -145,6 +195,16 @@ export function SavingsChart({ data }: SavingsChartProps) {
             animationEasing="ease-in-out"
             name="HSA Balance"
           />
+          {milestones.map((point) => (
+            <ReferenceLine
+              key={point.year}
+              x={point.label}
+              stroke="#94A3B8"
+              strokeDasharray="4 4"
+              strokeOpacity={0.6}
+              label={<MilestoneLabel point={point} />}
+            />
+          ))}
         </AreaChart>
       </ResponsiveContainer>
     </div>
