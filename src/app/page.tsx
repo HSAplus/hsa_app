@@ -60,6 +60,9 @@ export default async function Home() {
             <Link href="/calculator" className="hover:text-[#0F172A] transition-colors">
               Calculator
             </Link>
+            <Link href="/privacy" className="hover:text-[#0F172A] transition-colors">
+              Privacy
+            </Link>
           </nav>
           <div className="flex items-center gap-2">
             <Link href="/login">
