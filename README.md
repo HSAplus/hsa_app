@@ -28,14 +28,24 @@ HSA Plus is a full-stack web application for managing Health Savings Accounts, L
 - 7-year retention alerts for document lifecycle management
 - Eligible expense verification
 - Category and expense type tagging
+- Expense templates for quick entry of recurring costs
+- Annual tax summary with per-year CSV export
+
+### Claims & Reimbursement
+
+- Submit claims directly from eligible expenses
+- Claims tracking with status and submission channel
+- Reimbursement optimizer — see which unreimbursed expenses have the most growth potential
+- Mark expenses as reimbursed with date and amount
 
 ### Investment Growth & Tax Optimization
 
-- Interactive growth charts with custom time horizons and return rates
+- Interactive growth charts with milestones and contribution projections
+- What-if scenario comparison (up to 4 side-by-side)
 - Federal and state tax bracket settings for precise tax savings projections
 - Balance and contribution tracking with expected return monitoring
 - Unreimbursed expense growth tracking
-- Standalone savings calculator (available at `/calculator`, no sign-up needed)
+- Standalone savings calculator with HSA vs. taxable comparison
 
 ### Family & Multi-Account Management
 
@@ -75,6 +85,7 @@ src/
 │   ├── forgot-password/                # Password reset request
 │   ├── reset-password/                 # Password reset form
 │   ├── calculator/                     # Standalone savings calculator
+│   ├── privacy/                        # Privacy policy
 │   ├── auth/
 │   │   ├── actions.ts                  # Auth server actions (login, signup, etc.)
 │   │   └── callback/route.ts           # OAuth/email code exchange
@@ -89,7 +100,9 @@ src/
 │       └── digest/route.ts             # Cron endpoint for email digests
 ├── components/
 │   ├── ui/                             # shadcn/ui primitives
-│   ├── dashboard/                      # Dashboard-specific components
+│   ├── dashboard/                      # Dashboard components (stats, expenses, growth,
+│   │                                   #   scenarios, tax summary, claims, templates, etc.)
+│   │   └── savings-calculator/         # Calculator inputs, chart, and projections
 │   └── auth/                           # Auth components (Google sign-in, etc.)
 ├── lib/
 │   ├── supabase/                       # Supabase client (browser, server, middleware)
@@ -176,7 +189,7 @@ Session management is handled through SSR cookies with automatic refresh via Nex
 ### Supabase
 
 - **Auth**: User registration, login, OAuth, password reset
-- **Database**: Postgres tables for profiles, expenses, dependents, and expense templates
+- **Database**: Postgres tables for profiles, expenses, dependents, expense templates, and claims
 - **Storage**: `hsa-documents` bucket for receipt and document uploads
 
 ### Plaid (planned — not yet enabled)
