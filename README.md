@@ -1,10 +1,19 @@
-# HSA Plus
+<p align="center">
+  <img src="docs/assets/logo-dark.png" alt="HSA Plus" width="480" />
+</p>
 
-**Your HSA deserves a smarter strategy.**
+<p align="center">
+  <strong>Your HSA strategy, simplified.</strong><br />
+  Track medical expenses, project investment growth, manage family dependents, and stay IRS audit-ready.
+</p>
+
+<p align="center">
+  <a href="https://hsa.plus">hsa.plus</a>
+</p>
+
+---
 
 HSA Plus is a full-stack web application for managing Health Savings Accounts, Limited Purpose FSAs (LPFSA), and Health Care FSAs (HCFSA). It helps users track medical expenses, maintain IRS audit-ready documentation, model investment growth, and optimize reimbursement timing to maximize the HSA triple tax advantage.
-
-**Live at [hsa.plus](https://hsa.plus)**
 
 ---
 
@@ -201,6 +210,20 @@ The app includes built-in IRS HSA contribution limits from 2014 through 2026:
 | `npm run build` | Production build           |
 | `npm start`     | Start production server    |
 | `npm run lint`  | Run ESLint                 |
+
+---
+
+## Design
+
+HSA Plus follows the **Verdant Precision** design philosophy — organic vitality meets clinical exactness. The visual language is built on a constrained emerald palette ranging from deep forest shadow to bright leaf-light, grounded by near-black. Form follows the logic of crystalline growth: faceted and angular where necessary, but never cold. Rounded elements exist only where they soften critical junctions.
+
+The plus sign and intersection are treated as structural geometry representing accumulation, addition, and the power of compounding. Typography is architectural — it carries weight without shouting and occupies space with authority. Negative space is deliberate, providing the oxygen that allows each element to breathe.
+
+<p align="center">
+  <img src="docs/assets/icon.png" alt="HSA Plus Icon" width="128" />
+</p>
+
+Full design philosophy: [`docs/design-philosophy.md`](docs/design-philosophy.md)
 
 ---
 
