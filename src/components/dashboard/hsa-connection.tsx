@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { usePlaidLink } from "react-plaid-link";
+import { usePlaidLink, type PlaidLinkOnSuccess } from "react-plaid-link";
 import { Button } from "@/components/ui/button";
 import { Loader2, Link2, RefreshCw, Unlink, Building2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
@@ -45,8 +45,8 @@ export function HsaConnectionWidget({ onBalanceUpdate }: HsaConnectionProps) {
     setLinkToken(result.linkToken ?? null);
   };
 
-  const onPlaidSuccess = useCallback(
-    async (publicToken: string, metadata: { institution?: { name?: string; institution_id?: string } | null; account?: { id?: string; name?: string } }) => {
+  const onPlaidSuccess: PlaidLinkOnSuccess = useCallback(
+    async (publicToken, metadata) => {
       const result = await connectHsaAccount(publicToken, {
         institution: metadata.institution ?? undefined,
         account: metadata.account,
