@@ -49,7 +49,6 @@ HSA Plus is a full-stack web application for managing Health Savings Accounts, L
 | **Charts**         | Recharts                                                                   |
 | **Forms**          | React Hook Form + Zod validation                                          |
 | **Auth & Database**| [Supabase](https://supabase.com/) (Auth, Postgres, Storage)               |
-| **Bank Linking**   | [Plaid](https://plaid.com/) (Auth + Balance products)                     |
 | **Email**          | [Resend](https://resend.com/) (transactional email + scheduled digests)   |
 | **Hosting**        | [Vercel](https://vercel.com/) via GitHub deployment                       |
 
@@ -85,7 +84,7 @@ src/
 │   └── auth/                           # Auth components (Google sign-in, etc.)
 ├── lib/
 │   ├── supabase/                       # Supabase client (browser, server, middleware)
-│   ├── plaid.ts                        # Plaid client configuration
+│   ├── plaid.ts                        # Plaid client configuration (not yet enabled)
 │   ├── resend.ts                       # Resend email client
 │   ├── types.ts                        # Shared TypeScript types
 │   ├── hsa-constants.ts                # IRS limits, tax brackets, calculator logic
@@ -103,7 +102,6 @@ src/
 - Node.js 18+
 - npm
 - A [Supabase](https://supabase.com/) project
-- (Optional) [Plaid](https://plaid.com/) developer account for bank linking
 - (Optional) [Resend](https://resend.com/) account for email digests
 
 ### Installation
@@ -127,11 +125,6 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 # App URLs
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_APP_URL=http://localhost:3000
-
-# Plaid (optional — for HSA balance sync)
-PLAID_CLIENT_ID=your_plaid_client_id
-PLAID_SECRET=your_plaid_secret
-PLAID_ENV=sandbox
 
 # Resend (optional — for email digests)
 RESEND_API_KEY=your_resend_api_key
@@ -174,14 +167,12 @@ Session management is handled through SSR cookies with automatic refresh via Nex
 ### Supabase
 
 - **Auth**: User registration, login, OAuth, password reset
-- **Database**: Postgres tables for profiles, expenses, dependents, expense templates, and HSA connections
+- **Database**: Postgres tables for profiles, expenses, dependents, and expense templates
 - **Storage**: `hsa-documents` bucket for receipt and document uploads
 
-### Plaid
+### Plaid (planned — not yet enabled)
 
-- Links HSA accounts via Plaid Link
-- Syncs real-time account balances
-- Supports connect/disconnect lifecycle
+Scaffolding exists for HSA balance sync via Plaid Link (`src/lib/plaid.ts`, `src/components/dashboard/hsa-connection.tsx`), but the integration is not currently active in production.
 
 ### Resend
 
