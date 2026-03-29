@@ -9,8 +9,10 @@ import {
   getDashboardStats,
   deleteExpense,
   markAsReimbursed,
+  getClaims,
 } from "@/app/dashboard/actions";
 import type { Expense, DashboardStats, Profile } from "@/lib/types";
+import type { Claim } from "@/lib/claims/types";
 import { StatsCards } from "./stats-cards";
 import { ExpenseTable } from "./expense-table";
 import { OnboardingDialog } from "./onboarding-dialog";
@@ -20,6 +22,8 @@ import { ReimbursementOptimizer } from "./reimbursement-optimizer";
 import { TaxSummary } from "./tax-summary";
 import { IrsLimitsTable } from "./irs-limits-table";
 import { ScenarioComparison } from "./scenario-comparison";
+import { SubmitClaimDialog } from "./submit-claim-dialog";
+import { ClaimsList } from "./claims-list";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -54,16 +58,21 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
     expectedReturn: { projectedValue: 0, extraGrowth: 0, annualReturn: 7, timeHorizonYears: 20 },
   });
   const [loading, setLoading] = useState(true);
+  const [claims, setClaims] = useState<Claim[]>([]);
+  const [claimDialogOpen, setClaimDialogOpen] = useState(false);
+  const [claimExpense, setClaimExpense] = useState<Expense | null>(null);
 
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [expensesData, statsData] = await Promise.all([
+      const [expensesData, statsData, claimsData] = await Promise.all([
         getExpenses(),
         getDashboardStats(),
+        getClaims(),
       ]);
       setExpenses(expensesData);
       setStats(statsData);
+      setClaims(claimsData);
     } catch {
       toast.error("Failed to load data");
     } finally {
@@ -98,6 +107,13 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
   const handleEdit = (expense: Expense) => {
     router.push(`/dashboard/expenses/${expense.id}/edit`);
   };
+
+  const handleSubmitClaim = (expense: Expense) => {
+    setClaimExpense(expense);
+    setClaimDialogOpen(true);
+  };
+
+  const claimExpenseIds = new Set(claims.map((c) => c.expense_id));
 
   const profileName = profile
     ? `${profile.first_name} ${profile.last_name}`.trim()
@@ -227,7 +243,13 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
             onEdit={handleEdit}
             onDelete={handleDelete}
             onMarkReimbursed={handleMarkReimbursed}
+            onSubmitClaim={handleSubmitClaim}
+            claimExpenseIds={claimExpenseIds}
           />
+        </div>
+
+        <div className="mt-8">
+          <ClaimsList claims={claims} expenses={expenses} loading={loading} />
         </div>
 
         <div className="mt-8">
@@ -254,6 +276,14 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
           <IrsLimitsTable />
         </div>
       </main>
+
+      <SubmitClaimDialog
+        expense={claimExpense}
+        open={claimDialogOpen}
+        onOpenChange={setClaimDialogOpen}
+        savedAdminId={(profile as (Profile & { hsa_administrator_id: string | null }) | null)?.hsa_administrator_id ?? null}
+        onSubmitted={loadData}
+      />
     </div>
   );
 }
