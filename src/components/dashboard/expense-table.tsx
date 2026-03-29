@@ -39,6 +39,7 @@ import {
   AlertTriangle,
   ChevronLeft,
   ChevronRight,
+  Send,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -48,6 +49,8 @@ interface ExpenseTableProps {
   onEdit: (expense: Expense) => void;
   onDelete: (id: string) => void;
   onMarkReimbursed: (id: string, amount: number) => void;
+  onSubmitClaim: (expense: Expense) => void;
+  claimExpenseIds: Set<string>;
 }
 
 const categoryLabels: Record<string, string> = {
@@ -79,6 +82,8 @@ export function ExpenseTable({
   onEdit,
   onDelete,
   onMarkReimbursed,
+  onSubmitClaim,
+  claimExpenseIds,
 }: ExpenseTableProps) {
   const [search, setSearch] = useState("");
   const [filterCategory, setFilterCategory] = useState<string>("all");
@@ -314,6 +319,12 @@ export function ExpenseTable({
                             <Pencil className="mr-2 h-3.5 w-3.5" />
                             Edit
                           </DropdownMenuItem>
+                          {!expense.reimbursed && !claimExpenseIds.has(expense.id) && isAuditReady(expense) && (
+                            <DropdownMenuItem onClick={() => onSubmitClaim(expense)}>
+                              <Send className="mr-2 h-3.5 w-3.5" />
+                              Submit claim
+                            </DropdownMenuItem>
+                          )}
                           {!expense.reimbursed && (
                             <DropdownMenuItem
                               onClick={() =>
