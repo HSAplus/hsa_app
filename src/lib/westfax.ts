@@ -43,7 +43,7 @@ export async function sendFax(params: {
 
   for (let i = 0; i < params.pdfBuffers.length; i++) {
     const { filename, buffer } = params.pdfBuffers[i];
-    const blob = new Blob([buffer], { type: "application/pdf" });
+    const blob = new Blob([new Uint8Array(buffer)], { type: "application/pdf" });
     formData.append(`Files${i}`, blob, filename);
   }
 

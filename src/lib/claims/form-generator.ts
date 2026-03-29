@@ -113,6 +113,7 @@ function ClaimFormDocument({ payload }: { payload: ClaimPayload }) {
  */
 export async function generateClaimFormPdf(payload: ClaimPayload): Promise<Buffer> {
   const element = createElement(ClaimFormDocument, { payload });
-  const buffer = await renderToBuffer(element);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const buffer = await renderToBuffer(element as any);
   return Buffer.from(buffer);
 }
