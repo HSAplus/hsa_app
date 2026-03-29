@@ -368,3 +368,6 @@ export function calculateExpectedReturn(
     extraGrowth: Math.round((projectedValue - totalPending) * 100) / 100,
   };
 }
+
+// Re-export claim types for convenience
+export type { Claim, HsaAdministrator, ClaimStatus, SubmissionTier } from "@/lib/claims/types";
