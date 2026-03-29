@@ -686,6 +686,9 @@ export default async function Home() {
             <Link href="/calculator" className="hover:text-[#64748B] transition-colors">
               Calculator
             </Link>
+            <Link href="/privacy" className="hover:text-[#64748B] transition-colors">
+              Privacy
+            </Link>
             <Link href="/login" className="hover:text-[#64748B] transition-colors">
               Sign in
             </Link>
