@@ -1,102 +1,218 @@
-# HSA Expense Tracker
+# HSA Plus
 
-A modern web application to track your Health Savings Account (HSA) expenses, reimbursements, and store receipts/EOBs/invoices. Built with the strategy of paying medical bills with your credit card, documenting everything, and reimbursing yourself from your HSA when you're ready — letting your HSA investments grow tax-free.
+**Your HSA deserves a smarter strategy.**
 
-## Tech Stack
+HSA Plus is a full-stack web application for managing Health Savings Accounts, Limited Purpose FSAs (LPFSA), and Health Care FSAs (HCFSA). It helps users track medical expenses, maintain IRS audit-ready documentation, model investment growth, and optimize reimbursement timing to maximize the HSA triple tax advantage.
 
-- **Framework**: Next.js 15 (App Router) with TypeScript
-- **UI**: Tailwind CSS v4 + shadcn/ui
-- **Backend/Auth**: Supabase (Auth + Database + Row Level Security)
-- **Deployment**: Vercel via GitHub
-- **Icons**: Lucide React
+**Live at [hsa.plus](https://hsa.plus)**
+
+---
 
 ## Features
 
-- 🔐 **Authentication**: Email/password sign up and sign in via Supabase Auth
-- 📊 **Dashboard**: Overview stats (total expenses, reimbursed, pending)
-- 📝 **Expense Tracking**: Add, edit, and delete medical expenses
-- 🏷️ **Categories**: Medical, Dental, Vision, Prescription, Mental Health, Other
-- ✅ **Reimbursement Status**: Mark as Y/N with date and amount tracking
-- 📎 **Document Links**: Store links to EOB, Invoice/Bill, and Receipt/Credit Card Statement
-- 🔍 **Search & Filter**: Search by description/provider, filter by category and status
-- 📱 **Responsive**: Works on desktop, tablet, and mobile
+### Expense Tracking & Compliance
+
+- Log medical expenses with provider, amount, date, category, patient, and account type
+- Upload multiple documents per expense (receipts, EOBs, invoices, credit card statements)
+- Auto-computed audit-readiness scoring based on IRS requirements
+- Reimbursement status and date tracking
+- 7-year retention alerts for document lifecycle management
+- Eligible expense verification
+- Category and expense type tagging
+
+### Investment Growth & Tax Optimization
+
+- Interactive growth charts with custom time horizons and return rates
+- Federal and state tax bracket settings for precise tax savings projections
+- Balance and contribution tracking with expected return monitoring
+- Unreimbursed expense growth tracking
+- Standalone savings calculator (available at `/calculator`, no sign-up needed)
+
+### Family & Multi-Account Management
+
+- Dependent profiles for spouse, children, and domestic partners
+- Per-patient expense attribution
+- HSA, LPFSA, and HCFSA account type support
+- Per-account balance breakdowns
+- Guided 3-step onboarding
+- Secure profile and settings management
+
+---
+
+## Tech Stack
+
+| Layer              | Technology                                                                 |
+| ------------------ | -------------------------------------------------------------------------- |
+| **Framework**      | [Next.js 16](https://nextjs.org/) (App Router, Server Actions)            |
+| **Language**       | TypeScript                                                                 |
+| **UI**             | React 19, Tailwind CSS 4, Radix UI, shadcn/ui, Framer Motion              |
+| **Charts**         | Recharts                                                                   |
+| **Forms**          | React Hook Form + Zod validation                                          |
+| **Auth & Database**| [Supabase](https://supabase.com/) (Auth, Postgres, Storage)               |
+| **Bank Linking**   | [Plaid](https://plaid.com/) (Auth + Balance products)                     |
+| **Email**          | [Resend](https://resend.com/) (transactional email + scheduled digests)   |
+| **Hosting**        | [Vercel](https://vercel.com/) via GitHub deployment                       |
+
+---
+
+## Project Structure
+
+```
+src/
+├── app/
+│   ├── page.tsx                        # Landing page (marketing)
+│   ├── layout.tsx                      # Root layout with metadata
+│   ├── login/                          # Login page
+│   ├── signup/                         # Signup page
+│   ├── forgot-password/                # Password reset request
+│   ├── reset-password/                 # Password reset form
+│   ├── calculator/                     # Standalone savings calculator
+│   ├── auth/
+│   │   ├── actions.ts                  # Auth server actions (login, signup, etc.)
+│   │   └── callback/route.ts           # OAuth/email code exchange
+│   ├── dashboard/
+│   │   ├── page.tsx                    # Main dashboard
+│   │   ├── actions.ts                  # Dashboard server actions
+│   │   ├── expenses/new/               # Create expense
+│   │   ├── expenses/[id]/edit/         # Edit expense
+│   │   ├── profile/                    # Profile & HSA settings
+│   │   └── login-settings/             # Email/password management
+│   └── api/
+│       └── digest/route.ts             # Cron endpoint for email digests
+├── components/
+│   ├── ui/                             # shadcn/ui primitives
+│   ├── dashboard/                      # Dashboard-specific components
+│   └── auth/                           # Auth components (Google sign-in, etc.)
+├── lib/
+│   ├── supabase/                       # Supabase client (browser, server, middleware)
+│   ├── plaid.ts                        # Plaid client configuration
+│   ├── resend.ts                       # Resend email client
+│   ├── types.ts                        # Shared TypeScript types
+│   ├── hsa-constants.ts                # IRS limits, tax brackets, calculator logic
+│   └── email-templates/                # HTML email templates for digests
+├── hooks/                              # Custom React hooks
+└── middleware.ts                       # Auth middleware (route protection)
+```
+
+---
 
 ## Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
-- A [Supabase](https://supabase.com) account (free tier works)
+- npm
+- A [Supabase](https://supabase.com/) project
+- (Optional) [Plaid](https://plaid.com/) developer account for bank linking
+- (Optional) [Resend](https://resend.com/) account for email digests
 
-### 1. Clone and Install
+### Installation
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/nirmaldesai/hsa_app.git
 cd hsa_app
 npm install
 ```
 
-### 2. Set Up Supabase
+### Environment Variables
 
-1. Create a new project at [app.supabase.com](https://app.supabase.com)
-2. Go to **SQL Editor** and run the SQL from `supabase/schema.sql`
-3. Go to **Settings → API** and copy your **Project URL** and **anon/public key**
+Create a `.env.local` file in the project root:
 
-### 3. Configure Environment Variables
+```env
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-Copy the env template and add your Supabase credentials:
+# App URLs
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 
-```bash
-# Edit .env.local with your values
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+# Plaid (optional — for HSA balance sync)
+PLAID_CLIENT_ID=your_plaid_client_id
+PLAID_SECRET=your_plaid_secret
+PLAID_ENV=sandbox
+
+# Resend (optional — for email digests)
+RESEND_API_KEY=your_resend_api_key
+RESEND_FROM_EMAIL=noreply@yourdomain.com
+
+# Cron protection (optional)
+CRON_SECRET=your_cron_secret
 ```
 
-### 4. Run the Development Server
+### Development
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see the app.
+The app will be available at [http://localhost:3000](http://localhost:3000).
 
-### 5. Deploy to Vercel
+### Build
 
-1. Push to GitHub
-2. Import your repo on [Vercel](https://vercel.com)
-3. Add the environment variables in the Vercel dashboard
-4. Deploy!
+```bash
+npm run build
+npm start
+```
 
-### 6. Email digest (optional)
+---
 
-To send weekly/monthly HSA summary emails via [Resend](https://resend.com):
+## Authentication
 
-1. Add to `.env.local`: `RESEND_API_KEY`, `RESEND_FROM_EMAIL` (e.g. `HSA Plus <noreply@yourdomain.com>`), `CRON_SECRET`, and `NEXT_PUBLIC_APP_URL`.
-2. Run the migration: `supabase db push` or run `supabase/migrations/add_email_digest.sql` in the Supabase SQL Editor.
-3. Users enable the digest and choose frequency in **Profile → Email Digest**.
-4. To run the digest on a schedule, call `GET /api/digest` with header `Authorization: Bearer YOUR_CRON_SECRET` (e.g. daily). The API sends weekly digests on Mondays and monthly on the 1st. You can use [cron-job.org](https://cron-job.org), GitHub Actions, or another cron that supports custom headers; Vercel Cron does not add the secret header, so use an external scheduler.
+HSA Plus uses Supabase Auth with two sign-in methods:
 
-## Database Schema
+- **Email + password** — with email confirmation, password reset, and account settings
+- **Google OAuth** — one-click sign-in via Google
 
-The `expenses` table includes:
+Session management is handled through SSR cookies with automatic refresh via Next.js middleware. All routes except the landing page, auth pages, and the calculator are protected.
 
-| Column | Type | Description |
-|--------|------|-------------|
-| description | text | Brief note of the service or item |
-| amount | decimal | The total you paid out-of-pocket |
-| date_of_service | date | When the service was provided |
-| provider | text | Doctor/provider name |
-| category | text | medical, dental, vision, prescription, mental_health, other |
-| reimbursed | boolean | Mark "N" until you take the money from HSA; then update to "Y" |
-| reimbursed_date | date | Date of reimbursement |
-| reimbursed_amount | decimal | Amount reimbursed |
-| payment_method | text | credit_card, debit_card, hsa_card, cash, check, other |
-| receipt_urls | text[] | Links to Receipt documents (multiple supported) |
-| eob_urls | text[] | Links to Explanation of Benefits documents |
-| invoice_urls | text[] | Links to Invoice/Bill documents |
-| credit_card_statement_urls | text[] | Links to Credit Card Statement documents |
-| notes | text | Additional notes |
+---
+
+## Key Integrations
+
+### Supabase
+
+- **Auth**: User registration, login, OAuth, password reset
+- **Database**: Postgres tables for profiles, expenses, dependents, expense templates, and HSA connections
+- **Storage**: `hsa-documents` bucket for receipt and document uploads
+
+### Plaid
+
+- Links HSA accounts via Plaid Link
+- Syncs real-time account balances
+- Supports connect/disconnect lifecycle
+
+### Resend
+
+- Sends HTML email digests (weekly or monthly, user-configurable)
+- Digest endpoint at `/api/digest` can be triggered via cron with optional `CRON_SECRET` protection
+
+---
+
+## IRS Contribution Limits
+
+The app includes built-in IRS HSA contribution limits from 2014 through 2026:
+
+| Year | Individual | Family  | 55+ Catch-Up |
+| ---- | ---------- | ------- | ------------ |
+| 2024 | $4,150     | $8,300  | +$1,000      |
+| 2025 | $4,300     | $8,550  | +$1,000      |
+| 2026 | $4,400     | $8,750  | +$1,000      |
+
+---
+
+## Scripts
+
+| Command         | Description                |
+| --------------- | -------------------------- |
+| `npm run dev`   | Start development server   |
+| `npm run build` | Production build           |
+| `npm start`     | Start production server    |
+| `npm run lint`  | Run ESLint                 |
+
+---
 
 ## License
 
-MIT
+Private project. All rights reserved.
