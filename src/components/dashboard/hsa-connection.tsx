@@ -49,7 +49,7 @@ export function HsaConnectionWidget({ onBalanceUpdate }: HsaConnectionProps) {
     async (publicToken, metadata) => {
       const result = await connectHsaAccount(publicToken, {
         institution: metadata.institution ?? undefined,
-        account: metadata.account,
+        account: metadata.accounts?.[0],
       });
       if (result.error) {
         toast.error(result.error);
