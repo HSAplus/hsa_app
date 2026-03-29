@@ -4,6 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { Expense, ExpenseFormData, DashboardStats, Profile, Dependent } from "@/lib/types";
 import { isAuditReady, getRetentionStatus, calculateExpectedReturn } from "@/lib/types";
+import type { Claim, HsaAdministrator } from "@/lib/claims/types";
+import { submitClaim as submitClaimService } from "@/lib/claims/submission";
 
 export async function getProfile(): Promise<Profile | null> {
   const supabase = await createClient();
@@ -848,4 +850,121 @@ export async function getHsaConnection(): Promise<import("@/lib/types").HsaConne
     .single();
 
   return (data as import("@/lib/types").HsaConnection) ?? null;
+}
+
+// ── Claims ───────────────────────────────────────────
+
+export async function getHsaAdministrators(): Promise<HsaAdministrator[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("hsa_administrators")
+    .select("*")
+    .eq("active", true)
+    .order("market_share_pct", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching administrators:", error);
+    return [];
+  }
+
+  return data as HsaAdministrator[];
+}
+
+export async function setHsaAdministrator(
+  administratorId: string
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      hsa_administrator_id: administratorId,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", user.id);
+
+  if (error) {
+    console.error("Error setting administrator:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  return {};
+}
+
+export async function submitClaimAction(
+  expenseId: string
+): Promise<{
+  success: boolean;
+  claimId?: string;
+  generatedPdfUrl?: string;
+  portalUrl?: string;
+  error?: string;
+}> {
+  const result = await submitClaimService(expenseId);
+
+  if (result.success) {
+    revalidatePath("/dashboard");
+  }
+
+  return result;
+}
+
+export async function getClaims(): Promise<Claim[]> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("claims")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching claims:", error);
+    return [];
+  }
+
+  return data as Claim[];
+}
+
+export async function updateClaimStatus(
+  claimId: string,
+  status: string,
+  details?: { denial_reason?: string; reimbursed_amount?: number; reimbursed_date?: string }
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  const { error } = await supabase
+    .from("claims")
+    .update({
+      status,
+      ...details,
+      submitted_at: status === "submitted" ? new Date().toISOString() : undefined,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", claimId)
+    .eq("user_id", user.id);
+
+  if (error) {
+    console.error("Error updating claim:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  return {};
 }
