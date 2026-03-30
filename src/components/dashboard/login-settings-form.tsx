@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
-import { updateLoginSettings } from "@/app/auth/actions";
+import { updateLoginSettings, cleanupMfaFactors } from "@/app/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
@@ -52,19 +52,9 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
     loadMfaFactors();
   }, [loadMfaFactors]);
 
-  const cleanupUnverifiedFactors = async () => {
-    const { data } = await supabase.auth.mfa.listFactors();
-    for (const factor of data?.totp ?? []) {
-      if (factor.status === "unverified") {
-        await supabase.auth.mfa.unenroll({ factorId: factor.id });
-      }
-    }
-  };
-
   const handleMfaEnroll = async () => {
     setMfaEnrolling(true);
 
-    // Re-check: maybe a verified factor already exists
     const { data: check } = await supabase.auth.mfa.listFactors();
     const alreadyVerified = check?.totp?.find((f) => f.status === "verified");
     if (alreadyVerified) {
@@ -74,7 +64,8 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
       return;
     }
 
-    await cleanupUnverifiedFactors();
+    // Use server action with admin privileges to remove stale factors
+    await cleanupMfaFactors();
 
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: "totp",
@@ -127,9 +118,7 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
   };
 
   const handleMfaCancelEnroll = async () => {
-    if (mfaPendingFactorId) {
-      await supabase.auth.mfa.unenroll({ factorId: mfaPendingFactorId });
-    }
+    await cleanupMfaFactors();
     setMfaEnrolling(false);
     setMfaQrCode(null);
     setMfaSecret(null);

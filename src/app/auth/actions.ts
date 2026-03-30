@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { getContributionLimit, type CoverageType } from "@/lib/hsa-constants";
 
 export async function login(formData: FormData) {
@@ -217,4 +218,34 @@ export async function updateLoginSettings(formData: FormData) {
     success: true,
     emailChanged: !!authUpdates.email,
   };
+}
+
+export async function cleanupMfaFactors() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Not authenticated" };
+  }
+
+  const admin = createServiceClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+
+  const { data } = await admin.auth.admin.mfa.listFactors({ userId: user.id });
+  const factors = data?.factors ?? [];
+  let deleted = 0;
+
+  for (const factor of factors) {
+    if (factor.status === "unverified") {
+      await admin.auth.admin.mfa.deleteFactor({ id: factor.id, userId: user.id });
+      deleted++;
+    }
+  }
+
+  return { success: true, deleted };
 }
