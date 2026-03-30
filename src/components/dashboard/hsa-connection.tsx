@@ -15,11 +15,15 @@ import {
   getHsaConnection,
 } from "@/app/dashboard/actions";
 
+import { UpgradeBadge } from "@/components/ui/upgrade-badge";
+import { Sparkles } from "lucide-react";
+
 interface HsaConnectionProps {
   onBalanceUpdate?: (balance: number) => void;
+  isPlus?: boolean;
 }
 
-export function HsaConnectionWidget({ onBalanceUpdate }: HsaConnectionProps) {
+export function HsaConnectionWidget({ onBalanceUpdate, isPlus = false }: HsaConnectionProps) {
   const [connection, setConnection] = useState<HsaConnection | null>(null);
   const [loading, setLoading] = useState(true);
   const [linkToken, setLinkToken] = useState<string | null>(null);
@@ -191,19 +195,23 @@ export function HsaConnectionWidget({ onBalanceUpdate }: HsaConnectionProps) {
             <p className="text-[11px] text-[#94A3B8]">Auto-sync your balance from Fidelity, Lively, etc.</p>
           </div>
         </div>
-        <Button
-          size="sm"
-          onClick={initPlaidLink}
-          disabled={connecting}
-          className="h-8 text-[13px]"
-        >
-          {connecting ? (
-            <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
-          ) : (
-            <Link2 className="h-3.5 w-3.5 mr-1.5" />
-          )}
-          Connect
-        </Button>
+        {isPlus ? (
+          <Button
+            size="sm"
+            onClick={initPlaidLink}
+            disabled={connecting}
+            className="h-8 text-[13px]"
+          >
+            {connecting ? (
+              <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+            ) : (
+              <Link2 className="h-3.5 w-3.5 mr-1.5" />
+            )}
+            Connect
+          </Button>
+        ) : (
+          <UpgradeBadge message="Plus feature" />
+        )}
       </div>
     </div>
   );

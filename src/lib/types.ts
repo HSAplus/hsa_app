@@ -28,6 +28,8 @@ export interface Expense {
   audit_ready: boolean; // Whether all required documentation is attached
 }
 
+export type PlanType = "free" | "plus";
+
 export interface Profile {
   id: string;
   email: string;
@@ -46,6 +48,8 @@ export interface Profile {
   email_digest_enabled: boolean;
   email_digest_frequency: "weekly" | "monthly";
   onboarding_completed: boolean;
+  plan_type: PlanType;
+  subscription_status: string;
   created_at: string;
   updated_at: string;
 }

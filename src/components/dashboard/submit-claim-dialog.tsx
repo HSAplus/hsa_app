@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { isAuditReady } from "@/lib/types";
+import { UpgradeBlock } from "@/components/ui/upgrade-badge";
 
 const tierLabel: Record<string, string> = {
   api: "Direct API submission",
@@ -44,6 +45,7 @@ interface SubmitClaimDialogProps {
   onOpenChange: (open: boolean) => void;
   savedAdminId: string | null;
   onSubmitted: () => void;
+  isPlus?: boolean;
 }
 
 export function SubmitClaimDialog({
@@ -52,6 +54,7 @@ export function SubmitClaimDialog({
   onOpenChange,
   savedAdminId,
   onSubmitted,
+  isPlus = false,
 }: SubmitClaimDialogProps) {
   const [administrators, setAdministrators] = useState<HsaAdministrator[]>([]);
   const [selectedAdminId, setSelectedAdminId] = useState<string | null>(savedAdminId);
@@ -127,7 +130,21 @@ export function SubmitClaimDialog({
           </DialogTitle>
         </DialogHeader>
 
-        {portalResult && (
+        {!isPlus && (
+          <div className="py-4">
+            <UpgradeBlock
+              feature="Automated claim submission"
+              description="Submit reimbursement claims via API, email, fax, or portal with pre-filled forms"
+            />
+            <DialogFooter className="mt-4">
+              <Button variant="ghost" onClick={() => onOpenChange(false)}>
+                Close
+              </Button>
+            </DialogFooter>
+          </div>
+        )}
+
+        {isPlus && portalResult && (
           <div className="space-y-4 py-2">
             <p className="text-sm text-[#64748B]">
               Your claim form has been generated. Download it and upload to your administrator&apos;s portal.
@@ -160,7 +177,7 @@ export function SubmitClaimDialog({
           </div>
         )}
 
-        {!portalResult && step === "select-admin" && (
+        {isPlus && !portalResult && step === "select-admin" && (
           <div className="space-y-3 py-2">
             <p className="text-sm text-[#64748B]">
               Who is your HSA administrator? This is the company that manages your HSA account.
@@ -191,7 +208,7 @@ export function SubmitClaimDialog({
           </div>
         )}
 
-        {!portalResult && step === "confirm" && (
+        {isPlus && !portalResult && step === "confirm" && (
           <div className="space-y-4 py-2">
             <div className="rounded-lg border border-[#E2E8F0] p-3 space-y-2">
               <div className="flex justify-between">

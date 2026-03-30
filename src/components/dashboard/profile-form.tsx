@@ -15,10 +15,12 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, Loader2, Shield, Users, Plus, Pencil, Trash2, Mail, Send } from "lucide-react";
+import { ArrowLeft, Loader2, Shield, Users, Plus, Pencil, Trash2, Mail, Send, Lock } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
+import { getPlanLimits, getPlanType } from "@/lib/plans";
+import { UpgradeBadge, UpgradeBlock } from "@/components/ui/upgrade-badge";
 
 interface ProfileFormProps {
   user: User;
@@ -27,6 +29,10 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ user, profile, dependents: initialDependents }: ProfileFormProps) {
+  const planType = getPlanType(profile);
+  const planLimits = getPlanLimits(planType);
+  const isPlus = planType === "plus";
+
   const [saving, setSaving] = useState(false);
   const [firstName, setFirstName] = useState(profile?.first_name || "");
   const [middleName, setMiddleName] = useState(profile?.middle_name || "");
@@ -317,7 +323,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
               </div>
 
               {/* Plaid HSA connection */}
-              <HsaConnectionWidget onBalanceUpdate={(balance) => setHsaBalance(balance.toString())} />
+              <HsaConnectionWidget onBalanceUpdate={(balance) => setHsaBalance(balance.toString())} isPlus={isPlus} />
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -358,19 +364,24 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                   <div className="space-y-1.5 pt-2">
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] text-[#64748B]">Annual increase</span>
-                      <span className="text-[11px] font-mono font-semibold text-[#059669]">
-                        +{increasePercent}% / year
-                      </span>
+                      {planLimits.allowContributionIncrease ? (
+                        <span className="text-[11px] font-mono font-semibold text-[#059669]">
+                          +{increasePercent}% / year
+                        </span>
+                      ) : (
+                        <UpgradeBadge message="Plus feature" className="text-[10px]" />
+                      )}
                     </div>
                     <Slider
                       value={[increasePercent]}
-                      onValueChange={([pct]) => setIncreasePercent(pct)}
+                      onValueChange={([pct]) => planLimits.allowContributionIncrease && setIncreasePercent(pct)}
                       min={0}
                       max={20}
                       step={1}
-                      className="w-full"
+                      className={`w-full ${!planLimits.allowContributionIncrease ? "opacity-40 pointer-events-none" : ""}`}
+                      disabled={!planLimits.allowContributionIncrease}
                     />
-                    {increasePercent > 0 && (
+                    {planLimits.allowContributionIncrease && increasePercent > 0 && (
                       <p className="text-[11px] text-[#94A3B8]">
                         Contribution grows from ${(parseFloat(annualContribution) || 0).toLocaleString()} to ~${Math.round((parseFloat(annualContribution) || 0) * Math.pow(1 + increasePercent / 100, parseFloat(timeHorizonYears) || 1)).toLocaleString()} by year {timeHorizonYears}
                       </p>
@@ -489,13 +500,22 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                 <h2 className="text-sm font-semibold text-[#0F172A] font-sans">Dependents</h2>
                 <p className="text-xs text-[#94A3B8] mt-0.5">Family members covered under your plan</p>
               </div>
-              <Button type="button" size="sm" variant="outline" onClick={openAddDependent} className="h-8 text-[13px]">
-                <Plus className="h-3.5 w-3.5 mr-1.5" />
-                Add
-              </Button>
+              {planLimits.allowDependents ? (
+                <Button type="button" size="sm" variant="outline" onClick={openAddDependent} className="h-8 text-[13px]">
+                  <Plus className="h-3.5 w-3.5 mr-1.5" />
+                  Add
+                </Button>
+              ) : (
+                <UpgradeBadge message="Plus feature" />
+              )}
             </div>
 
-            {dependentsList.length === 0 ? (
+            {!planLimits.allowDependents ? (
+              <UpgradeBlock
+                feature="Family & dependent management"
+                description="Track expenses for spouse, children, and domestic partners with per-patient attribution"
+              />
+            ) : dependentsList.length === 0 ? (
               <div className="text-center py-8 rounded-xl border border-dashed border-[#E2E8F0]">
                 <Users className="h-8 w-8 mx-auto mb-2 text-[#E2E8F0]" />
                 <p className="text-sm text-[#64748B]">No dependents added</p>
@@ -565,8 +585,17 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                 </h2>
                 <p className="text-xs text-[#94A3B8] mt-0.5">Get periodic summaries of your HSA activity</p>
               </div>
+              {!planLimits.allowEmailDigest && (
+                <UpgradeBadge message="Plus feature" />
+              )}
             </div>
 
+            {!planLimits.allowEmailDigest ? (
+              <UpgradeBlock
+                feature="Weekly & monthly email digests"
+                description="Receive summaries of your expenses, balances, and growth projections"
+              />
+            ) : (
             <div className="space-y-4">
               {/* Enable toggle */}
               <div className="flex items-center justify-between p-3 rounded-lg border border-[#E2E8F0]">
@@ -649,6 +678,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                 </>
               )}
             </div>
+            )}
           </section>
 
           {/* Save Button */}

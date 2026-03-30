@@ -10,9 +10,13 @@ import {
   deleteExpense,
   markAsReimbursed,
   getClaims,
+  getExpenseCount,
 } from "@/app/dashboard/actions";
 import type { Expense, DashboardStats, Profile } from "@/lib/types";
 import type { Claim } from "@/lib/claims/types";
+import { getPlanLimits, getPlanType, isPlusUser } from "@/lib/plans";
+import { UpgradeBadge } from "@/components/ui/upgrade-badge";
+import { Sparkles } from "lucide-react";
 import { StatsCards } from "./stats-cards";
 import { ExpenseTable } from "./expense-table";
 import { OnboardingDialog } from "./onboarding-dialog";
@@ -33,7 +37,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Plus, RefreshCw, UserCog, Calculator, KeyRound } from "lucide-react";
+import { LogOut, Plus, RefreshCw, UserCog, Calculator, KeyRound, Lock } from "lucide-react";
 import Image from "next/image";
 import { Toaster, toast } from "sonner";
 import Link from "next/link";
@@ -61,18 +65,26 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [claimDialogOpen, setClaimDialogOpen] = useState(false);
   const [claimExpense, setClaimExpense] = useState<Expense | null>(null);
+  const [expenseCount, setExpenseCount] = useState(0);
+
+  const planType = getPlanType(profile);
+  const planLimits = getPlanLimits(planType);
+  const isPlus = isPlusUser(profile);
+  const atExpenseLimit = !isPlus && expenseCount >= planLimits.maxExpenses;
 
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [expensesData, statsData, claimsData] = await Promise.all([
+      const [expensesData, statsData, claimsData, count] = await Promise.all([
         getExpenses(),
         getDashboardStats(),
         getClaims(),
+        getExpenseCount(),
       ]);
       setExpenses(expensesData);
       setStats(statsData);
       setClaims(claimsData);
+      setExpenseCount(count);
     } catch {
       toast.error("Failed to load data");
     } finally {
@@ -138,6 +150,16 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
           <div className="flex items-center gap-2.5">
             <Image src="/logo.png" alt="HSA Plus" width={56} height={37} className="rounded-lg" />
             <span className="text-base font-semibold tracking-tight">HSA Plus</span>
+            {isPlus ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#059669]/10 to-[#34d399]/10 border border-[#059669]/20 px-2 py-0.5 text-[10px] font-semibold text-[#059669]">
+                <Sparkles className="h-2.5 w-2.5" />
+                Plus
+              </span>
+            ) : (
+              <span className="inline-flex items-center rounded-full bg-[#F1F5F9] px-2 py-0.5 text-[10px] font-medium text-[#94A3B8]">
+                Free
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -163,15 +185,19 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
               </Link>
             </Button>
 
-            <Button
-              size="sm"
-              asChild
-            >
-              <Link href="/dashboard/expenses/new">
-                <Plus className="h-3.5 w-3.5 mr-1.5" />
-                Add expense
-              </Link>
-            </Button>
+            {atExpenseLimit ? (
+              <Button size="sm" variant="outline" disabled className="opacity-60">
+                <Lock className="h-3.5 w-3.5 mr-1.5" />
+                {planLimits.maxExpenses}/{planLimits.maxExpenses} expenses
+              </Button>
+            ) : (
+              <Button size="sm" asChild>
+                <Link href="/dashboard/expenses/new">
+                  <Plus className="h-3.5 w-3.5 mr-1.5" />
+                  Add expense{!isPlus && ` (${expenseCount}/${planLimits.maxExpenses})`}
+                </Link>
+              </Button>
+            )}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -245,6 +271,7 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
             onMarkReimbursed={handleMarkReimbursed}
             onSubmitClaim={handleSubmitClaim}
             claimExpenseIds={claimExpenseIds}
+            isPlus={isPlus}
           />
         </div>
 
@@ -253,7 +280,7 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
         </div>
 
         <div className="mt-8">
-          <ReimbursementOptimizer expenses={expenses} profile={profile} />
+          <ReimbursementOptimizer expenses={expenses} profile={profile} isPlus={isPlus} />
         </div>
 
         <div className="mt-8">
@@ -269,12 +296,22 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
         </div>
 
         <div className="mt-8">
-          <ScenarioComparison profile={profile} />
+          <ScenarioComparison profile={profile} isPlus={isPlus} />
         </div>
 
         <div className="mt-8">
           <IrsLimitsTable />
         </div>
+
+        {!isPlus && (
+          <div className="mt-8 rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50/50 to-orange-50/50 p-6 text-center">
+            <Sparkles className="h-6 w-6 text-amber-500 mx-auto mb-2" />
+            <h3 className="text-base font-semibold text-[#0F172A]">Upgrade to HSA Plus</h3>
+            <p className="text-sm text-[#64748B] mt-1 max-w-md mx-auto">
+              Unlimited expenses, Plaid sync, automated claims, family management, and more &mdash; $5/mo or $48/yr
+            </p>
+          </div>
+        )}
       </main>
 
       <SubmitClaimDialog
@@ -283,6 +320,7 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
         onOpenChange={setClaimDialogOpen}
         savedAdminId={(profile as (Profile & { hsa_administrator_id: string | null }) | null)?.hsa_administrator_id ?? null}
         onSubmitted={loadData}
+        isPlus={isPlus}
       />
     </div>
   );

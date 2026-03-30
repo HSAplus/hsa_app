@@ -51,6 +51,7 @@ interface ExpenseTableProps {
   onMarkReimbursed: (id: string, amount: number) => void;
   onSubmitClaim: (expense: Expense) => void;
   claimExpenseIds: Set<string>;
+  isPlus?: boolean;
 }
 
 const categoryLabels: Record<string, string> = {
@@ -84,6 +85,7 @@ export function ExpenseTable({
   onMarkReimbursed,
   onSubmitClaim,
   claimExpenseIds,
+  isPlus: _isPlus,
 }: ExpenseTableProps) {
   const [search, setSearch] = useState("");
   const [filterCategory, setFilterCategory] = useState<string>("all");

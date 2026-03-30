@@ -19,9 +19,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
+import { UpgradeBadge } from "@/components/ui/upgrade-badge";
+import { PLAN_LIMITS } from "@/lib/plans";
 
 interface ScenarioComparisonProps {
   profile: Profile | null;
+  isPlus?: boolean;
 }
 
 interface Scenario {
@@ -274,7 +277,8 @@ function ScenarioCard({
   );
 }
 
-export function ScenarioComparison({ profile }: ScenarioComparisonProps) {
+export function ScenarioComparison({ profile, isPlus = false }: ScenarioComparisonProps) {
+  const maxScenarios = isPlus ? PLAN_LIMITS.plus.maxScenarios : PLAN_LIMITS.free.maxScenarios;
   const baseInputs: CalculatorInputs = useMemo(
     () => ({
       initialBalance: profile?.current_hsa_balance ?? 0,
@@ -325,7 +329,7 @@ export function ScenarioComparison({ profile }: ScenarioComparisonProps) {
   const handleDuplicate = useCallback(
     (id: string) => {
       setScenarios((prev) => {
-        if (prev.length >= 4) return prev;
+        if (prev.length >= maxScenarios) return prev;
         const source = prev.find((s) => s.id === id);
         if (!source) return prev;
         const newId = `scenario-${Date.now()}`;
@@ -340,12 +344,12 @@ export function ScenarioComparison({ profile }: ScenarioComparisonProps) {
         ];
       });
     },
-    []
+    [maxScenarios]
   );
 
   const handleAdd = useCallback(() => {
     setScenarios((prev) => {
-      if (prev.length >= 4) return prev;
+      if (prev.length >= maxScenarios) return prev;
       const newId = `scenario-${Date.now()}`;
       const names = ["Conservative", "Moderate", "Aggressive Growth", "Max Contribution"];
       const name = names[prev.length] ?? `Scenario ${prev.length + 1}`;
@@ -359,7 +363,7 @@ export function ScenarioComparison({ profile }: ScenarioComparisonProps) {
         },
       ];
     });
-  }, [baseInputs]);
+  }, [baseInputs, maxScenarios]);
 
   // Comparison summary
   const summaries = useMemo(() => {
@@ -393,9 +397,9 @@ export function ScenarioComparison({ profile }: ScenarioComparisonProps) {
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="secondary" className="text-[10px]">
-              {scenarios.length}/4 scenarios
+              {scenarios.length}/{maxScenarios} scenarios
             </Badge>
-            {scenarios.length < 4 && (
+            {scenarios.length < maxScenarios ? (
               <Button
                 variant="outline"
                 size="sm"
@@ -405,7 +409,9 @@ export function ScenarioComparison({ profile }: ScenarioComparisonProps) {
                 <Plus className="h-3 w-3 mr-1" />
                 Add scenario
               </Button>
-            )}
+            ) : !isPlus ? (
+              <UpgradeBadge message="Unlock 4 scenarios" />
+            ) : null}
           </div>
         </div>
       </div>

@@ -28,6 +28,8 @@ interface FileUploadProps {
   accept?: string;
   /** Whether this field is required for audit readiness */
   required?: boolean;
+  /** Max number of files allowed (Infinity = unlimited) */
+  maxFiles?: number;
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -40,7 +42,9 @@ export function FileUpload({
   description,
   accept = "image/*,.pdf,.jpg,.jpeg,.png,.webp,.heic",
   required = false,
+  maxFiles,
 }: FileUploadProps) {
+  const atFileLimit = maxFiles !== undefined && maxFiles !== Infinity && value.length >= maxFiles;
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -49,6 +53,11 @@ export function FileUpload({
   const uploadFile = useCallback(
     async (file: File) => {
       setError(null);
+
+      if (maxFiles !== undefined && maxFiles !== Infinity && value.length >= maxFiles) {
+        setError(`Upload limit reached (${maxFiles} files). Upgrade to Plus for unlimited.`);
+        return;
+      }
 
       if (file.size > MAX_FILE_SIZE) {
         setError("File too large. Maximum size is 10 MB.");
@@ -217,7 +226,12 @@ export function FileUpload({
         </div>
       )}
 
-      {/* Drop zone — always visible so users can add more */}
+      {/* Drop zone — hidden when at file limit */}
+      {atFileLimit ? (
+        <p className="text-[11px] text-amber-600 font-medium">
+          {maxFiles} file limit reached &mdash; upgrade to Plus for unlimited uploads
+        </p>
+      ) : (
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -267,6 +281,7 @@ export function FileUpload({
           </>
         )}
       </div>
+      )}
       {error && (
         <p className="text-xs text-destructive">{error}</p>
       )}

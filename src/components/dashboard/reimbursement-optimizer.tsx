@@ -14,10 +14,13 @@ import {
   DollarSign,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { UpgradeBadge } from "@/components/ui/upgrade-badge";
+import { Lock } from "lucide-react";
 
 interface ReimbursementOptimizerProps {
   expenses: Expense[];
   profile: Profile | null;
+  isPlus?: boolean;
 }
 
 interface AnalyzedExpense {
@@ -75,6 +78,7 @@ function formatDate(dateStr: string): string {
 export function ReimbursementOptimizer({
   expenses,
   profile,
+  isPlus = false,
 }: ReimbursementOptimizerProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -235,95 +239,112 @@ export function ReimbursementOptimizer({
         </div>
       </div>
 
-      {/* Expense list */}
-      <div className="divide-y divide-[#F1F5F9]">
-        {displayItems.map((item) => (
-          <div
-            key={item.expense.id}
-            className="px-6 py-3 hover:bg-[#FAFAFA] transition-colors"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium text-[#0F172A] truncate">
-                    {item.expense.description}
-                  </p>
-                  <Badge
-                    variant="secondary"
-                    className="text-[10px] px-1.5 py-0 h-4 bg-[#F1F5F9] text-[#64748B] flex-shrink-0"
-                  >
-                    {item.expense.category}
-                  </Badge>
+      {/* Expense list — full breakdown for Plus, gated for free */}
+      {isPlus ? (
+        <>
+          <div className="divide-y divide-[#F1F5F9]">
+            {displayItems.map((item) => (
+              <div
+                key={item.expense.id}
+                className="px-6 py-3 hover:bg-[#FAFAFA] transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-medium text-[#0F172A] truncate">
+                        {item.expense.description}
+                      </p>
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] px-1.5 py-0 h-4 bg-[#F1F5F9] text-[#64748B] flex-shrink-0"
+                      >
+                        {item.expense.category}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-3 mt-0.5">
+                      <span className="text-[11px] text-[#94A3B8] flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        {formatDate(item.expense.date_of_service)}
+                      </span>
+                      <span className="text-[11px] text-[#94A3B8] flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {item.yearsInvested.toFixed(1)} yrs invested
+                      </span>
+                      <span className="text-[11px] text-[#94A3B8] flex items-center gap-1">
+                        <DollarSign className="h-3 w-3" />
+                        {item.expense.provider}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="text-right ml-4 flex-shrink-0">
+                    <p className="text-sm font-semibold font-mono tabular-nums text-[#0F172A]">
+                      {formatCurrency(item.expense.amount)}
+                    </p>
+                    <div className="flex items-center gap-1 justify-end">
+                      <TrendingUp className="h-3 w-3 text-[#059669]" />
+                      <span className="text-[11px] font-mono font-medium text-[#059669]">
+                        +{formatCurrency(item.potentialGrowth)}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3 mt-0.5">
-                  <span className="text-[11px] text-[#94A3B8] flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    {formatDate(item.expense.date_of_service)}
-                  </span>
-                  <span className="text-[11px] text-[#94A3B8] flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {item.yearsInvested.toFixed(1)} yrs invested
-                  </span>
-                  <span className="text-[11px] text-[#94A3B8] flex items-center gap-1">
-                    <DollarSign className="h-3 w-3" />
-                    {item.expense.provider}
-                  </span>
-                </div>
-              </div>
-              <div className="text-right ml-4 flex-shrink-0">
-                <p className="text-sm font-semibold font-mono tabular-nums text-[#0F172A]">
-                  {formatCurrency(item.expense.amount)}
-                </p>
-                <div className="flex items-center gap-1 justify-end">
-                  <TrendingUp className="h-3 w-3 text-[#059669]" />
-                  <span className="text-[11px] font-mono font-medium text-[#059669]">
-                    +{formatCurrency(item.potentialGrowth)}
-                  </span>
-                </div>
-              </div>
-            </div>
 
-            {/* Growth bar */}
-            <div className="mt-2">
-              <div className="flex items-center justify-between mb-0.5">
-                <span className="text-[10px] text-[#94A3B8]">
-                  {formatCurrency(item.expense.amount)} → {formatCurrency(item.futureValue)}
-                </span>
-                <span className="text-[10px] font-mono text-[#059669]">
-                  +{item.growthPercent.toFixed(0)}%
-                </span>
+                {/* Growth bar */}
+                <div className="mt-2">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-[10px] text-[#94A3B8]">
+                      {formatCurrency(item.expense.amount)} → {formatCurrency(item.futureValue)}
+                    </span>
+                    <span className="text-[10px] font-mono text-[#059669]">
+                      +{item.growthPercent.toFixed(0)}%
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full bg-[#F1F5F9] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-[#059669] to-[#34d399] rounded-full transition-all"
+                      style={{
+                        width: `${Math.min(100, (item.currentValue / item.futureValue) * 100)}%`,
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="h-1.5 w-full bg-[#F1F5F9] rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-[#059669] to-[#34d399] rounded-full transition-all"
-                  style={{
-                    width: `${Math.min(100, (item.currentValue / item.futureValue) * 100)}%`,
-                  }}
-                />
-              </div>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {/* Show more/less */}
-      {analyzed.length > 5 && (
-        <div className="px-6 py-2 border-t border-[#F1F5F9]">
-          <button
-            onClick={() => setExpanded(!expanded)}
-            className="flex items-center gap-1 text-[12px] font-medium text-[#64748B] hover:text-[#0F172A] transition-colors w-full justify-center py-1"
-          >
-            {expanded ? (
-              <>
-                Show less <ChevronUp className="h-3.5 w-3.5" />
-              </>
-            ) : (
-              <>
-                Show {analyzed.length - 5} more{" "}
-                <ChevronDown className="h-3.5 w-3.5" />
-              </>
-            )}
-          </button>
+          {/* Show more/less */}
+          {analyzed.length > 5 && (
+            <div className="px-6 py-2 border-t border-[#F1F5F9]">
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="flex items-center gap-1 text-[12px] font-medium text-[#64748B] hover:text-[#0F172A] transition-colors w-full justify-center py-1"
+              >
+                {expanded ? (
+                  <>
+                    Show less <ChevronUp className="h-3.5 w-3.5" />
+                  </>
+                ) : (
+                  <>
+                    Show {analyzed.length - 5} more{" "}
+                    <ChevronDown className="h-3.5 w-3.5" />
+                  </>
+                )}
+              </button>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="px-6 py-6 text-center border-t border-[#F1F5F9]">
+          <Lock className="h-5 w-5 mx-auto mb-2 text-[#94A3B8]" />
+          <p className="text-sm font-medium text-[#0F172A]">
+            Per-expense growth analysis
+          </p>
+          <p className="text-xs text-[#64748B] mt-1">
+            See timing recommendations and growth projections for each expense
+          </p>
+          <div className="mt-3">
+            <UpgradeBadge message="Unlock full analysis with Plus" />
+          </div>
         </div>
       )}
     </div>

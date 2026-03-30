@@ -36,6 +36,8 @@ import { toast, Toaster } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
 
+import { getPlanLimits, getPlanType } from "@/lib/plans";
+
 interface ExpenseFormPageProps {
   expense?: Expense;
   profile?: Profile | null;
@@ -87,6 +89,10 @@ const categoryLabel: Record<string, string> = {
 export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFormPageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const planType = getPlanType(profile ?? null);
+  const planLimits = getPlanLimits(planType);
+  const isPlus = planType === "plus";
 
   // Auto-populate patient_name with profile name when creating a new expense
   const profileFullName = profile
@@ -648,8 +654,17 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="hsa">HSA</SelectItem>
-                        <SelectItem value="lpfsa">LPFSA (Limited Purpose FSA)</SelectItem>
-                        <SelectItem value="hcfsa">HCFSA (Health Care FSA)</SelectItem>
+                        {planLimits.allowMultiAccount ? (
+                          <>
+                            <SelectItem value="lpfsa">LPFSA (Limited Purpose FSA)</SelectItem>
+                            <SelectItem value="hcfsa">HCFSA (Health Care FSA)</SelectItem>
+                          </>
+                        ) : (
+                          <>
+                            <SelectItem value="lpfsa" disabled>LPFSA &mdash; Plus only</SelectItem>
+                            <SelectItem value="hcfsa" disabled>HCFSA &mdash; Plus only</SelectItem>
+                          </>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
@@ -746,6 +761,7 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                     value={form.receipt_urls}
                     onChange={(urls) => setForm({ ...form, receipt_urls: urls })}
                     required
+                    maxFiles={planLimits.maxUploadsPerExpense}
                   />
 
                   <FileUpload
@@ -754,6 +770,7 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                     description="From your insurance — proves the expense was medical"
                     value={form.eob_urls}
                     onChange={(urls) => setForm({ ...form, eob_urls: urls })}
+                    maxFiles={planLimits.maxUploadsPerExpense}
                   />
 
                   <FileUpload
@@ -762,6 +779,7 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                     description="From the provider — details services and cost"
                     value={form.invoice_urls}
                     onChange={(urls) => setForm({ ...form, invoice_urls: urls })}
+                    maxFiles={planLimits.maxUploadsPerExpense}
                   />
 
                   <FileUpload
@@ -770,6 +788,7 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                     description="Proves you paid out-of-pocket (not with HSA debit card)"
                     value={form.credit_card_statement_urls}
                     onChange={(urls) => setForm({ ...form, credit_card_statement_urls: urls })}
+                    maxFiles={planLimits.maxUploadsPerExpense}
                   />
                 </div>
 

@@ -138,6 +138,10 @@ CREATE TABLE public.profiles (
   email_digest_enabled boolean NOT NULL DEFAULT false,
   email_digest_frequency text NOT NULL DEFAULT 'monthly'::text CHECK (email_digest_frequency = ANY (ARRAY['weekly'::text, 'monthly'::text])),
   hsa_administrator_id text,
+  plan_type text NOT NULL DEFAULT 'free'::text CHECK (plan_type = ANY (ARRAY['free'::text, 'plus'::text])),
+  subscription_status text NOT NULL DEFAULT 'inactive'::text CHECK (subscription_status = ANY (ARRAY['inactive'::text, 'trialing'::text, 'active'::text, 'past_due'::text, 'canceled'::text])),
+  stripe_customer_id text,
+  stripe_subscription_id text,
   CONSTRAINT profiles_pkey PRIMARY KEY (id),
   CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id),
   CONSTRAINT profiles_hsa_administrator_id_fkey FOREIGN KEY (hsa_administrator_id) REFERENCES public.hsa_administrators(id)

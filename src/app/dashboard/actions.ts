@@ -6,6 +6,8 @@ import type { Expense, ExpenseFormData, DashboardStats, Profile, Dependent } fro
 import { isAuditReady, getRetentionStatus, calculateExpectedReturn } from "@/lib/types";
 import type { Claim, HsaAdministrator } from "@/lib/claims/types";
 import { submitClaim as submitClaimService } from "@/lib/claims/submission";
+import { getPlanLimits } from "@/lib/plans";
+import type { PlanType } from "@/lib/types";
 
 export async function getProfile(): Promise<Profile | null> {
   const supabase = await createClient();
@@ -109,6 +111,17 @@ export async function addDependent(dependent: {
   } = await supabase.auth.getUser();
 
   if (!user) return { error: "Not authenticated" };
+
+  const { data: profileData } = await supabase
+    .from("profiles")
+    .select("plan_type")
+    .eq("id", user.id)
+    .single();
+
+  const limits = getPlanLimits((profileData?.plan_type as PlanType) ?? "free");
+  if (!limits.allowDependents) {
+    return { error: "Dependent management requires HSA Plus. Upgrade to track family expenses." };
+  }
 
   const { data, error } = await supabase.from("dependents").insert({
     user_id: user.id,
@@ -289,6 +302,29 @@ export async function addExpense(formData: ExpenseFormData): Promise<{ error?: s
   } = await supabase.auth.getUser();
 
   if (!user) return { error: "Not authenticated" };
+
+  const { data: profileData } = await supabase
+    .from("profiles")
+    .select("plan_type")
+    .eq("id", user.id)
+    .single();
+
+  const limits = getPlanLimits((profileData?.plan_type as PlanType) ?? "free");
+
+  if (limits.maxExpenses !== Infinity) {
+    const { count } = await supabase
+      .from("expenses")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id);
+
+    if ((count ?? 0) >= limits.maxExpenses) {
+      return { error: `Free plan is limited to ${limits.maxExpenses} expenses. Upgrade to Plus for unlimited.` };
+    }
+  }
+
+  if (!limits.allowMultiAccount && formData.account_type !== "hsa") {
+    return { error: "LPFSA and HCFSA accounts require HSA Plus. Upgrade to unlock multi-account tracking." };
+  }
 
   const { error } = await supabase.from("expenses").insert({
     user_id: user.id,
@@ -603,6 +639,17 @@ export async function createPlaidLinkToken(): Promise<{ linkToken?: string; erro
 
   if (!user) return { error: "Not authenticated" };
 
+  const { data: profileData } = await supabase
+    .from("profiles")
+    .select("plan_type")
+    .eq("id", user.id)
+    .single();
+
+  const limits = getPlanLimits((profileData?.plan_type as PlanType) ?? "free");
+  if (!limits.allowPlaid) {
+    return { error: "Plaid HSA sync requires HSA Plus. Upgrade to auto-sync your balance." };
+  }
+
   try {
     const { createLinkToken } = await import("@/lib/plaid");
     const linkToken = await createLinkToken(user.id);
@@ -623,6 +670,17 @@ export async function connectHsaAccount(
   } = await supabase.auth.getUser();
 
   if (!user) return { error: "Not authenticated" };
+
+  const { data: profileData } = await supabase
+    .from("profiles")
+    .select("plan_type")
+    .eq("id", user.id)
+    .single();
+
+  const limits = getPlanLimits((profileData?.plan_type as PlanType) ?? "free");
+  if (!limits.allowPlaid) {
+    return { error: "Plaid HSA sync requires HSA Plus." };
+  }
 
   try {
     const { exchangePublicToken, getBalance } = await import("@/lib/plaid");
@@ -753,6 +811,11 @@ export async function sendTestDigest(): Promise<{ error?: string }> {
 
   const profile = await getProfile();
   if (!profile) return { error: "Profile not found" };
+
+  const limits = getPlanLimits(profile.plan_type ?? "free");
+  if (!limits.allowEmailDigest) {
+    return { error: "Email digests require HSA Plus. Upgrade to receive periodic summaries." };
+  }
 
   const expenses = await getExpenses();
 
@@ -906,6 +969,12 @@ export async function submitClaimAction(
   portalUrl?: string;
   error?: string;
 }> {
+  const profile = await getProfile();
+  const limits = getPlanLimits(profile?.plan_type ?? "free");
+  if (!limits.allowClaimSubmission) {
+    return { success: false, error: "Automated claim submission requires HSA Plus. Upgrade to submit claims directly." };
+  }
+
   const result = await submitClaimService(expenseId);
 
   if (result.success) {
@@ -967,4 +1036,20 @@ export async function updateClaimStatus(
 
   revalidatePath("/dashboard");
   return {};
+}
+
+export async function getExpenseCount(): Promise<number> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return 0;
+
+  const { count } = await supabase
+    .from("expenses")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id);
+
+  return count ?? 0;
 }
