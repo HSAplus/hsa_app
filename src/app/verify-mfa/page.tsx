@@ -67,9 +67,9 @@ export default function VerifyMfaPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#FAFAFA]">
+    <div className="min-h-screen flex bg-[#FAFAF8]">
       {/* Left brand panel */}
-      <div className="hidden lg:flex lg:w-[45%] bg-[#0F172A] relative overflow-hidden items-end p-12">
+      <div className="hidden lg:flex lg:w-[45%] bg-[#0C1220] relative overflow-hidden items-end p-12">
         <div className="absolute inset-0 dot-pattern" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#059669]/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#34d399]/8 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
@@ -95,7 +95,7 @@ export default function VerifyMfaPage() {
 
           <div className="flex items-center gap-2.5 mb-2">
             <ShieldCheck className="h-6 w-6 text-[#059669]" />
-            <h1 className="text-2xl tracking-tight text-[#0F172A] font-sans font-bold">
+            <h1 className="text-2xl tracking-tight text-[#0C1220] font-sans font-bold">
               Two-factor verification
             </h1>
           </div>
@@ -141,7 +141,7 @@ export default function VerifyMfaPage() {
             <button
               type="button"
               onClick={handleSignOut}
-              className="inline-flex items-center gap-1.5 text-sm text-[#64748B] hover:text-[#0F172A] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-sm text-[#64748B] hover:text-[#0C1220] transition-colors cursor-pointer"
             >
               <LogOut className="h-3.5 w-3.5" />
               Sign out

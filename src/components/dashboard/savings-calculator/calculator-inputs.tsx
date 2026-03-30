@@ -192,7 +192,7 @@ export function CalculatorInputsPanel({
       {/* Advanced Toggle */}
       <button
         onClick={() => setShowAdvanced(!showAdvanced)}
-        className="flex items-center gap-1 text-xs text-[#64748B] hover:text-[#0F172A] transition-colors w-full"
+        className="flex items-center gap-1 text-xs text-[#64748B] hover:text-[#0C1220] transition-colors w-full"
       >
         {showAdvanced ? (
           <ChevronUp className="h-3 w-3" />

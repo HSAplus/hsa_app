@@ -77,7 +77,7 @@ export function DigestEmail({
         <p
           style={{
             fontSize: "15px",
-            color: "#0F172A",
+            color: "#0C1220",
             margin: "0 0 20px",
           }}
         >
@@ -108,7 +108,7 @@ export function DigestEmail({
                 <p style={{ fontSize: "11px", color: "#94A3B8", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                   HSA Balance
                 </p>
-                <p style={{ fontSize: "20px", fontWeight: 700, color: "#0F172A", margin: 0, fontFamily: "monospace" }}>
+                <p style={{ fontSize: "20px", fontWeight: 700, color: "#0C1220", margin: 0, fontFamily: "monospace" }}>
                   {formatMoney(hsaBalance)}
                 </p>
               </td>
@@ -116,7 +116,7 @@ export function DigestEmail({
                 <p style={{ fontSize: "11px", color: "#94A3B8", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                   Pending Reimbursement
                 </p>
-                <p style={{ fontSize: "20px", fontWeight: 700, color: "#0F172A", margin: 0, fontFamily: "monospace" }}>
+                <p style={{ fontSize: "20px", fontWeight: 700, color: "#0C1220", margin: 0, fontFamily: "monospace" }}>
                   {formatMoney(pendingReimbursement)}
                 </p>
               </td>
@@ -126,7 +126,7 @@ export function DigestEmail({
                 <p style={{ fontSize: "11px", color: "#94A3B8", margin: "0 0 4px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                   Total Expenses
                 </p>
-                <p style={{ fontSize: "18px", fontWeight: 600, color: "#0F172A", margin: 0, fontFamily: "monospace" }}>
+                <p style={{ fontSize: "18px", fontWeight: 600, color: "#0C1220", margin: 0, fontFamily: "monospace" }}>
                   {formatMoney(totalExpenses)}
                 </p>
               </td>
@@ -160,7 +160,7 @@ export function DigestEmail({
                 <td style={{ fontSize: "13px", color: "#64748B", padding: "4px 0" }}>
                   New expenses added
                 </td>
-                <td style={{ fontSize: "13px", fontWeight: 600, color: "#0F172A", textAlign: "right", padding: "4px 0", fontFamily: "monospace" }}>
+                <td style={{ fontSize: "13px", fontWeight: 600, color: "#0C1220", textAlign: "right", padding: "4px 0", fontFamily: "monospace" }}>
                   {newExpenseCount}
                 </td>
               </tr>
@@ -168,7 +168,7 @@ export function DigestEmail({
                 <td style={{ fontSize: "13px", color: "#64748B", padding: "4px 0" }}>
                   Reimbursed this period
                 </td>
-                <td style={{ fontSize: "13px", fontWeight: 600, color: "#0F172A", textAlign: "right", padding: "4px 0", fontFamily: "monospace" }}>
+                <td style={{ fontSize: "13px", fontWeight: 600, color: "#0C1220", textAlign: "right", padding: "4px 0", fontFamily: "monospace" }}>
                   {formatMoney(reimbursedThisPeriod)}
                 </td>
               </tr>
@@ -202,13 +202,13 @@ export function DigestEmail({
               <tbody>
                 {topExpenses.map((exp, i) => (
                   <tr key={i} style={{ borderBottom: "1px solid #F1F5F9" }}>
-                    <td style={{ fontSize: "13px", color: "#0F172A", padding: "8px 0" }}>
+                    <td style={{ fontSize: "13px", color: "#0C1220", padding: "8px 0" }}>
                       {exp.description}
                     </td>
                     <td style={{ fontSize: "12px", color: "#94A3B8", padding: "8px 8px", whiteSpace: "nowrap" }}>
                       {exp.date}
                     </td>
-                    <td style={{ fontSize: "13px", fontWeight: 600, color: "#0F172A", textAlign: "right", padding: "8px 0", fontFamily: "monospace" }}>
+                    <td style={{ fontSize: "13px", fontWeight: 600, color: "#0C1220", textAlign: "right", padding: "8px 0", fontFamily: "monospace" }}>
                       {formatMoney(exp.amount)}
                     </td>
                   </tr>

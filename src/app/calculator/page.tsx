@@ -17,10 +17,10 @@ export default async function CalculatorPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#FAFAF8]">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0] bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0]/80 bg-white/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <Link href="/dashboard" className="flex items-center gap-2.5">
               <Image src="/logo.png" alt="HSA Plus" width={56} height={37} className="rounded-lg" />
@@ -42,7 +42,7 @@ export default async function CalculatorPage() {
       {/* Main Content */}
       <main className="mx-auto max-w-6xl px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-2xl tracking-tight text-[#0F172A]">
+          <h1 className="text-2xl tracking-tight text-[#0C1220]">
             HSA Savings Calculator
           </h1>
           <p className="text-sm text-[#64748B] mt-1">

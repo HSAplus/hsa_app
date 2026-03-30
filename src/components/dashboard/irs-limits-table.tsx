@@ -30,7 +30,7 @@ export function IrsLimitsTable() {
             <div className="rounded-lg p-1.5 bg-gradient-to-br from-violet-500 to-purple-400">
               <BookOpen className="h-3.5 w-3.5 text-white" />
             </div>
-            <h2 className="text-base font-semibold text-[#0F172A] font-sans">
+            <h2 className="text-base font-semibold text-[#0C1220] font-sans">
               IRS HSA Contribution Limits
             </h2>
           </div>
@@ -75,7 +75,7 @@ export function IrsLimitsTable() {
               return (
                 <tr
                   key={year}
-                  className={`hover:bg-[#FAFAFA] transition-colors ${
+                  className={`hover:bg-[#FAFAF8] transition-colors ${
                     isCurrent ? "bg-[#059669]/5" : ""
                   }`}
                 >
@@ -83,7 +83,7 @@ export function IrsLimitsTable() {
                     <div className="flex items-center gap-2">
                       <span
                         className={`font-mono font-semibold ${
-                          isCurrent ? "text-[#059669]" : "text-[#0F172A]"
+                          isCurrent ? "text-[#059669]" : "text-[#0C1220]"
                         }`}
                       >
                         {year}
@@ -98,10 +98,10 @@ export function IrsLimitsTable() {
                       )}
                     </div>
                   </td>
-                  <td className="px-5 py-2.5 text-right font-mono tabular-nums text-[#0F172A]">
+                  <td className="px-5 py-2.5 text-right font-mono tabular-nums text-[#0C1220]">
                     {formatMoney(limits.individual)}
                   </td>
-                  <td className="px-5 py-2.5 text-right font-mono tabular-nums text-[#0F172A]">
+                  <td className="px-5 py-2.5 text-right font-mono tabular-nums text-[#0C1220]">
                     {formatMoney(limits.family)}
                   </td>
                   <td className="px-5 py-2.5 text-right font-mono tabular-nums text-[#64748B]">
@@ -125,7 +125,7 @@ export function IrsLimitsTable() {
         <div className="px-6 py-2 border-t border-[#F1F5F9]">
           <button
             onClick={() => setShowAll(!showAll)}
-            className="flex items-center gap-1 text-[12px] font-medium text-[#64748B] hover:text-[#0F172A] transition-colors w-full justify-center py-1"
+            className="flex items-center gap-1 text-[12px] font-medium text-[#64748B] hover:text-[#0C1220] transition-colors w-full justify-center py-1"
           >
             {showAll ? (
               <>

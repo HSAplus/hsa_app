@@ -177,12 +177,12 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#FAFAF8]">
       <Toaster richColors position="top-right" />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0] bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0]/80 bg-white/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <Link href="/dashboard" className="flex items-center gap-2.5">
               <Image src="/logo.png" alt="HSA Plus" width={56} height={37} className="rounded-lg" />
@@ -211,7 +211,7 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
             </AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight text-[#0F172A] font-sans">
+            <h1 className="text-xl font-semibold tracking-tight text-[#0C1220] font-sans">
               Login Settings
             </h1>
             <p className="text-sm text-[#64748B]">
@@ -229,7 +229,7 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Email */}
           <section>
-            <h2 className="text-sm font-semibold text-[#0F172A] mb-1 font-sans">Email address</h2>
+            <h2 className="text-sm font-semibold text-[#0C1220] mb-1 font-sans">Email address</h2>
             <p className="text-xs text-[#94A3B8] mb-4">
               {isOAuthUser
                 ? "Your email is managed by your OAuth provider"
@@ -258,7 +258,7 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
             <>
               <Separator className="bg-[#F1F5F9]" />
               <section>
-                <h2 className="text-sm font-semibold text-[#0F172A] mb-1 font-sans">Change password</h2>
+                <h2 className="text-sm font-semibold text-[#0C1220] mb-1 font-sans">Change password</h2>
                 <p className="text-xs text-[#94A3B8] mb-4">Leave blank to keep your current password</p>
                 <div className="grid grid-cols-2 gap-4 max-w-sm">
                   <div className="space-y-2">
@@ -284,7 +284,7 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
               ) : (
                 <ShieldOff className="h-4 w-4 text-[#94A3B8]" />
               )}
-              <h2 className="text-sm font-semibold text-[#0F172A] font-sans">Two-factor authentication</h2>
+              <h2 className="text-sm font-semibold text-[#0C1220] font-sans">Two-factor authentication</h2>
             </div>
             <p className="text-xs text-[#94A3B8] mb-4">
               {mfaFactorId
@@ -401,11 +401,11 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
 
           {/* Account Info */}
           <section>
-            <h2 className="text-sm font-semibold text-[#0F172A] mb-4 font-sans">Account info</h2>
+            <h2 className="text-sm font-semibold text-[#0C1220] mb-4 font-sans">Account info</h2>
             <div className="grid grid-cols-2 gap-6 text-sm max-w-sm">
               <div>
                 <p className="text-xs text-[#94A3B8] mb-0.5">Created</p>
-                <p className="text-[13px] font-medium text-[#0F172A]">
+                <p className="text-[13px] font-medium text-[#0C1220]">
                   {user.created_at
                     ? new Date(user.created_at).toLocaleDateString("en-US", {
                         year: "numeric",
@@ -417,7 +417,7 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
               </div>
               <div>
                 <p className="text-xs text-[#94A3B8] mb-0.5">Last sign in</p>
-                <p className="text-[13px] font-medium text-[#0F172A]">
+                <p className="text-[13px] font-medium text-[#0C1220]">
                   {user.last_sign_in_at
                     ? new Date(user.last_sign_in_at).toLocaleDateString("en-US", {
                         year: "numeric",

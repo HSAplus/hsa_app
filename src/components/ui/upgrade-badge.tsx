@@ -39,7 +39,7 @@ export function UpgradeBlock({
       <div className="inline-flex items-center justify-center rounded-full bg-amber-100 p-2 mb-2">
         <Sparkles className="h-4 w-4 text-amber-600" />
       </div>
-      <p className="text-sm font-medium text-[#0F172A]">{feature}</p>
+      <p className="text-sm font-medium text-[#0C1220]">{feature}</p>
       {description && (
         <p className="text-xs text-[#64748B] mt-1">{description}</p>
       )}

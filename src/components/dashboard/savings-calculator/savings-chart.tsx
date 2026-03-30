@@ -43,7 +43,7 @@ function CustomTooltip({
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-[#059669]" />
             <span className="text-xs text-[#64748B]">HSA Balance:</span>
-            <span className="text-xs font-mono font-semibold ml-auto text-[#0F172A]">
+            <span className="text-xs font-mono font-semibold ml-auto text-[#0C1220]">
               {formatCurrency(balance.value)}
             </span>
           </div>
@@ -52,7 +52,7 @@ function CustomTooltip({
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-blue-500" />
             <span className="text-xs text-[#64748B]">Contributions:</span>
-            <span className="text-xs font-mono font-semibold ml-auto text-[#0F172A]">
+            <span className="text-xs font-mono font-semibold ml-auto text-[#0C1220]">
               {formatCurrency(contributions.value)}
             </span>
           </div>

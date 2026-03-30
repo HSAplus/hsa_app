@@ -309,12 +309,12 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]" onKeyDown={handleKeyDown}>
+    <div className="min-h-screen bg-[#FAFAF8]" onKeyDown={handleKeyDown}>
       <Toaster richColors position="top-right" />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0] bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0]/80 bg-white/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <Link href="/dashboard" className="flex items-center gap-2.5">
               <Image src="/logo.png" alt="HSA Plus" width={56} height={37} className="rounded-lg" />
@@ -396,10 +396,10 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
       <main className="container mx-auto px-6 py-8 max-w-2xl">
         {/* Step Title */}
         <div className="mb-6">
-          <h1 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+          <h1 className="text-xl font-semibold tracking-tight text-[#0C1220] dark:text-white">
             {STEPS[step - 1].title}
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-sm text-[#64748B] dark:text-gray-400 mt-1">
             Step {step} of 4 &mdash; {STEPS[step - 1].description}
           </p>
         </div>
@@ -627,7 +627,7 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                           className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
                             form.patient_name === profileFullName && form.patient_relationship === "self"
                               ? "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                              : "border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                              : "border-[#E2E8F0] bg-white hover:bg-[#FAFAF8] dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
                           }`}
                           onClick={() =>
                             setForm({
@@ -660,7 +660,7 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                             className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
                               isSelected
                                 ? "border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                                : "border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
+                                : "border-[#E2E8F0] bg-white hover:bg-[#FAFAF8] dark:border-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800"
                             }`}
                             onClick={() =>
                               setForm({
@@ -1076,12 +1076,12 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
         <div className="flex items-center justify-between mt-6 pb-8">
           <div>
             {step > 1 ? (
-              <Button type="button" variant="ghost" onClick={handleBack} className="text-[13px] text-gray-500 h-9">
+              <Button type="button" variant="ghost" onClick={handleBack} className="text-[13px] text-[#64748B] h-9">
                 <ArrowLeft className="h-3.5 w-3.5 mr-1.5" />
                 Back
               </Button>
             ) : (
-              <Button type="button" variant="ghost" asChild className="text-[13px] text-gray-500 h-9">
+              <Button type="button" variant="ghost" asChild className="text-[13px] text-[#64748B] h-9">
                 <Link href="/dashboard">Cancel</Link>
               </Button>
             )}

@@ -55,7 +55,7 @@ export function ClaimsList({ claims, expenses, loading }: ClaimsListProps) {
       <div className="rounded-xl border border-[#E2E8F0] bg-white shadow-sm">
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <FileText className="h-10 w-10 text-[#E2E8F0] mb-3" />
-          <p className="text-sm font-medium text-[#0F172A]">No claims submitted yet</p>
+          <p className="text-sm font-medium text-[#0C1220]">No claims submitted yet</p>
           <p className="text-xs text-[#94A3B8] mt-1">
             Submit a claim from any expense with documentation attached
           </p>
@@ -67,7 +67,7 @@ export function ClaimsList({ claims, expenses, loading }: ClaimsListProps) {
   return (
     <div className="rounded-xl border border-[#E2E8F0] bg-white shadow-sm">
       <div className="px-5 py-4 border-b border-[#F1F5F9]">
-        <h2 className="text-base font-semibold text-[#0F172A]">Claims History</h2>
+        <h2 className="text-base font-semibold text-[#0C1220]">Claims History</h2>
       </div>
       <div className="overflow-x-auto">
         <Table>
@@ -97,13 +97,13 @@ export function ClaimsList({ claims, expenses, loading }: ClaimsListProps) {
                       ? format(new Date(claim.submitted_at), "MMM d, yyyy")
                       : format(new Date(claim.created_at), "MMM d, yyyy")}
                   </TableCell>
-                  <TableCell className="text-[13px] font-medium text-[#0F172A] max-w-48 truncate">
+                  <TableCell className="text-[13px] font-medium text-[#0C1220] max-w-48 truncate">
                     {expense?.description ?? (formData.provider as string) ?? "—"}
                   </TableCell>
                   <TableCell className="text-[13px] text-[#64748B]">
                     {claim.administrator_id}
                   </TableCell>
-                  <TableCell className="text-right text-[13px] font-medium tabular-nums font-mono text-[#0F172A]">
+                  <TableCell className="text-right text-[13px] font-medium tabular-nums font-mono text-[#0C1220]">
                     ${((formData.amount as number) ?? expense?.amount ?? 0).toFixed(2)}
                   </TableCell>
                   <TableCell className="text-center">

@@ -166,7 +166,7 @@ export function ReimbursementOptimizer({
             <div className="rounded-lg p-1.5 bg-gradient-to-br from-amber-500 to-orange-400">
               <Lightbulb className="h-3.5 w-3.5 text-white" />
             </div>
-            <h2 className="text-base font-semibold text-[#0F172A] font-sans">
+            <h2 className="text-base font-semibold text-[#0C1220] font-sans">
               Reimbursement Strategy
             </h2>
           </div>
@@ -191,7 +191,7 @@ export function ReimbursementOptimizer({
             <div className="rounded-lg p-1.5 bg-gradient-to-br from-amber-500 to-orange-400">
               <Lightbulb className="h-3.5 w-3.5 text-white" />
             </div>
-            <h2 className="text-base font-semibold text-[#0F172A] font-sans">
+            <h2 className="text-base font-semibold text-[#0C1220] font-sans">
               Reimbursement Strategy
             </h2>
           </div>
@@ -217,7 +217,7 @@ export function ReimbursementOptimizer({
           <p className="text-[10px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono mb-0.5">
             Pending
           </p>
-          <p className="text-base font-semibold tabular-nums font-mono text-[#0F172A]">
+          <p className="text-base font-semibold tabular-nums font-mono text-[#0C1220]">
             {formatCurrency(totals.totalPending)}
           </p>
         </div>
@@ -225,7 +225,7 @@ export function ReimbursementOptimizer({
           <p className="text-[10px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono mb-0.5">
             Current Value
           </p>
-          <p className="text-base font-semibold tabular-nums font-mono text-[#0F172A]">
+          <p className="text-base font-semibold tabular-nums font-mono text-[#0C1220]">
             {formatCurrency(totals.totalCurrentValue)}
           </p>
         </div>
@@ -246,12 +246,12 @@ export function ReimbursementOptimizer({
             {displayItems.map((item) => (
               <div
                 key={item.expense.id}
-                className="px-6 py-3 hover:bg-[#FAFAFA] transition-colors"
+                className="px-6 py-3 hover:bg-[#FAFAF8] transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-[#0F172A] truncate">
+                      <p className="text-sm font-medium text-[#0C1220] truncate">
                         {item.expense.description}
                       </p>
                       <Badge
@@ -277,7 +277,7 @@ export function ReimbursementOptimizer({
                     </div>
                   </div>
                   <div className="text-right ml-4 flex-shrink-0">
-                    <p className="text-sm font-semibold font-mono tabular-nums text-[#0F172A]">
+                    <p className="text-sm font-semibold font-mono tabular-nums text-[#0C1220]">
                       {formatCurrency(item.expense.amount)}
                     </p>
                     <div className="flex items-center gap-1 justify-end">
@@ -317,7 +317,7 @@ export function ReimbursementOptimizer({
             <div className="px-6 py-2 border-t border-[#F1F5F9]">
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="flex items-center gap-1 text-[12px] font-medium text-[#64748B] hover:text-[#0F172A] transition-colors w-full justify-center py-1"
+                className="flex items-center gap-1 text-[12px] font-medium text-[#64748B] hover:text-[#0C1220] transition-colors w-full justify-center py-1"
               >
                 {expanded ? (
                   <>
@@ -336,7 +336,7 @@ export function ReimbursementOptimizer({
       ) : (
         <div className="px-6 py-6 text-center border-t border-[#F1F5F9]">
           <Lock className="h-5 w-5 mx-auto mb-2 text-[#94A3B8]" />
-          <p className="text-sm font-medium text-[#0F172A]">
+          <p className="text-sm font-medium text-[#0C1220]">
             Per-expense growth analysis
           </p>
           <p className="text-xs text-[#64748B] mt-1">

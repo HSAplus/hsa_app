@@ -136,7 +136,7 @@ export function ExpenseTable({
       {/* Header */}
       <div className="px-5 py-4 border-b border-[#F1F5F9]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <h2 className="text-base font-semibold text-[#0F172A] font-sans">Expenses</h2>
+          <h2 className="text-base font-semibold text-[#0C1220] font-sans">Expenses</h2>
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#94A3B8]" />
@@ -199,7 +199,7 @@ export function ExpenseTable({
         ) : filteredExpenses.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <FileText className="h-10 w-10 text-[#E2E8F0] mb-3" />
-            <p className="text-sm font-medium text-[#0F172A]">No expenses found</p>
+            <p className="text-sm font-medium text-[#0C1220]">No expenses found</p>
             <p className="text-xs text-[#94A3B8] mt-1">
               {expenses.length === 0
                 ? "Add your first expense to get started"
@@ -233,7 +233,7 @@ export function ExpenseTable({
                     <TableCell className="whitespace-nowrap text-[13px] text-[#64748B] tabular-nums font-mono">
                       {format(new Date(expense.date_of_service), "MMM d, yyyy")}
                     </TableCell>
-                    <TableCell className="text-[13px] font-medium text-[#0F172A] max-w-48 truncate">
+                    <TableCell className="text-[13px] font-medium text-[#0C1220] max-w-48 truncate">
                       {expense.description}
                     </TableCell>
                     <TableCell className="text-[13px] text-[#64748B]">
@@ -255,7 +255,7 @@ export function ExpenseTable({
                         {accountLabels[expense.account_type] || expense.account_type}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right text-[13px] font-medium tabular-nums font-mono text-[#0F172A]">
+                    <TableCell className="text-right text-[13px] font-medium tabular-nums font-mono text-[#0C1220]">
                       ${expense.amount.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-center">

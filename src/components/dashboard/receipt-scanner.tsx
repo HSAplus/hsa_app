@@ -108,7 +108,7 @@ export function ReceiptScanner({ onScanComplete, isPlus }: ReceiptScannerProps) 
             <Camera className="h-4 w-4 text-amber-600" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-[#0F172A]">Scan a Receipt</p>
+            <p className="text-sm font-medium text-[#0C1220]">Scan a Receipt</p>
             <p className="text-xs text-[#64748B]">
               Auto-fill expense details from a photo
             </p>

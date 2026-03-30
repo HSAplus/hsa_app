@@ -73,7 +73,7 @@ function ScenarioCard({
               onChange={(e) =>
                 onUpdate(scenario.id, { ...scenario.inputs } as Partial<CalculatorInputs> & { __name?: string })
               }
-              className="text-sm font-semibold text-[#0F172A] bg-transparent border-none outline-none truncate w-full"
+              className="text-sm font-semibold text-[#0C1220] bg-transparent border-none outline-none truncate w-full"
               readOnly
             />
           </div>
@@ -151,7 +151,7 @@ function ScenarioCard({
             <Label className="text-[10px] text-[#94A3B8] uppercase tracking-wider">
               Annual Return
             </Label>
-            <span className="text-[11px] font-mono font-semibold text-[#0F172A]">
+            <span className="text-[11px] font-mono font-semibold text-[#0C1220]">
               {scenario.inputs.expectedReturn}%
             </span>
           </div>
@@ -172,7 +172,7 @@ function ScenarioCard({
             <Label className="text-[10px] text-[#94A3B8] uppercase tracking-wider">
               Time Horizon
             </Label>
-            <span className="text-[11px] font-mono font-semibold text-[#0F172A]">
+            <span className="text-[11px] font-mono font-semibold text-[#0C1220]">
               {scenario.inputs.timeHorizon} yrs
             </span>
           </div>
@@ -257,7 +257,7 @@ function ScenarioCard({
             <span className="text-[11px] text-[#64748B] flex items-center gap-1">
               <PiggyBank className="h-3 w-3" /> Tax Savings
             </span>
-            <span className="text-[12px] font-medium font-mono tabular-nums text-[#0F172A]">
+            <span className="text-[12px] font-medium font-mono tabular-nums text-[#0C1220]">
               {formatCurrency(summary.totalTaxSavings)}
             </span>
           </div>
@@ -391,7 +391,7 @@ export function ScenarioComparison({ profile, isPlus = false }: ScenarioComparis
             <div className="rounded-lg p-1.5 bg-gradient-to-br from-indigo-500 to-blue-400">
               <GitCompareArrows className="h-3.5 w-3.5 text-white" />
             </div>
-            <h2 className="text-base font-semibold text-[#0F172A] font-sans">
+            <h2 className="text-base font-semibold text-[#0C1220] font-sans">
               What-if Scenarios
             </h2>
           </div>
@@ -438,7 +438,7 @@ export function ScenarioComparison({ profile, isPlus = false }: ScenarioComparis
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <span className="text-[12px] font-mono font-semibold tabular-nums text-[#0F172A] w-24 text-right">
+                <span className="text-[12px] font-mono font-semibold tabular-nums text-[#0C1220] w-24 text-right">
                   {formatCurrency(s.balance)}
                 </span>
               </div>

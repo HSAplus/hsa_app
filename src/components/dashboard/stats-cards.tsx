@@ -67,7 +67,7 @@ export function StatsCards({ stats, loading }: StatsCardsProps) {
             <div className="h-7 w-28 animate-pulse rounded bg-[#F1F5F9]" />
           ) : (
             <>
-              <p className="text-2xl font-semibold font-mono tabular-nums text-[#0F172A]">
+              <p className="text-2xl font-semibold font-mono tabular-nums text-[#0C1220]">
                 {card.value}
               </p>
               <p className="text-xs text-[#94A3B8] mt-1">

@@ -48,7 +48,7 @@ function CustomTooltip({
           <div className="flex items-center gap-2">
             <div className="h-1.5 w-1.5 rounded-full bg-[#059669]" />
             <span className="text-[11px] text-[#64748B]">Balance</span>
-            <span className="text-[11px] font-medium tabular-nums font-mono text-[#0F172A] ml-auto">
+            <span className="text-[11px] font-medium tabular-nums font-mono text-[#0C1220] ml-auto">
               {formatCurrency(balance.value)}
             </span>
           </div>
@@ -57,7 +57,7 @@ function CustomTooltip({
           <div className="flex items-center gap-2">
             <div className="h-1.5 w-1.5 rounded-full bg-blue-400" />
             <span className="text-[11px] text-[#64748B]">Contributions</span>
-            <span className="text-[11px] font-medium tabular-nums font-mono text-[#0F172A] ml-auto">
+            <span className="text-[11px] font-medium tabular-nums font-mono text-[#0C1220] ml-auto">
               {formatCurrency(contributions.value)}
             </span>
           </div>
@@ -202,7 +202,7 @@ export function GrowthProjection({ profile, loading }: GrowthProjectionProps) {
       {/* Header */}
       <div className="px-6 py-4 border-b border-[#F1F5F9]">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-[#0F172A] font-sans">
+          <h2 className="text-base font-semibold text-[#0C1220] font-sans">
             Growth Projection
           </h2>
           <span className="text-xs font-mono text-[#94A3B8]">
@@ -305,7 +305,7 @@ export function GrowthProjection({ profile, loading }: GrowthProjectionProps) {
                 {card.label}
               </p>
             </div>
-            <p className="text-lg font-semibold tabular-nums font-mono text-[#0F172A]">
+            <p className="text-lg font-semibold tabular-nums font-mono text-[#0C1220]">
               {formatCurrency(card.value)}
             </p>
           </div>

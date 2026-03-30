@@ -209,12 +209,12 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#FAFAF8]">
       <Toaster richColors position="top-right" />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0] bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0]/80 bg-white/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <Link href="/dashboard" className="flex items-center gap-2.5">
               <Image src="/logo.png" alt="HSA Plus" width={56} height={37} className="rounded-lg" />
@@ -243,7 +243,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
             </AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight text-[#0F172A] font-sans">
+            <h1 className="text-xl font-semibold tracking-tight text-[#0C1220] font-sans">
               {displayName || "Profile Settings"}
             </h1>
             <p className="text-sm text-[#64748B]">
@@ -261,7 +261,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Personal Information */}
           <section>
-            <h2 className="text-sm font-semibold text-[#0F172A] mb-4 font-sans">Personal information</h2>
+            <h2 className="text-sm font-semibold text-[#0C1220] mb-4 font-sans">Personal information</h2>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -292,7 +292,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
 
           {/* HSA Investment Settings */}
           <section>
-            <h2 className="text-sm font-semibold text-[#0F172A] mb-1 font-sans">HSA investment settings</h2>
+            <h2 className="text-sm font-semibold text-[#0C1220] mb-1 font-sans">HSA investment settings</h2>
             <p className="text-xs text-[#94A3B8] mb-4">Used to project growth from delaying reimbursement</p>
             <div className="space-y-4">
               {/* Coverage type toggle */}
@@ -312,7 +312,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                       }}
                       className={`px-4 py-1.5 text-[13px] font-medium rounded-md transition-all ${
                         coverageType === type
-                          ? "bg-white text-[#0F172A] shadow-sm"
+                          ? "bg-white text-[#0C1220] shadow-sm"
                           : "text-[#94A3B8] hover:text-[#64748B]"
                       }`}
                     >
@@ -411,7 +411,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                           }}
                           className={`px-2 py-0.5 text-[11px] font-medium rounded transition-all ${
                             horizonMode === mode
-                              ? "bg-white text-[#0F172A] shadow-sm"
+                              ? "bg-white text-[#0C1220] shadow-sm"
                               : "text-[#94A3B8] hover:text-[#64748B]"
                           }`}
                         >
@@ -466,7 +466,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
 
           {/* Tax Settings */}
           <section>
-            <h2 className="text-sm font-semibold text-[#0F172A] mb-4 font-sans">Tax settings</h2>
+            <h2 className="text-sm font-semibold text-[#0C1220] mb-4 font-sans">Tax settings</h2>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="federalBracket" className="text-[13px] text-[#475569]">Federal tax bracket</Label>
@@ -497,7 +497,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
           <section>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-sm font-semibold text-[#0F172A] font-sans">Dependents</h2>
+                <h2 className="text-sm font-semibold text-[#0C1220] font-sans">Dependents</h2>
                 <p className="text-xs text-[#94A3B8] mt-0.5">Family members covered under your plan</p>
               </div>
               {planLimits.allowDependents ? (
@@ -537,7 +537,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="text-sm font-medium text-[#0F172A]">
+                        <p className="text-sm font-medium text-[#0C1220]">
                           {dep.first_name} {dep.last_name}
                         </p>
                         <p className="text-xs text-[#94A3B8]">
@@ -579,7 +579,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
           <section>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-sm font-semibold text-[#0F172A] font-sans flex items-center gap-2">
+                <h2 className="text-sm font-semibold text-[#0C1220] font-sans flex items-center gap-2">
                   <Mail className="h-4 w-4 text-[#64748B]" />
                   Email Digest
                 </h2>
@@ -600,7 +600,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
               {/* Enable toggle */}
               <div className="flex items-center justify-between p-3 rounded-lg border border-[#E2E8F0]">
                 <div>
-                  <p className="text-sm font-medium text-[#0F172A]">Enable email digest</p>
+                  <p className="text-sm font-medium text-[#0C1220]">Enable email digest</p>
                   <p className="text-xs text-[#94A3B8] mt-0.5">
                     Receive a summary of expenses, balances, and growth projections
                   </p>
@@ -633,7 +633,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                           onClick={() => setEmailDigestFrequency(freq)}
                           className={`px-4 py-1.5 text-[13px] font-medium rounded-md transition-all ${
                             emailDigestFrequency === freq
-                              ? "bg-white text-[#0F172A] shadow-sm"
+                              ? "bg-white text-[#0C1220] shadow-sm"
                               : "text-[#94A3B8] hover:text-[#64748B]"
                           }`}
                         >
@@ -647,7 +647,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-[#F8FAFC] border border-[#F1F5F9]">
                     <div className="flex-1">
                       <p className="text-[12px] text-[#64748B]">
-                        Send a test email to <span className="font-medium text-[#0F172A]">{user.email}</span>
+                        Send a test email to <span className="font-medium text-[#0C1220]">{user.email}</span>
                       </p>
                     </div>
                     <Button

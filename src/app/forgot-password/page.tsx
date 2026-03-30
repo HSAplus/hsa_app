@@ -14,12 +14,12 @@ export default async function ForgotPasswordPage({
   const params = await searchParams;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FAFAFA] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#FAFAF8] p-4">
       <div className="w-full max-w-sm">
         <div className="flex justify-center mb-6">
           <Image src="/logo.png" alt="HSA Plus" width={72} height={48} className="rounded-lg" />
         </div>
-        <h1 className="text-2xl tracking-tight text-[#0F172A] text-center font-sans font-bold">
+        <h1 className="text-2xl tracking-tight text-[#0C1220] text-center font-sans font-bold">
           Forgot password
         </h1>
         <p className="mt-1.5 text-sm text-[#64748B] text-center mb-8">

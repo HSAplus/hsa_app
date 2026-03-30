@@ -212,7 +212,7 @@ export function TaxSummary({ expenses }: TaxSummaryProps) {
             <div className="rounded-lg p-1.5 bg-gradient-to-br from-blue-500 to-blue-400">
               <FileSpreadsheet className="h-3.5 w-3.5 text-white" />
             </div>
-            <h2 className="text-base font-semibold text-[#0F172A] font-sans">
+            <h2 className="text-base font-semibold text-[#0C1220] font-sans">
               Annual Tax Summary
             </h2>
           </div>
@@ -237,7 +237,7 @@ export function TaxSummary({ expenses }: TaxSummaryProps) {
             <div className="rounded-lg p-1.5 bg-gradient-to-br from-blue-500 to-blue-400">
               <FileSpreadsheet className="h-3.5 w-3.5 text-white" />
             </div>
-            <h2 className="text-base font-semibold text-[#0F172A] font-sans">
+            <h2 className="text-base font-semibold text-[#0C1220] font-sans">
               Annual Tax Summary
             </h2>
           </div>
@@ -266,7 +266,7 @@ export function TaxSummary({ expenses }: TaxSummaryProps) {
                 onClick={() =>
                   setExpandedYear(isExpanded ? null : summary.year)
                 }
-                className="w-full px-6 py-3.5 flex items-center justify-between hover:bg-[#FAFAFA] transition-colors"
+                className="w-full px-6 py-3.5 flex items-center justify-between hover:bg-[#FAFAF8] transition-colors"
               >
                 <div className="flex items-center gap-3">
                   {isExpanded ? (
@@ -276,7 +276,7 @@ export function TaxSummary({ expenses }: TaxSummaryProps) {
                   )}
                   <div className="text-left">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-[#0F172A] font-mono">
+                      <span className="text-sm font-semibold text-[#0C1220] font-mono">
                         {summary.year}
                       </span>
                       <Badge
@@ -318,7 +318,7 @@ export function TaxSummary({ expenses }: TaxSummaryProps) {
                     e.stopPropagation();
                     handleExport(summary);
                   }}
-                  className="h-7 text-[11px] px-2 text-[#64748B] hover:text-[#0F172A]"
+                  className="h-7 text-[11px] px-2 text-[#64748B] hover:text-[#0C1220]"
                 >
                   <Download className="h-3 w-3 mr-1" />
                   CSV
@@ -327,7 +327,7 @@ export function TaxSummary({ expenses }: TaxSummaryProps) {
 
               {/* Expanded detail */}
               {isExpanded && (
-                <div className="px-6 pb-4 pt-1 bg-[#FAFAFA]">
+                <div className="px-6 pb-4 pt-1 bg-[#FAFAF8]">
                   {/* Category breakdown */}
                   <div className="mb-3">
                     <p className="text-[11px] font-medium text-[#64748B] uppercase tracking-wider mb-2">
@@ -342,7 +342,7 @@ export function TaxSummary({ expenses }: TaxSummaryProps) {
                           <p className="text-[11px] text-[#64748B]">
                             {categoryLabels[cat.category] ?? cat.category}
                           </p>
-                          <p className="text-sm font-semibold font-mono tabular-nums text-[#0F172A]">
+                          <p className="text-sm font-semibold font-mono tabular-nums text-[#0C1220]">
                             {formatMoney(cat.total)}
                           </p>
                           <p className="text-[10px] text-[#94A3B8]">
@@ -370,7 +370,7 @@ export function TaxSummary({ expenses }: TaxSummaryProps) {
                         .map(([label, value]) => (
                           <div key={label} className="text-[12px]">
                             <span className="text-[#64748B]">{label}:</span>{" "}
-                            <span className="font-mono font-medium text-[#0F172A]">
+                            <span className="font-mono font-medium text-[#0C1220]">
                               {formatMoney(value)}
                             </span>
                           </div>
@@ -406,7 +406,7 @@ export function TaxSummary({ expenses }: TaxSummaryProps) {
                         </thead>
                         <tbody className="divide-y divide-[#F1F5F9]">
                           {summary.expenses.map((e) => (
-                            <tr key={e.id} className="hover:bg-[#FAFAFA]">
+                            <tr key={e.id} className="hover:bg-[#FAFAF8]">
                               <td className="px-3 py-2 text-[#64748B] font-mono whitespace-nowrap">
                                 {new Date(
                                   e.date_of_service + "T00:00:00"
@@ -415,13 +415,13 @@ export function TaxSummary({ expenses }: TaxSummaryProps) {
                                   day: "numeric",
                                 })}
                               </td>
-                              <td className="px-3 py-2 text-[#0F172A] truncate max-w-[200px]">
+                              <td className="px-3 py-2 text-[#0C1220] truncate max-w-[200px]">
                                 {e.description}
                               </td>
                               <td className="px-3 py-2 text-[#64748B]">
                                 {categoryLabels[e.category] ?? e.category}
                               </td>
-                              <td className="px-3 py-2 text-right font-mono tabular-nums text-[#0F172A]">
+                              <td className="px-3 py-2 text-right font-mono tabular-nums text-[#0C1220]">
                                 {formatMoney(e.amount)}
                               </td>
                               <td className="px-3 py-2 text-center">

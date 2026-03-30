@@ -12,10 +12,10 @@ export const metadata: Metadata = {
 
 export default function PrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#FAFAF8]">
       {/* ─── Nav ─── */}
-      <header className="border-b border-[#E2E8F0] bg-white/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+      <header className="border-b border-[#E2E8F0]/80 bg-white/80 backdrop-blur-xl sticky top-0 z-50">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
             <Image
               src="/logo.png"
@@ -41,7 +41,7 @@ export default function PrivacyPolicy() {
 
       {/* ─── Content ─── */}
       <main className="mx-auto max-w-3xl px-6 py-16 md:py-24">
-        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[#0F172A] mb-2">
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[#0C1220] mb-2">
           Privacy Policy
         </h1>
         <p className="text-sm text-[#94A3B8] mb-12">
@@ -51,7 +51,7 @@ export default function PrivacyPolicy() {
         <div className="prose-policy space-y-10 text-[15px] leading-relaxed text-[#475569]">
           {/* 1 */}
           <section>
-            <h2 className="text-lg font-semibold text-[#0F172A] mb-3">
+            <h2 className="text-lg font-semibold text-[#0C1220] mb-3">
               1. Introduction
             </h2>
             <p>
@@ -69,11 +69,11 @@ export default function PrivacyPolicy() {
 
           {/* 2 */}
           <section>
-            <h2 className="text-lg font-semibold text-[#0F172A] mb-3">
+            <h2 className="text-lg font-semibold text-[#0C1220] mb-3">
               2. Information We Collect
             </h2>
 
-            <h3 className="text-[15px] font-semibold text-[#0F172A] mt-5 mb-2">
+            <h3 className="text-[15px] font-semibold text-[#0C1220] mt-5 mb-2">
               2.1 Account &amp; Profile Information
             </h3>
             <ul className="list-disc pl-5 space-y-1.5">
@@ -83,7 +83,7 @@ export default function PrivacyPolicy() {
               <li>Coverage type (individual or family)</li>
             </ul>
 
-            <h3 className="text-[15px] font-semibold text-[#0F172A] mt-5 mb-2">
+            <h3 className="text-[15px] font-semibold text-[#0C1220] mt-5 mb-2">
               2.2 Financial Information
             </h3>
             <ul className="list-disc pl-5 space-y-1.5">
@@ -96,7 +96,7 @@ export default function PrivacyPolicy() {
               </li>
             </ul>
 
-            <h3 className="text-[15px] font-semibold text-[#0F172A] mt-5 mb-2">
+            <h3 className="text-[15px] font-semibold text-[#0C1220] mt-5 mb-2">
               2.3 Medical Expense Data
             </h3>
             <ul className="list-disc pl-5 space-y-1.5">
@@ -108,7 +108,7 @@ export default function PrivacyPolicy() {
               <li>Notes and audit-readiness information</li>
             </ul>
 
-            <h3 className="text-[15px] font-semibold text-[#0F172A] mt-5 mb-2">
+            <h3 className="text-[15px] font-semibold text-[#0C1220] mt-5 mb-2">
               2.4 Uploaded Documents
             </h3>
             <p>
@@ -117,7 +117,7 @@ export default function PrivacyPolicy() {
               corresponding expense record.
             </p>
 
-            <h3 className="text-[15px] font-semibold text-[#0F172A] mt-5 mb-2">
+            <h3 className="text-[15px] font-semibold text-[#0C1220] mt-5 mb-2">
               2.5 Dependent Information
             </h3>
             <p>
@@ -125,7 +125,7 @@ export default function PrivacyPolicy() {
               and relationship to you.
             </p>
 
-            <h3 className="text-[15px] font-semibold text-[#0F172A] mt-5 mb-2">
+            <h3 className="text-[15px] font-semibold text-[#0C1220] mt-5 mb-2">
               2.6 Usage &amp; Technical Data
             </h3>
             <ul className="list-disc pl-5 space-y-1.5">
@@ -141,7 +141,7 @@ export default function PrivacyPolicy() {
 
           {/* 3 */}
           <section>
-            <h2 className="text-lg font-semibold text-[#0F172A] mb-3">
+            <h2 className="text-lg font-semibold text-[#0C1220] mb-3">
               3. How We Use Your Information
             </h2>
             <p>We use the information we collect to:</p>
@@ -169,7 +169,7 @@ export default function PrivacyPolicy() {
 
           {/* 4 */}
           <section>
-            <h2 className="text-lg font-semibold text-[#0F172A] mb-3">
+            <h2 className="text-lg font-semibold text-[#0C1220] mb-3">
               4. Third-Party Services
             </h2>
             <p>
@@ -179,7 +179,7 @@ export default function PrivacyPolicy() {
 
             <div className="mt-4 space-y-4">
               <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
-                <p className="font-semibold text-[#0F172A] text-sm mb-1">
+                <p className="font-semibold text-[#0C1220] text-sm mb-1">
                   Supabase (Authentication, Database &amp; File Storage)
                 </p>
                 <p className="text-sm text-[#64748B]">
@@ -190,7 +190,7 @@ export default function PrivacyPolicy() {
               </div>
 
               <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
-                <p className="font-semibold text-[#0F172A] text-sm mb-1">
+                <p className="font-semibold text-[#0C1220] text-sm mb-1">
                   Plaid (Banking Connection)
                 </p>
                 <p className="text-sm text-[#64748B]">
@@ -211,7 +211,7 @@ export default function PrivacyPolicy() {
               </div>
 
               <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
-                <p className="font-semibold text-[#0F172A] text-sm mb-1">
+                <p className="font-semibold text-[#0C1220] text-sm mb-1">
                   Resend (Email Delivery)
                 </p>
                 <p className="text-sm text-[#64748B]">
@@ -221,7 +221,7 @@ export default function PrivacyPolicy() {
               </div>
 
               <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
-                <p className="font-semibold text-[#0F172A] text-sm mb-1">
+                <p className="font-semibold text-[#0C1220] text-sm mb-1">
                   OpenAI (Eligibility Verification)
                 </p>
                 <p className="text-sm text-[#64748B]">
@@ -233,7 +233,7 @@ export default function PrivacyPolicy() {
               </div>
 
               <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
-                <p className="font-semibold text-[#0F172A] text-sm mb-1">
+                <p className="font-semibold text-[#0C1220] text-sm mb-1">
                   Anthropic Claude (Receipt Scanning)
                 </p>
                 <p className="text-sm text-[#64748B]">
@@ -249,11 +249,11 @@ export default function PrivacyPolicy() {
 
           {/* 5 */}
           <section>
-            <h2 className="text-lg font-semibold text-[#0F172A] mb-3">
+            <h2 className="text-lg font-semibold text-[#0C1220] mb-3">
               5. Data Retention &amp; Disposal
             </h2>
 
-            <h3 className="text-[15px] font-semibold text-[#0F172A] mt-5 mb-2">
+            <h3 className="text-[15px] font-semibold text-[#0C1220] mt-5 mb-2">
               5.1 Retention While Active
             </h3>
             <p>
@@ -263,7 +263,7 @@ export default function PrivacyPolicy() {
               when expenses have met the recommended documentation period.
             </p>
 
-            <h3 className="text-[15px] font-semibold text-[#0F172A] mt-5 mb-2">
+            <h3 className="text-[15px] font-semibold text-[#0C1220] mt-5 mb-2">
               5.2 Account Deletion &amp; Data Disposal
             </h3>
             <p>
@@ -272,22 +272,22 @@ export default function PrivacyPolicy() {
             </p>
             <ul className="list-disc pl-5 space-y-1.5 mt-2">
               <li>
-                <strong className="text-[#0F172A]">Account &amp; profile data</strong> is
+                <strong className="text-[#0C1220]">Account &amp; profile data</strong> is
                 permanently deleted. All related records (expenses, dependents, templates,
                 preferences) are cascade-deleted from the database.
               </li>
               <li>
-                <strong className="text-[#0F172A]">Uploaded documents</strong> (receipts,
+                <strong className="text-[#0C1220]">Uploaded documents</strong> (receipts,
                 EOBs, invoices, statements) are permanently removed from cloud storage.
               </li>
               <li>
-                <strong className="text-[#0F172A]">Plaid connection</strong> &mdash; if you
+                <strong className="text-[#0C1220]">Plaid connection</strong> &mdash; if you
                 have a linked HSA, the Plaid access token is revoked via Plaid&apos;s API,
                 severing all access to your financial institution. Stored tokens are deleted
                 from our database.
               </li>
               <li>
-                <strong className="text-[#0F172A]">Email digest preferences</strong> are
+                <strong className="text-[#0C1220]">Email digest preferences</strong> are
                 deleted and all scheduled emails are cancelled.
               </li>
             </ul>
@@ -296,7 +296,7 @@ export default function PrivacyPolicy() {
               account deletion except where required by law.
             </p>
 
-            <h3 className="text-[15px] font-semibold text-[#0F172A] mt-5 mb-2">
+            <h3 className="text-[15px] font-semibold text-[#0C1220] mt-5 mb-2">
               5.3 Partial Data Removal
             </h3>
             <p>
@@ -304,16 +304,16 @@ export default function PrivacyPolicy() {
             </p>
             <ul className="list-disc pl-5 space-y-1.5 mt-2">
               <li>
-                <strong className="text-[#0F172A]">Disconnect your HSA</strong> &mdash;
+                <strong className="text-[#0C1220]">Disconnect your HSA</strong> &mdash;
                 revokes the Plaid access token and removes all stored banking connection data
                 from your account
               </li>
               <li>
-                <strong className="text-[#0F172A]">Delete individual expenses</strong> &mdash;
+                <strong className="text-[#0C1220]">Delete individual expenses</strong> &mdash;
                 removes the expense record and all associated uploaded documents
               </li>
               <li>
-                <strong className="text-[#0F172A]">Disable email digests</strong> &mdash;
+                <strong className="text-[#0C1220]">Disable email digests</strong> &mdash;
                 stops all periodic summary emails immediately via your profile settings
               </li>
             </ul>
@@ -321,7 +321,7 @@ export default function PrivacyPolicy() {
 
           {/* 6 */}
           <section>
-            <h2 className="text-lg font-semibold text-[#0F172A] mb-3">
+            <h2 className="text-lg font-semibold text-[#0C1220] mb-3">
               6. Data Security
             </h2>
             <p>We implement industry-standard security measures to protect your data:</p>
@@ -346,7 +346,7 @@ export default function PrivacyPolicy() {
 
           {/* 7 */}
           <section>
-            <h2 className="text-lg font-semibold text-[#0F172A] mb-3">
+            <h2 className="text-lg font-semibold text-[#0C1220] mb-3">
               7. Cookies &amp; Similar Technologies
             </h2>
             <p>
@@ -359,33 +359,33 @@ export default function PrivacyPolicy() {
 
           {/* 8 */}
           <section>
-            <h2 className="text-lg font-semibold text-[#0F172A] mb-3">
+            <h2 className="text-lg font-semibold text-[#0C1220] mb-3">
               8. Your Rights &amp; Choices
             </h2>
             <p>Depending on your jurisdiction, you may have the right to:</p>
             <ul className="list-disc pl-5 space-y-1.5 mt-2">
               <li>
-                <strong className="text-[#0F172A]">Access</strong> the personal data we hold
+                <strong className="text-[#0C1220]">Access</strong> the personal data we hold
                 about you
               </li>
               <li>
-                <strong className="text-[#0F172A]">Correct</strong> inaccurate or incomplete
+                <strong className="text-[#0C1220]">Correct</strong> inaccurate or incomplete
                 data via your profile settings
               </li>
               <li>
-                <strong className="text-[#0F172A]">Delete</strong> your account and all
+                <strong className="text-[#0C1220]">Delete</strong> your account and all
                 associated data
               </li>
               <li>
-                <strong className="text-[#0F172A]">Export</strong> your expense data (CSV
+                <strong className="text-[#0C1220]">Export</strong> your expense data (CSV
                 export is available in the dashboard)
               </li>
               <li>
-                <strong className="text-[#0F172A]">Withdraw consent</strong> for optional
+                <strong className="text-[#0C1220]">Withdraw consent</strong> for optional
                 features such as Plaid bank sync or email digests at any time
               </li>
               <li>
-                <strong className="text-[#0F172A]">Opt out</strong> of email digests at any
+                <strong className="text-[#0C1220]">Opt out</strong> of email digests at any
                 time through your profile settings
               </li>
             </ul>
@@ -397,21 +397,21 @@ export default function PrivacyPolicy() {
 
           {/* 9 */}
           <section>
-            <h2 className="text-lg font-semibold text-[#0F172A] mb-3">
+            <h2 className="text-lg font-semibold text-[#0C1220] mb-3">
               9. California Privacy Rights (CCPA)
             </h2>
             <p>
               If you are a California resident, you have additional rights under the California
               Consumer Privacy Act (CCPA), including the right to know what personal information
               we collect and how it is used, the right to request deletion, and the right to
-              opt out of the sale of personal information. <strong className="text-[#0F172A]">We
+              opt out of the sale of personal information. <strong className="text-[#0C1220]">We
               do not sell your personal information.</strong>
             </p>
           </section>
 
           {/* 10 */}
           <section>
-            <h2 className="text-lg font-semibold text-[#0F172A] mb-3">
+            <h2 className="text-lg font-semibold text-[#0C1220] mb-3">
               10. Children&apos;s Privacy
             </h2>
             <p>
@@ -425,7 +425,7 @@ export default function PrivacyPolicy() {
 
           {/* 11 */}
           <section>
-            <h2 className="text-lg font-semibold text-[#0F172A] mb-3">
+            <h2 className="text-lg font-semibold text-[#0C1220] mb-3">
               11. International Users
             </h2>
             <p>
@@ -438,7 +438,7 @@ export default function PrivacyPolicy() {
 
           {/* 12 */}
           <section>
-            <h2 className="text-lg font-semibold text-[#0F172A] mb-3">
+            <h2 className="text-lg font-semibold text-[#0C1220] mb-3">
               12. Changes to This Policy
             </h2>
             <p>
@@ -451,7 +451,7 @@ export default function PrivacyPolicy() {
 
           {/* 13 */}
           <section>
-            <h2 className="text-lg font-semibold text-[#0F172A] mb-3">
+            <h2 className="text-lg font-semibold text-[#0C1220] mb-3">
               13. Contact Us
             </h2>
             <p>
@@ -459,7 +459,7 @@ export default function PrivacyPolicy() {
               rights, please contact us at:
             </p>
             <div className="mt-3 rounded-xl border border-[#E2E8F0] bg-white p-5">
-              <p className="font-semibold text-[#0F172A] text-sm">HSA Plus</p>
+              <p className="font-semibold text-[#0C1220] text-sm">HSA Plus</p>
               <p className="text-sm text-[#64748B] mt-1">
                 Email:{" "}
                 <a
@@ -499,6 +499,7 @@ export default function PrivacyPolicy() {
             </Link>
           </div>
         </div>
+        <p className="text-center text-xs text-[#94A3B8] pb-4">Tax-free wealth, made simple.</p>
       </footer>
     </div>
   );

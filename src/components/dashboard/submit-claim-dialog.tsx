@@ -198,7 +198,7 @@ export function SubmitClaimDialog({
                   onClick={() => handleSelectAdmin(admin.id)}
                   className="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[#F8FAFC] text-left transition-colors"
                 >
-                  <span className="text-sm font-medium text-[#0F172A]">{admin.name}</span>
+                  <span className="text-sm font-medium text-[#0C1220]">{admin.name}</span>
                   <Badge variant="secondary" className="text-[10px]">
                     {tierLabel[admin.submission_tier]}
                   </Badge>
@@ -213,7 +213,7 @@ export function SubmitClaimDialog({
             <div className="rounded-lg border border-[#E2E8F0] p-3 space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm text-[#64748B]">Expense</span>
-                <span className="text-sm font-medium text-[#0F172A]">{expense.description}</span>
+                <span className="text-sm font-medium text-[#0C1220]">{expense.description}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#64748B]">Amount</span>
@@ -221,7 +221,7 @@ export function SubmitClaimDialog({
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#64748B]">Date</span>
-                <span className="text-sm text-[#0F172A]">{expense.date_of_service}</span>
+                <span className="text-sm text-[#0C1220]">{expense.date_of_service}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#64748B]">Docs</span>
@@ -243,7 +243,7 @@ export function SubmitClaimDialog({
               <div className="rounded-lg border border-[#E2E8F0] p-3 space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-[#64748B]">Administrator</span>
-                  <span className="text-sm font-medium text-[#0F172A]">{selectedAdmin.name}</span>
+                  <span className="text-sm font-medium text-[#0C1220]">{selectedAdmin.name}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-[#64748B]">Method</span>

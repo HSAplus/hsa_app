@@ -138,15 +138,15 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
       : "U";
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#FAFAF8]">
       <Toaster richColors position="top-right" />
 
       {/* First-login onboarding popup */}
       <OnboardingDialog profile={profile} onComplete={loadData} />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0] bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
+      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0]/80 bg-white/80 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
             <Image src="/logo.png" alt="HSA Plus" width={56} height={37} className="rounded-lg" />
             <span className="text-base font-semibold tracking-tight">HSA Plus</span>
@@ -254,7 +254,7 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
       {/* Main Content */}
       <main className="mx-auto max-w-6xl px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-2xl tracking-tight text-[#0F172A]">Dashboard</h1>
+          <h1 className="text-2xl tracking-tight text-[#0C1220]">Dashboard</h1>
           <p className="text-sm text-[#64748B] mt-1">
             Track your medical expenses and HSA reimbursements
           </p>
@@ -306,7 +306,7 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
         {!isPlus && (
           <div className="mt-8 rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50/50 to-orange-50/50 p-6 text-center">
             <Sparkles className="h-6 w-6 text-amber-500 mx-auto mb-2" />
-            <h3 className="text-base font-semibold text-[#0F172A]">Upgrade to HSA Plus</h3>
+            <h3 className="text-base font-semibold text-[#0C1220]">Upgrade to HSA Plus</h3>
             <p className="text-sm text-[#64748B] mt-1 max-w-md mx-auto">
               Unlimited expenses, Plaid sync, automated claims, family management, and more &mdash; $5/mo or $48/yr
             </p>

@@ -170,7 +170,7 @@ export function ExpenseTemplates() {
       <div className="px-6 py-4 border-b border-[#F1F5F9] flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Repeat className="h-4 w-4 text-[#059669]" />
-          <h2 className="text-base font-semibold text-[#0F172A] font-sans">
+          <h2 className="text-base font-semibold text-[#0C1220] font-sans">
             Recurring Templates
           </h2>
           <span className="text-xs text-[#94A3B8] font-mono">{templates.length}</span>
@@ -203,7 +203,7 @@ export function ExpenseTemplates() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-medium text-[#0F172A] truncate">{t.name}</p>
+                      <p className="text-sm font-medium text-[#0C1220] truncate">{t.name}</p>
                       <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#F1F5F9] text-[#64748B] shrink-0">
                         {frequencyLabels[t.frequency]}
                       </span>
@@ -213,7 +213,7 @@ export function ExpenseTemplates() {
                       {categoryLabels[t.category]} · {t.account_type.toUpperCase()}
                     </p>
                   </div>
-                  <p className="text-sm font-mono font-semibold text-[#0F172A] shrink-0">
+                  <p className="text-sm font-mono font-semibold text-[#0C1220] shrink-0">
                     {formatCurrency(t.amount)}
                   </p>
                 </div>

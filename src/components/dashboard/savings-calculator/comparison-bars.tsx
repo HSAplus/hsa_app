@@ -51,15 +51,15 @@ export function ComparisonBars({
       {/* Info text */}
       <p className="text-sm text-[#64748B]">
         Comparison after{" "}
-        <span className="font-semibold text-[#0F172A]">
+        <span className="font-semibold text-[#0C1220]">
           {inputs.timeHorizon} years
         </span>{" "}
         contributing{" "}
-        <span className="font-semibold text-[#0F172A]">
+        <span className="font-semibold text-[#0C1220]">
           {formatCurrency(inputs.annualContribution)}/yr
         </span>{" "}
         at{" "}
-        <span className="font-semibold text-[#0F172A]">
+        <span className="font-semibold text-[#0C1220]">
           {inputs.expectedReturn}% return
         </span>
       </p>
@@ -76,12 +76,12 @@ export function ComparisonBars({
           >
             <div className="flex items-baseline justify-between">
               <div>
-                <span className="text-sm font-medium text-[#0F172A]">{row.label}</span>
+                <span className="text-sm font-medium text-[#0C1220]">{row.label}</span>
                 <p className="text-[11px] text-[#94A3B8]">
                   {row.sublabel}
                 </p>
               </div>
-              <span className="text-sm font-mono font-bold text-[#0F172A]">
+              <span className="text-sm font-mono font-bold text-[#0C1220]">
                 {formatCurrency(row.value)}
               </span>
             </div>
@@ -109,7 +109,7 @@ export function ComparisonBars({
         <div className="rounded-[calc(12px-2px)] bg-white p-5">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p className="text-sm font-semibold text-[#0F172A]">
+              <p className="text-sm font-semibold text-[#0C1220]">
                 HSA Triple-Tax Advantage
               </p>
               <p className="text-xs text-[#64748B] mt-0.5">
@@ -132,7 +132,7 @@ export function ComparisonBars({
               <p className="text-[11px] text-[#94A3B8]">
                 Tax-free contributions
               </p>
-              <p className="text-sm font-mono font-semibold text-[#0F172A]">
+              <p className="text-sm font-mono font-semibold text-[#0C1220]">
                 {formatCurrency(summary.totalTaxSavings)}
               </p>
             </div>
@@ -140,7 +140,7 @@ export function ComparisonBars({
               <p className="text-[11px] text-[#94A3B8]">
                 Tax-free growth
               </p>
-              <p className="text-sm font-mono font-semibold text-[#0F172A]">
+              <p className="text-sm font-mono font-semibold text-[#0C1220]">
                 {formatCurrency(summary.totalGrowth)}
               </p>
             </div>

@@ -15,9 +15,9 @@ export default async function LoginPage({
   const params = await searchParams;
 
   return (
-    <div className="min-h-screen flex bg-[#FAFAFA]">
+    <div className="min-h-screen flex bg-[#FAFAF8]">
       {/* Left brand panel (inverted) */}
-      <div className="hidden lg:flex lg:w-[45%] bg-[#0F172A] relative overflow-hidden items-end p-12">
+      <div className="hidden lg:flex lg:w-[45%] bg-[#0C1220] relative overflow-hidden items-end p-12">
         {/* Texture */}
         <div className="absolute inset-0 dot-pattern" />
         {/* Radial glow */}
@@ -38,11 +38,11 @@ export default async function LoginPage({
 
       {/* Right form panel */}
       <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-sm bg-white rounded-2xl p-8 shadow-surface-lg">
           <div className="lg:hidden flex justify-center mb-6">
             <Image src="/logo.png" alt="HSA Plus" width={72} height={48} className="rounded-lg" />
           </div>
-          <h1 className="text-2xl tracking-tight text-[#0F172A] font-sans font-bold">
+          <h1 className="text-2xl tracking-tight text-[#0C1220] font-sans font-bold">
             Welcome back
           </h1>
           <p className="mt-1.5 text-sm text-[#64748B] mb-8">
@@ -65,7 +65,7 @@ export default async function LoginPage({
 
             <div className="relative my-2">
               <Separator />
-              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#FAFAFA] px-3 text-xs text-[#94A3B8]">
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#FAFAF8] px-3 text-xs text-[#94A3B8]">
                 or
               </span>
             </div>

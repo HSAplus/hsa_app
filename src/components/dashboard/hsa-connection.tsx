@@ -138,7 +138,7 @@ export function HsaConnectionWidget({ onBalanceUpdate, isPlus = false }: HsaConn
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <p className="text-sm font-medium text-[#0F172A]">
+                <p className="text-sm font-medium text-[#0C1220]">
                   {connection.institution_name || "HSA Account"}
                 </p>
                 <CheckCircle2 className="h-3.5 w-3.5 text-[#059669]" />
@@ -191,7 +191,7 @@ export function HsaConnectionWidget({ onBalanceUpdate, isPlus = false }: HsaConn
             <Link2 className="h-4 w-4 text-[#94A3B8]" />
           </div>
           <div>
-            <p className="text-sm font-medium text-[#0F172A]">Connect your HSA</p>
+            <p className="text-sm font-medium text-[#0C1220]">Connect your HSA</p>
             <p className="text-[11px] text-[#94A3B8]">Auto-sync your balance from Fidelity, Lively, etc.</p>
           </div>
         </div>
