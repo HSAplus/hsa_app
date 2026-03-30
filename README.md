@@ -88,8 +88,9 @@ src/
 │   ├── reset-password/                 # Password reset form
 │   ├── calculator/                     # Standalone savings calculator
 │   ├── privacy/                        # Privacy policy
+│   ├── verify-mfa/                    # TOTP 2FA verification after login
 │   ├── auth/
-│   │   ├── actions.ts                  # Auth server actions (login, signup, etc.)
+│   │   ├── actions.ts                  # Auth server actions (login, signup, MFA cleanup, etc.)
 │   │   └── callback/route.ts           # OAuth/email code exchange
 │   ├── dashboard/
 │   │   ├── page.tsx                    # Main dashboard
@@ -97,7 +98,7 @@ src/
 │   │   ├── expenses/new/               # Create expense
 │   │   ├── expenses/[id]/edit/         # Edit expense
 │   │   ├── profile/                    # Profile & HSA settings
-│   │   └── login-settings/             # Email/password management
+│   │   └── login-settings/             # Email/password and 2FA management
 │   └── api/
 │       ├── digest/route.ts             # Cron endpoint for email digests
 │       └── receipts/scan/route.ts      # AI receipt scanning endpoint (Plus)
@@ -116,7 +117,7 @@ src/
 │   ├── hsa-constants.ts                # IRS limits, tax brackets, calculator logic
 │   └── email-templates/                # HTML email templates for digests
 ├── hooks/                              # Custom React hooks
-└── middleware.ts                       # Auth middleware (route protection)
+└── middleware.ts                       # Auth middleware (route protection + MFA enforcement)
 ```
 
 ---
@@ -187,6 +188,15 @@ HSA Plus uses Supabase Auth with two sign-in methods:
 - **Email + password** — with email confirmation, password reset, and account settings
 - **Google OAuth** — one-click sign-in via Google
 
+### Two-Factor Authentication (2FA)
+
+Users can enable TOTP-based two-factor authentication from Login Settings using any authenticator app (Google Authenticator, Authy, 1Password, etc.). When enabled:
+
+- After login (email/password or Google OAuth), users are prompted for a 6-digit TOTP code before accessing protected routes
+- The middleware enforces AAL2 (Authenticator Assurance Level 2) for all authenticated routes
+- Supabase manages MFA factors internally via `auth.mfa_factors` — no additional database tables are needed
+- Stale unverified factors are cleaned up server-side via the admin API
+
 Session management is handled through SSR cookies with automatic refresh via Next.js middleware. All routes except the landing page, auth pages, and the calculator are protected.
 
 ---
@@ -195,7 +205,7 @@ Session management is handled through SSR cookies with automatic refresh via Nex
 
 ### Supabase
 
-- **Auth**: User registration, login, OAuth, password reset
+- **Auth**: User registration, login, OAuth, password reset, TOTP 2FA
 - **Database**: Postgres with 7 tables — see [Database Schema](#database-schema)
 - **Storage**: `hsa-documents` bucket for receipt and document uploads
 
