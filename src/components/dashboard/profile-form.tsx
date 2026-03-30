@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, Loader2, Shield, Users, Plus, Pencil, Trash2, Mail, Send, Lock } from "lucide-react";
+import { ArrowLeft, Loader2, Shield, Users, Plus, Pencil, Trash2, Mail, Send, Lock, CreditCard, Sparkles, ExternalLink } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
@@ -80,6 +80,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
     profile?.email_digest_frequency ?? "monthly"
   );
   const [sendingTest, setSendingTest] = useState(false);
+  const [openingPortal, setOpeningPortal] = useState(false);
 
   const displayName = `${firstName} ${lastName}`.trim();
 
@@ -678,6 +679,77 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                 </>
               )}
             </div>
+            )}
+          </section>
+
+          <Separator className="bg-[#F1F5F9]" />
+
+          {/* Subscription */}
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-sm font-semibold text-[#0C1220] font-sans flex items-center gap-2">
+                  <CreditCard className="h-4 w-4 text-[#64748B]" />
+                  Subscription
+                </h2>
+                <p className="text-xs text-[#94A3B8] mt-0.5">Manage your HSA Plus plan</p>
+              </div>
+            </div>
+
+            {isPlus ? (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 rounded-lg border border-amber-200 bg-amber-50/50">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-amber-600" />
+                    <div>
+                      <p className="text-sm font-medium text-[#0C1220]">HSA Plus</p>
+                      <p className="text-xs text-[#94A3B8]">Active subscription</p>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={openingPortal}
+                    onClick={async () => {
+                      setOpeningPortal(true);
+                      try {
+                        const res = await fetch("/api/stripe/portal", { method: "POST" });
+                        const data = await res.json();
+                        if (data.url) {
+                          window.location.href = data.url;
+                        } else {
+                          toast.error(data.error || "Could not open billing portal");
+                          setOpeningPortal(false);
+                        }
+                      } catch {
+                        toast.error("Something went wrong");
+                        setOpeningPortal(false);
+                      }
+                    }}
+                    className="h-8 text-[13px]"
+                  >
+                    {openingPortal ? (
+                      <Loader2 className="h-3 w-3 animate-spin mr-1.5" />
+                    ) : (
+                      <ExternalLink className="h-3 w-3 mr-1.5" />
+                    )}
+                    Manage subscription
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-4 text-center">
+                <p className="text-sm text-[#64748B] mb-3">
+                  You&apos;re on the <span className="font-semibold text-[#0C1220]">Free</span> plan
+                </p>
+                <Button type="button" size="sm" asChild className="h-8 text-[13px]">
+                  <Link href="/pricing">
+                    <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                    Upgrade to Plus
+                  </Link>
+                </Button>
+              </div>
             )}
           </section>
 

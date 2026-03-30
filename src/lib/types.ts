@@ -50,6 +50,8 @@ export interface Profile {
   onboarding_completed: boolean;
   plan_type: PlanType;
   subscription_status: string;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
   created_at: string;
   updated_at: string;
 }

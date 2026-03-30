@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { signout } from "@/app/auth/actions";
 import {
@@ -11,10 +11,13 @@ import {
   markAsReimbursed,
   getClaims,
   getExpenseCount,
+  getHsaConnection,
 } from "@/app/dashboard/actions";
-import type { Expense, DashboardStats, Profile } from "@/lib/types";
+import type { Expense, DashboardStats, Profile, HsaConnection } from "@/lib/types";
 import type { Claim } from "@/lib/claims/types";
 import { getPlanLimits, getPlanType, isPlusUser } from "@/lib/plans";
+import { computeNotifications } from "@/lib/notifications";
+import { NotificationBell } from "./notification-bell";
 import { UpgradeBadge } from "@/components/ui/upgrade-badge";
 import { Sparkles } from "lucide-react";
 import { StatsCards } from "./stats-cards";
@@ -49,6 +52,7 @@ interface DashboardShellProps {
 
 export function DashboardShell({ user, profile }: DashboardShellProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [stats, setStats] = useState<DashboardStats>({
     currentHsaBalance: 0,
@@ -66,6 +70,7 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
   const [claimDialogOpen, setClaimDialogOpen] = useState(false);
   const [claimExpense, setClaimExpense] = useState<Expense | null>(null);
   const [expenseCount, setExpenseCount] = useState(0);
+  const [hsaConnection, setHsaConnection] = useState<HsaConnection | null>(null);
 
   const planType = getPlanType(profile);
   const planLimits = getPlanLimits(planType);
@@ -75,16 +80,18 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const [expensesData, statsData, claimsData, count] = await Promise.all([
+      const [expensesData, statsData, claimsData, count, hsaConn] = await Promise.all([
         getExpenses(),
         getDashboardStats(),
         getClaims(),
         getExpenseCount(),
+        getHsaConnection(),
       ]);
       setExpenses(expensesData);
       setStats(statsData);
       setClaims(claimsData);
       setExpenseCount(count);
+      setHsaConnection(hsaConn);
     } catch {
       toast.error("Failed to load data");
     } finally {
@@ -95,6 +102,15 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    if (searchParams.get("upgraded") === "true") {
+      toast.success("Welcome to HSA Plus! All premium features are now unlocked.", {
+        duration: 5000,
+      });
+      router.replace("/dashboard", { scroll: false });
+    }
+  }, [searchParams, router]);
 
   const handleDelete = async (id: string) => {
     const result = await deleteExpense(id);
@@ -124,6 +140,21 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
     setClaimExpense(expense);
     setClaimDialogOpen(true);
   };
+
+  const notifications = useMemo(
+    () =>
+      computeNotifications({
+        stats,
+        profile,
+        claims,
+        expenses,
+        hsaConnection,
+        expenseCount,
+        planLimits,
+        isPlus,
+      }),
+    [stats, profile, claims, expenses, hsaConnection, expenseCount, planLimits, isPlus],
+  );
 
   const claimExpenseIds = new Set(claims.map((c) => c.expense_id));
 
@@ -172,6 +203,8 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
             >
               <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
             </Button>
+
+            <NotificationBell notifications={notifications} />
 
             <Button
               variant="ghost"
