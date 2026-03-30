@@ -189,7 +189,7 @@ Session management is handled through SSR cookies with automatic refresh via Nex
 ### Supabase
 
 - **Auth**: User registration, login, OAuth, password reset
-- **Database**: Postgres tables for profiles, expenses, dependents, expense templates, and claims
+- **Database**: Postgres with 7 tables — see [Database Schema](#database-schema)
 - **Storage**: `hsa-documents` bucket for receipt and document uploads
 
 ### Plaid (planned — not yet enabled)
@@ -200,6 +200,24 @@ Scaffolding exists for HSA balance sync via Plaid Link (`src/lib/plaid.ts`, `src
 
 - Sends HTML email digests (weekly or monthly, user-configurable)
 - Digest endpoint at `/api/digest` can be triggered via cron with optional `CRON_SECRET` protection
+
+---
+
+## Database Schema
+
+The app uses Supabase Postgres with 7 tables. Full schema is in [`Database.sql`](Database.sql).
+
+| Table | Purpose |
+| ----- | ------- |
+| `profiles` | User settings — name, DOB, HSA balance, contribution, return rate, tax brackets, coverage type, digest preferences, plan/subscription status |
+| `expenses` | Medical expenses with provider, patient, category, account type, reimbursement status, audit readiness, tax year, and document URLs (receipts, EOBs, invoices, statements) |
+| `dependents` | Family members (spouse, dependent child, domestic partner) linked to a user |
+| `expense_templates` | Reusable expense shortcuts with pre-filled fields and frequency |
+| `claims` | Claim submissions tied to an expense and HSA administrator, with status lifecycle (draft → submitted → processing → approved/denied → reimbursed) |
+| `hsa_administrators` | Reference table of HSA custodians with submission tiers (API, email, fax, portal) and contact details |
+| `hsa_connections` | Plaid-linked HSA accounts (not yet enabled in production) |
+
+All user-owned tables enforce row-level security (RLS) scoped to `auth.uid() = user_id`. The `profiles` table is keyed directly to `auth.users(id)` and auto-created via a database trigger on signup.
 
 ---
 
