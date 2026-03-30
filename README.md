@@ -22,6 +22,7 @@ HSA Plus is a full-stack web application for managing Health Savings Accounts, L
 ### Expense Tracking & Compliance
 
 - Log medical expenses with provider, amount, date, category, patient, and account type
+- **AI receipt scanning** — upload or photograph a receipt and auto-populate all expense fields via Claude vision (Plus)
 - Upload multiple documents per expense (receipts, EOBs, invoices, credit card statements)
 - Auto-computed audit-readiness scoring based on IRS requirements
 - Reimbursement status and date tracking
@@ -68,6 +69,7 @@ HSA Plus is a full-stack web application for managing Health Savings Accounts, L
 | **Charts**         | Recharts                                                                   |
 | **Forms**          | React Hook Form + Zod validation                                          |
 | **Auth & Database**| [Supabase](https://supabase.com/) (Auth, Postgres, Storage)               |
+| **AI**             | [Anthropic Claude](https://anthropic.com/) (receipt scanning via vision API) |
 | **Email**          | [Resend](https://resend.com/) (transactional email + scheduled digests)   |
 | **Hosting**        | [Vercel](https://vercel.com/) via GitHub deployment                       |
 
@@ -97,7 +99,8 @@ src/
 │   │   ├── profile/                    # Profile & HSA settings
 │   │   └── login-settings/             # Email/password management
 │   └── api/
-│       └── digest/route.ts             # Cron endpoint for email digests
+│       ├── digest/route.ts             # Cron endpoint for email digests
+│       └── receipts/scan/route.ts      # AI receipt scanning endpoint (Plus)
 ├── components/
 │   ├── ui/                             # shadcn/ui primitives
 │   ├── dashboard/                      # Dashboard components (stats, expenses, growth,
@@ -106,6 +109,7 @@ src/
 │   └── auth/                           # Auth components (Google sign-in, etc.)
 ├── lib/
 │   ├── supabase/                       # Supabase client (browser, server, middleware)
+│   ├── receipt-scanner.ts               # AI receipt extraction via Claude vision
 │   ├── plaid.ts                        # Plaid client configuration (not yet enabled)
 │   ├── resend.ts                       # Resend email client
 │   ├── types.ts                        # Shared TypeScript types
@@ -152,6 +156,9 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 RESEND_API_KEY=your_resend_api_key
 RESEND_FROM_EMAIL=noreply@yourdomain.com
 
+# Anthropic Claude (optional — for AI receipt scanning)
+ANTHROPIC_API_KEY=your_anthropic_api_key
+
 # Cron protection (optional)
 CRON_SECRET=your_cron_secret
 ```
@@ -195,6 +202,14 @@ Session management is handled through SSR cookies with automatic refresh via Nex
 ### Plaid (planned — not yet enabled)
 
 Scaffolding exists for HSA balance sync via Plaid Link (`src/lib/plaid.ts`, `src/components/dashboard/hsa-connection.tsx`), but the integration is not currently active in production.
+
+### Anthropic Claude
+
+- Powers the **AI receipt scanning** feature for Plus subscribers
+- Receives only the receipt image — no user PII is sent
+- Extracts provider, amount, date, description, category, expense type, and payment method
+- Returns per-field confidence scores (high / medium / low) for review UX
+- API route at `/api/receipts/scan` handles auth, Plus gating, and server-side processing
 
 ### Resend
 

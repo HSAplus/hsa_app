@@ -10,6 +10,7 @@ export interface PlanLimits {
   allowEmailDigest: boolean;
   allowContributionIncrease: boolean;
   allowMultiAccount: boolean;
+  allowReceiptScanning: boolean;
   optimizerFull: boolean;
 }
 
@@ -24,6 +25,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     allowEmailDigest: false,
     allowContributionIncrease: false,
     allowMultiAccount: false,
+    allowReceiptScanning: false,
     optimizerFull: false,
   },
   plus: {
@@ -36,6 +38,7 @@ export const PLAN_LIMITS: Record<PlanType, PlanLimits> = {
     allowEmailDigest: true,
     allowContributionIncrease: true,
     allowMultiAccount: true,
+    allowReceiptScanning: true,
     optimizerFull: true,
   },
 };

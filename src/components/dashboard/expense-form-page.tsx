@@ -32,6 +32,8 @@ import {
   X,
 } from "lucide-react";
 import { FileUpload } from "@/components/ui/file-upload";
+import { ReceiptScanner } from "@/components/dashboard/receipt-scanner";
+import type { ReceiptScanResult, ConfidenceLevel } from "@/lib/receipt-scanner";
 import { toast, Toaster } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
@@ -108,6 +110,8 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
   const [error, setError] = useState<string | null>(null);
   const [dependentsList, setDependentsList] = useState<Dependent[]>(dependents);
   const [savingDependent, setSavingDependent] = useState(false);
+  const [scanConfidence, setScanConfidence] = useState<Record<string, ConfidenceLevel> | null>(null);
+  const [scanNotMedical, setScanNotMedical] = useState(false);
 
   const isEditing = !!expense;
 
@@ -266,6 +270,28 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
     }
   };
 
+  const handleScanComplete = useCallback(
+    (result: ReceiptScanResult, receiptUrl: string) => {
+      setForm((prev) => ({
+        ...prev,
+        description: result.description || prev.description,
+        amount: result.amount > 0 ? result.amount : prev.amount,
+        date_of_service: result.date_of_service || prev.date_of_service,
+        provider: result.provider || prev.provider,
+        category: result.category || prev.category,
+        expense_type: result.expense_type || prev.expense_type,
+        payment_method: result.payment_method || prev.payment_method,
+        receipt_urls: prev.receipt_urls.includes(receiptUrl)
+          ? prev.receipt_urls
+          : [...prev.receipt_urls, receiptUrl],
+      }));
+      setScanConfidence(result.confidence);
+      setScanNotMedical(!result.is_medical);
+      toast.success("Receipt scanned — review the details below");
+    },
+    []
+  );
+
   const handleNext = () => {
     if (step < 4) setStep(step + 1);
     else handleSubmit();
@@ -389,6 +415,31 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
             {/* ── Step 1: Expense Info ── */}
             {step === 1 && (
               <div className="space-y-5 animate-in fade-in duration-200">
+                {!isEditing && (
+                  <>
+                    <ReceiptScanner
+                      onScanComplete={handleScanComplete}
+                      isPlus={isPlus}
+                    />
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t border-[#E2E8F0]" />
+                      </div>
+                      <div className="relative flex justify-center text-xs">
+                        <span className="bg-white px-2 text-[#94A3B8]">
+                          {scanConfidence ? "Review scanned details" : "or fill in manually"}
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {scanNotMedical && (
+                  <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+                    This doesn&apos;t appear to be a medical expense. You can still save it if it&apos;s HSA-eligible.
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <Label htmlFor="description">What was this for? *</Label>
                   <Input
@@ -400,7 +451,17 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                     placeholder="e.g., Annual physical exam, dental cleaning"
                     autoFocus
                     required
+                    className={
+                      scanConfidence?.description === "medium"
+                        ? "border-l-2 border-l-amber-400"
+                        : scanConfidence?.description === "low"
+                          ? "ring-1 ring-red-300"
+                          : ""
+                    }
                   />
+                  {scanConfidence?.description === "low" && (
+                    <p className="text-[11px] text-red-500">Please verify — could not read clearly</p>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-x-4 gap-y-5">
@@ -417,7 +478,17 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                       }
                       placeholder="0.00"
                       required
+                      className={
+                        scanConfidence?.amount === "medium"
+                          ? "border-l-2 border-l-amber-400"
+                          : scanConfidence?.amount === "low"
+                            ? "ring-1 ring-red-300"
+                            : ""
+                      }
                     />
+                    {scanConfidence?.amount === "low" && (
+                      <p className="text-[11px] text-red-500">Please verify — could not read clearly</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -430,7 +501,17 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                       }
                       placeholder="e.g., Dr. Smith, CVS"
                       required
+                      className={
+                        scanConfidence?.provider === "medium"
+                          ? "border-l-2 border-l-amber-400"
+                          : scanConfidence?.provider === "low"
+                            ? "ring-1 ring-red-300"
+                            : ""
+                      }
                     />
+                    {scanConfidence?.provider === "low" && (
+                      <p className="text-[11px] text-red-500">Please verify — could not read clearly</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -441,7 +522,13 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                         setForm({ ...form, category: value, expense_type: "" })
                       }
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className={`w-full ${
+                        scanConfidence?.category === "medium"
+                          ? "border-l-2 border-l-amber-400"
+                          : scanConfidence?.category === "low"
+                            ? "ring-1 ring-red-300"
+                            : ""
+                      }`}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -455,6 +542,9 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
+                    {scanConfidence?.category === "low" && (
+                      <p className="text-[11px] text-red-500">Please verify — could not determine category</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -465,7 +555,13 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                         setForm({ ...form, expense_type: value === "custom" ? "" : value })
                       }
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className={`w-full ${
+                        scanConfidence?.expense_type === "medium"
+                          ? "border-l-2 border-l-amber-400"
+                          : scanConfidence?.expense_type === "low"
+                            ? "ring-1 ring-red-300"
+                            : ""
+                      }`}>
                         <SelectValue placeholder="Select from list" />
                       </SelectTrigger>
                       <SelectContent>
@@ -489,7 +585,17 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                         setForm({ ...form, date_of_service: e.target.value })
                       }
                       required
+                      className={
+                        scanConfidence?.date_of_service === "medium"
+                          ? "border-l-2 border-l-amber-400"
+                          : scanConfidence?.date_of_service === "low"
+                            ? "ring-1 ring-red-300"
+                            : ""
+                      }
                     />
+                    {scanConfidence?.date_of_service === "low" && (
+                      <p className="text-[11px] text-red-500">Please verify — date may be inaccurate</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">

@@ -231,6 +231,19 @@ export default function PrivacyPolicy() {
                   API data for model training.
                 </p>
               </div>
+
+              <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
+                <p className="font-semibold text-[#0F172A] text-sm mb-1">
+                  Anthropic Claude (Receipt Scanning)
+                </p>
+                <p className="text-sm text-[#64748B]">
+                  Receipt images uploaded by Plus subscribers may be sent to Anthropic&apos;s
+                  Claude API for automated data extraction (provider name, amount, date, and
+                  expense category). Only the receipt image is transmitted &mdash; no
+                  personally identifiable information from your profile is included. Anthropic
+                  does not use API data for model training per their commercial terms.
+                </p>
+              </div>
             </div>
           </section>
 
