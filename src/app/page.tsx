@@ -17,8 +17,6 @@ import {
   ChevronRight,
   Lock,
   Eye,
-  Menu,
-  X,
   BarChart3,
   CircleDollarSign,
   AlertCircle,
@@ -37,7 +35,10 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
+    <div className="min-h-screen bg-[#FAFAF8] touch-manipulation [-webkit-tap-highlight-color:transparent]">
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       {/* ─── Nav ─── */}
       <header className="border-b border-[#E2E8F0]/80 bg-white/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
@@ -53,27 +54,48 @@ export default async function Home() {
               HSA Plus
             </span>
           </div>
-          <nav className="hidden md:flex items-center gap-8 text-[13px] font-medium text-[#64748B]">
-            <a href="#features" className="hover:text-[#0C1220] transition-colors">
+          <nav
+            className="hidden md:flex items-center gap-8 text-[13px] font-medium text-[#64748B]"
+            aria-label="Primary"
+          >
+            <a
+              href="#features"
+              className="rounded-sm hover:text-[#0C1220] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/50 focus-visible:ring-offset-2"
+            >
               Features
             </a>
-            <a href="#growth" className="hover:text-[#0C1220] transition-colors">
+            <a
+              href="#growth"
+              className="rounded-sm hover:text-[#0C1220] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/50 focus-visible:ring-offset-2"
+            >
               Growth
             </a>
-            <a href="#how-it-works" className="hover:text-[#0C1220] transition-colors">
+            <a
+              href="#how-it-works"
+              className="rounded-sm hover:text-[#0C1220] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/50 focus-visible:ring-offset-2"
+            >
               How It Works
             </a>
-            <Link href="/calculator" className="hover:text-[#0C1220] transition-colors">
+            <Link
+              href="/calculator"
+              className="rounded-sm hover:text-[#0C1220] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/50 focus-visible:ring-offset-2"
+            >
               Calculator
             </Link>
           </nav>
           <div className="flex items-center gap-2">
-            <Link href="/login" className="hidden sm:inline-flex">
+            <Link
+              href="/login"
+              className="hidden sm:inline-flex rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/50 focus-visible:ring-offset-2"
+            >
               <Button variant="ghost" size="sm" className="text-[13px] font-medium text-[#64748B]">
                 Sign in
               </Button>
             </Link>
-            <Link href="/signup">
+            <Link
+              href="/signup"
+              className="rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/50 focus-visible:ring-offset-2"
+            >
               <Button size="sm" className="shadow-accent font-semibold">
                 Get started free
               </Button>
@@ -83,6 +105,7 @@ export default async function Home() {
         </div>
       </header>
 
+      <main id="main-content">
       {/* ─── Hero ─── */}
       <section className="relative overflow-hidden">
         <div className="absolute top-0 left-1/3 w-[800px] h-[800px] bg-[#059669]/[0.04] rounded-full blur-[200px] -translate-y-1/2" />
@@ -97,7 +120,7 @@ export default async function Home() {
               </span>
             </div>
 
-            <h1 className="text-[2.75rem] sm:text-[3.75rem] lg:text-[4.75rem] font-normal leading-[1.02] tracking-[-0.025em] text-[#0C1220]">
+            <h1 className="text-balance text-[2.75rem] sm:text-[3.75rem] lg:text-[4.75rem] font-normal leading-[1.02] tracking-[-0.025em] text-[#0C1220]">
               Turn medical expenses into{" "}
               <span className="relative inline-block">
                 <span className="gradient-text">tax-free wealth</span>
@@ -132,10 +155,13 @@ export default async function Home() {
 
           {/* ─── Product Preview ─── */}
           <div className="mt-16 md:mt-20 animate-fade-up-delay-2">
-            <div className="relative rounded-2xl border border-[#E2E8F0] bg-white shadow-surface-lg overflow-hidden">
+            <div
+              className="relative rounded-2xl border border-[#E2E8F0] bg-white shadow-surface-lg overflow-hidden"
+              aria-hidden="true"
+            >
               {/* Browser chrome */}
               <div className="flex items-center gap-2 px-5 py-3 border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                <div className="flex gap-1.5">
+                <div className="flex gap-1.5" aria-hidden="true">
                   <div className="h-2.5 w-2.5 rounded-full bg-[#E2E8F0]" />
                   <div className="h-2.5 w-2.5 rounded-full bg-[#E2E8F0]" />
                   <div className="h-2.5 w-2.5 rounded-full bg-[#E2E8F0]" />
@@ -169,7 +195,7 @@ export default async function Home() {
                     <p className="text-sm font-semibold text-[#0C1220]">Investment Growth</p>
                     <span className="text-[11px] font-mono text-[#94A3B8]">20-year projection</span>
                   </div>
-                  <div className="flex items-end gap-1 h-24">
+                  <div className="flex items-end gap-1 h-24" aria-hidden="true">
                     {[12, 18, 22, 28, 32, 38, 42, 50, 56, 62, 68, 75, 82, 88, 95, 100].map((h, i) => (
                       <div key={i} className="flex-1 rounded-t bg-gradient-to-t from-[#059669] to-[#34d399] opacity-80" style={{ height: `${h}%` }} />
                     ))}
@@ -252,7 +278,7 @@ export default async function Home() {
       </section>
 
       {/* ─── Features ─── */}
-      <section id="features" className="py-24 md:py-36">
+      <section id="features" className="scroll-mt-24 py-24 md:py-36">
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-3 rounded-full border border-[#059669]/20 bg-[#059669]/[0.04] px-4 py-1.5 mb-6">
@@ -414,7 +440,7 @@ export default async function Home() {
       </section>
 
       {/* ─── Growth / Triple Tax Advantage ─── */}
-      <section id="growth" className="relative bg-[#0C1220] text-white overflow-hidden">
+      <section id="growth" className="scroll-mt-24 relative bg-[#0C1220] text-white overflow-hidden">
         <div className="absolute inset-0 dot-pattern" />
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#059669]/[0.05] rounded-full blur-[180px] translate-x-1/4 -translate-y-1/4" />
 
@@ -517,7 +543,7 @@ export default async function Home() {
       </section>
 
       {/* ─── How It Works ─── */}
-      <section id="how-it-works" className="bg-[#F1F5F9] py-24 md:py-36">
+      <section id="how-it-works" className="scroll-mt-24 bg-[#F1F5F9] py-24 md:py-36">
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-3 rounded-full border border-[#059669]/20 bg-[#059669]/[0.04] px-4 py-1.5 mb-6">
@@ -692,19 +718,20 @@ export default async function Home() {
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link href="/signup">
-              <Button size="lg" className="group shadow-accent text-base font-semibold h-13 px-8">
+              <Button size="lg" className="group shadow-accent text-base font-semibold min-h-11 px-8 sm:min-h-12">
                 Get started free
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
             <Link href="/login">
-              <Button variant="ghost" size="lg" className="text-white/50 hover:text-white hover:bg-white/10 h-13 px-8">
+              <Button variant="ghost" size="lg" className="text-white/50 hover:text-white hover:bg-white/10 min-h-11 px-8 sm:min-h-12">
                 Sign in
               </Button>
             </Link>
           </div>
         </div>
       </section>
+      </main>
 
       {/* ─── Footer ─── */}
       <footer className="border-t border-[#E2E8F0] bg-white">
@@ -722,13 +749,22 @@ export default async function Home() {
             </span>
           </div>
           <div className="flex items-center gap-6 text-[13px] font-medium text-[#94A3B8]">
-            <Link href="/calculator" className="hover:text-[#64748B] transition-colors">
+            <Link
+              href="/calculator"
+              className="rounded-sm hover:text-[#64748B] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/40 focus-visible:ring-offset-2"
+            >
               Calculator
             </Link>
-            <Link href="/privacy" className="hover:text-[#64748B] transition-colors">
+            <Link
+              href="/privacy"
+              className="rounded-sm hover:text-[#64748B] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/40 focus-visible:ring-offset-2"
+            >
               Privacy
             </Link>
-            <Link href="/login" className="hover:text-[#64748B] transition-colors">
+            <Link
+              href="/login"
+              className="rounded-sm hover:text-[#64748B] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/40 focus-visible:ring-offset-2"
+            >
               Sign in
             </Link>
           </div>
