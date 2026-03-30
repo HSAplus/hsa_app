@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-jakarta);
   --font-mono: var(--font-jetbrains-mono);
   --font-display: var(--font-calistoga);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -50,16 +50,16 @@
 
 :root {
   --radius: 0.75rem;
-  --background: #FAFAFA;
-  --foreground: #0F172A;
+  --background: #FAFAF8;
+  --foreground: #0C1220;
   --card: #FFFFFF;
-  --card-foreground: #0F172A;
+  --card-foreground: #0C1220;
   --popover: #FFFFFF;
-  --popover-foreground: #0F172A;
+  --popover-foreground: #0C1220;
   --primary: #059669;
   --primary-foreground: #FFFFFF;
   --secondary: #F1F5F9;
-  --secondary-foreground: #0F172A;
+  --secondary-foreground: #0C1220;
   --muted: #F1F5F9;
   --muted-foreground: #64748B;
   --accent: #059669;
@@ -129,11 +129,20 @@
 
 /* ── Design System: Accent Shadows ── */
 .shadow-accent {
-  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.25);
+  box-shadow: 0 4px 20px rgba(5, 150, 105, 0.2), 0 1px 3px rgba(5, 150, 105, 0.1);
 }
 
 .shadow-accent-lg {
-  box-shadow: 0 8px 24px rgba(5, 150, 105, 0.35);
+  box-shadow: 0 8px 32px rgba(5, 150, 105, 0.3), 0 2px 8px rgba(5, 150, 105, 0.15);
+}
+
+/* ── Design System: Premium Surface Shadow ── */
+.shadow-surface {
+  box-shadow: 0 1px 3px rgba(12, 18, 32, 0.04), 0 8px 32px rgba(12, 18, 32, 0.06);
+}
+
+.shadow-surface-lg {
+  box-shadow: 0 2px 4px rgba(12, 18, 32, 0.04), 0 16px 48px rgba(12, 18, 32, 0.08);
 }
 
 /* ── Design System: Dot Pattern (for inverted sections) ── */
@@ -168,6 +177,37 @@
   50% { box-shadow: 0 0 12px 4px rgba(5, 150, 105, 0.15); }
 }
 
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-up-delay-1 {
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+.animate-fade-up-delay-2 {
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+}
+
+.animate-fade-up-delay-3 {
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+.animate-fade-up-delay-4 {
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
 .animate-pulse-dot {
   animation: pulse-dot 2s infinite;
 }
@@ -194,7 +234,12 @@
   .animate-float,
   .animate-float-delayed,
   .animate-rotate-slow,
-  .animate-pulse-glow {
+  .animate-pulse-glow,
+  .animate-fade-up,
+  .animate-fade-up-delay-1,
+  .animate-fade-up-delay-2,
+  .animate-fade-up-delay-3,
+  .animate-fade-up-delay-4 {
     animation: none;
   }
 }
