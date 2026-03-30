@@ -29,8 +29,9 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
   const isOAuthUser = user.app_metadata?.provider !== "email";
 
   // MFA state
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
   const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
+  const [mfaLoaded, setMfaLoaded] = useState(false);
   const [mfaEnrolling, setMfaEnrolling] = useState(false);
   const [mfaQrCode, setMfaQrCode] = useState<string | null>(null);
   const [mfaSecret, setMfaSecret] = useState<string | null>(null);
@@ -41,30 +42,43 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
 
   const loadMfaFactors = useCallback(async () => {
     const { data } = await supabase.auth.mfa.listFactors();
-    const verified = data?.totp?.find((f) => f.status === "verified");
+    const totp = data?.totp ?? [];
+    const verified = totp.find((f) => f.status === "verified");
     setMfaFactorId(verified?.id ?? null);
+    setMfaLoaded(true);
   }, [supabase]);
 
   useEffect(() => {
     loadMfaFactors();
   }, [loadMfaFactors]);
 
+  const cleanupUnverifiedFactors = async () => {
+    const { data } = await supabase.auth.mfa.listFactors();
+    for (const factor of data?.totp ?? []) {
+      if (factor.status === "unverified") {
+        await supabase.auth.mfa.unenroll({ factorId: factor.id });
+      }
+    }
+  };
+
   const handleMfaEnroll = async () => {
     setMfaEnrolling(true);
 
-    // Clean up any stale unverified factors from previous attempts
-    const { data: existing } = await supabase.auth.mfa.listFactors();
-    if (existing?.totp) {
-      for (const factor of existing.totp) {
-        if (factor.status === "unverified") {
-          await supabase.auth.mfa.unenroll({ factorId: factor.id });
-        }
-      }
+    // Re-check: maybe a verified factor already exists
+    const { data: check } = await supabase.auth.mfa.listFactors();
+    const alreadyVerified = check?.totp?.find((f) => f.status === "verified");
+    if (alreadyVerified) {
+      setMfaFactorId(alreadyVerified.id);
+      setMfaEnrolling(false);
+      toast.success("Two-factor authentication is already enabled");
+      return;
     }
+
+    await cleanupUnverifiedFactors();
 
     const { data, error } = await supabase.auth.mfa.enroll({
       factorType: "totp",
-      friendlyName: "HSA Plus Authenticator",
+      friendlyName: `HSA Plus (${Date.now()})`,
     });
     if (error) {
       toast.error(error.message);
@@ -103,7 +117,6 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
       return;
     }
 
-    toast.success("Two-factor authentication enabled");
     setMfaEnrolling(false);
     setMfaQrCode(null);
     setMfaSecret(null);
@@ -111,6 +124,7 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
     setMfaVerifyCode("");
     setMfaVerifying(false);
     await loadMfaFactors();
+    toast.success("Two-factor authentication enabled");
   };
 
   const handleMfaCancelEnroll = async () => {
@@ -279,7 +293,14 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
                 : "Add an extra layer of security with an authenticator app"}
             </p>
 
-            {!mfaEnrolling && !mfaFactorId && (
+            {!mfaLoaded && (
+              <div className="flex items-center gap-2 text-xs text-[#94A3B8]">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                Checking status...
+              </div>
+            )}
+
+            {mfaLoaded && !mfaEnrolling && !mfaFactorId && (
               <Button
                 type="button"
                 variant="outline"
