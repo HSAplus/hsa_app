@@ -51,7 +51,21 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
 
   const handleMfaEnroll = async () => {
     setMfaEnrolling(true);
-    const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp" });
+
+    // Clean up any stale unverified factors from previous attempts
+    const { data: existing } = await supabase.auth.mfa.listFactors();
+    if (existing?.totp) {
+      for (const factor of existing.totp) {
+        if (factor.status === "unverified") {
+          await supabase.auth.mfa.unenroll({ factorId: factor.id });
+        }
+      }
+    }
+
+    const { data, error } = await supabase.auth.mfa.enroll({
+      factorType: "totp",
+      friendlyName: "HSA Plus Authenticator",
+    });
     if (error) {
       toast.error(error.message);
       setMfaEnrolling(false);
