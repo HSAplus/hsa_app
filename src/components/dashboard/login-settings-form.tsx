@@ -1,14 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { User } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
 import { updateLoginSettings } from "@/app/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowLeft, Loader2, Shield } from "lucide-react";
+import { ArrowLeft, Loader2, Shield, ShieldCheck, ShieldOff } from "lucide-react";
 import { toast, Toaster } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
@@ -26,6 +27,101 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const isOAuthUser = user.app_metadata?.provider !== "email";
+
+  // MFA state
+  const supabase = createClient();
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
+  const [mfaEnrolling, setMfaEnrolling] = useState(false);
+  const [mfaQrCode, setMfaQrCode] = useState<string | null>(null);
+  const [mfaSecret, setMfaSecret] = useState<string | null>(null);
+  const [mfaPendingFactorId, setMfaPendingFactorId] = useState<string | null>(null);
+  const [mfaVerifyCode, setMfaVerifyCode] = useState("");
+  const [mfaVerifying, setMfaVerifying] = useState(false);
+  const [mfaDisabling, setMfaDisabling] = useState(false);
+
+  const loadMfaFactors = useCallback(async () => {
+    const { data } = await supabase.auth.mfa.listFactors();
+    const verified = data?.totp?.find((f) => f.status === "verified");
+    setMfaFactorId(verified?.id ?? null);
+  }, [supabase]);
+
+  useEffect(() => {
+    loadMfaFactors();
+  }, [loadMfaFactors]);
+
+  const handleMfaEnroll = async () => {
+    setMfaEnrolling(true);
+    const { data, error } = await supabase.auth.mfa.enroll({ factorType: "totp" });
+    if (error) {
+      toast.error(error.message);
+      setMfaEnrolling(false);
+      return;
+    }
+    setMfaQrCode(data.totp.qr_code);
+    setMfaSecret(data.totp.secret);
+    setMfaPendingFactorId(data.id);
+  };
+
+  const handleMfaConfirmEnroll = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!mfaPendingFactorId || mfaVerifyCode.length !== 6) return;
+
+    setMfaVerifying(true);
+    const { data: challenge, error: challengeError } =
+      await supabase.auth.mfa.challenge({ factorId: mfaPendingFactorId });
+
+    if (challengeError) {
+      toast.error(challengeError.message);
+      setMfaVerifying(false);
+      return;
+    }
+
+    const { error: verifyError } = await supabase.auth.mfa.verify({
+      factorId: mfaPendingFactorId,
+      challengeId: challenge.id,
+      code: mfaVerifyCode,
+    });
+
+    if (verifyError) {
+      toast.error("Invalid code. Please try again.");
+      setMfaVerifyCode("");
+      setMfaVerifying(false);
+      return;
+    }
+
+    toast.success("Two-factor authentication enabled");
+    setMfaEnrolling(false);
+    setMfaQrCode(null);
+    setMfaSecret(null);
+    setMfaPendingFactorId(null);
+    setMfaVerifyCode("");
+    setMfaVerifying(false);
+    await loadMfaFactors();
+  };
+
+  const handleMfaCancelEnroll = async () => {
+    if (mfaPendingFactorId) {
+      await supabase.auth.mfa.unenroll({ factorId: mfaPendingFactorId });
+    }
+    setMfaEnrolling(false);
+    setMfaQrCode(null);
+    setMfaSecret(null);
+    setMfaPendingFactorId(null);
+    setMfaVerifyCode("");
+  };
+
+  const handleMfaDisable = async () => {
+    if (!mfaFactorId) return;
+    setMfaDisabling(true);
+    const { error } = await supabase.auth.mfa.unenroll({ factorId: mfaFactorId });
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Two-factor authentication disabled");
+      setMfaFactorId(null);
+    }
+    setMfaDisabling(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,6 +246,121 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
               </section>
             </>
           )}
+
+          <Separator className="bg-[#F1F5F9]" />
+
+          {/* Two-Factor Authentication */}
+          <section>
+            <div className="flex items-center gap-2 mb-1">
+              {mfaFactorId ? (
+                <ShieldCheck className="h-4 w-4 text-[#059669]" />
+              ) : (
+                <ShieldOff className="h-4 w-4 text-[#94A3B8]" />
+              )}
+              <h2 className="text-sm font-semibold text-[#0F172A] font-sans">Two-factor authentication</h2>
+            </div>
+            <p className="text-xs text-[#94A3B8] mb-4">
+              {mfaFactorId
+                ? "Your account is protected with an authenticator app"
+                : "Add an extra layer of security with an authenticator app"}
+            </p>
+
+            {!mfaEnrolling && !mfaFactorId && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="text-[13px] h-8"
+                onClick={handleMfaEnroll}
+              >
+                Enable 2FA
+              </Button>
+            )}
+
+            {mfaEnrolling && mfaQrCode && (
+              <div className="max-w-sm space-y-4">
+                <div className="rounded-lg border border-[#E2E8F0] bg-white p-4">
+                  <p className="text-[13px] text-[#475569] mb-3">
+                    Scan this QR code with your authenticator app (Google Authenticator, Authy, 1Password, etc.)
+                  </p>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={mfaQrCode}
+                    alt="Scan this QR code with your authenticator app"
+                    className="mx-auto w-48 h-48"
+                  />
+                  {mfaSecret && (
+                    <div className="mt-3 text-center">
+                      <p className="text-[11px] text-[#94A3B8] mb-1">Or enter this key manually:</p>
+                      <code className="text-xs font-mono bg-[#F1F5F9] px-2 py-1 rounded select-all">
+                        {mfaSecret}
+                      </code>
+                    </div>
+                  )}
+                </div>
+
+                <form onSubmit={handleMfaConfirmEnroll} className="space-y-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="mfaCode" className="text-[13px] text-[#475569]">
+                      Enter the 6-digit code from your app
+                    </Label>
+                    <Input
+                      id="mfaCode"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={6}
+                      placeholder="000000"
+                      value={mfaVerifyCode}
+                      onChange={(e) => setMfaVerifyCode(e.target.value.replace(/\D/g, ""))}
+                      className="text-center text-lg tracking-[0.3em] font-mono max-w-[200px]"
+                      autoComplete="one-time-code"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      type="submit"
+                      size="sm"
+                      className="text-[13px] h-8"
+                      disabled={mfaVerifying || mfaVerifyCode.length !== 6}
+                    >
+                      {mfaVerifying && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
+                      Verify &amp; enable
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-[13px] h-8 text-[#64748B]"
+                      onClick={handleMfaCancelEnroll}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {mfaFactorId && !mfaEnrolling && (
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#059669]/10 px-2.5 py-1 text-xs font-medium text-[#059669]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#059669]" />
+                  Enabled
+                </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="text-[13px] h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  onClick={handleMfaDisable}
+                  disabled={mfaDisabling}
+                >
+                  {mfaDisabling && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
+                  Disable 2FA
+                </Button>
+              </div>
+            )}
+          </section>
 
           <Separator className="bg-[#F1F5F9]" />
 

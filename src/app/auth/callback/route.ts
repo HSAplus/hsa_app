@@ -13,14 +13,18 @@ export async function GET(request: Request) {
       // Profile row + storage folders are created by the DB trigger (handle_new_user)
       // which fires on auth.users insert. No need to duplicate that work here.
 
+      const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      const needsMfa = aal?.currentLevel === "aal1" && aal?.nextLevel === "aal2";
+      const destination = needsMfa ? "/verify-mfa" : next;
+
       const forwardedHost = request.headers.get("x-forwarded-host");
       const isLocalEnv = process.env.NODE_ENV === "development";
       if (isLocalEnv) {
-        return NextResponse.redirect(`${origin}${next}`);
+        return NextResponse.redirect(`${origin}${destination}`);
       } else if (forwardedHost) {
-        return NextResponse.redirect(`https://${forwardedHost}${next}`);
+        return NextResponse.redirect(`https://${forwardedHost}${destination}`);
       } else {
-        return NextResponse.redirect(`${origin}${next}`);
+        return NextResponse.redirect(`${origin}${destination}`);
       }
     }
   }
