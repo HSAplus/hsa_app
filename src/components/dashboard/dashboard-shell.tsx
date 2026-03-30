@@ -40,7 +40,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, Plus, RefreshCw, UserCog, Calculator, KeyRound, Lock } from "lucide-react";
+import { LogOut, Plus, RefreshCw, UserCog, Calculator, KeyRound, Lock, Receipt, TrendingUp, FileText } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import Image from "next/image";
 import { Toaster, toast } from "sonner";
 import Link from "next/link";
@@ -77,6 +78,22 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
   const isPlus = isPlusUser(profile);
   const atExpenseLimit = !isPlus && expenseCount >= planLimits.maxExpenses;
 
+  const VALID_TABS = ["expenses", "strategy", "tax"] as const;
+  type TabValue = (typeof VALID_TABS)[number];
+  const rawTab = searchParams.get("tab");
+  const activeTab: TabValue = VALID_TABS.includes(rawTab as TabValue)
+    ? (rawTab as TabValue)
+    : "expenses";
+
+  const handleTabChange = useCallback(
+    (value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("tab", value);
+      router.replace(`/dashboard?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router],
+  );
+
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
@@ -108,7 +125,10 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
       toast.success("Welcome to HSA Plus! All premium features are now unlocked.", {
         duration: 5000,
       });
-      router.replace("/dashboard", { scroll: false });
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("upgraded");
+      const qs = params.toString();
+      router.replace(qs ? `/dashboard?${qs}` : "/dashboard", { scroll: false });
     }
   }, [searchParams, router]);
 
@@ -295,46 +315,64 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
 
         <StatsCards stats={stats} loading={loading} />
 
-        <div className="mt-8">
-          <ExpenseTable
-            expenses={expenses}
-            loading={loading}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onMarkReimbursed={handleMarkReimbursed}
-            onSubmitClaim={handleSubmitClaim}
-            claimExpenseIds={claimExpenseIds}
-            isPlus={isPlus}
-          />
-        </div>
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="mt-8">
+          <TabsList variant="line" className="w-full justify-start border-b border-[#E2E8F0] pb-0">
+            <TabsTrigger value="expenses">
+              <Receipt className="h-4 w-4" />
+              Expenses
+            </TabsTrigger>
+            <TabsTrigger value="strategy">
+              <TrendingUp className="h-4 w-4" />
+              Strategy
+            </TabsTrigger>
+            <TabsTrigger value="tax">
+              <FileText className="h-4 w-4" />
+              Tax &amp; Compliance
+            </TabsTrigger>
+          </TabsList>
 
-        <div className="mt-8">
-          <ClaimsList claims={claims} expenses={expenses} loading={loading} />
-        </div>
+          <TabsContent value="expenses">
+            <div className="mt-6">
+              <ExpenseTable
+                expenses={expenses}
+                loading={loading}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onMarkReimbursed={handleMarkReimbursed}
+                onSubmitClaim={handleSubmitClaim}
+                claimExpenseIds={claimExpenseIds}
+                isPlus={isPlus}
+              />
+            </div>
+            <div className="mt-8">
+              <ClaimsList claims={claims} expenses={expenses} loading={loading} />
+            </div>
+            <div className="mt-8">
+              <ExpenseTemplates />
+            </div>
+          </TabsContent>
 
-        <div className="mt-8">
-          <ReimbursementOptimizer expenses={expenses} profile={profile} isPlus={isPlus} />
-        </div>
+          <TabsContent value="strategy">
+            <div className="mt-6">
+              <ReimbursementOptimizer expenses={expenses} profile={profile} isPlus={isPlus} />
+            </div>
+            <div className="mt-8">
+              <GrowthProjection profile={profile} loading={loading} />
+            </div>
+            <div className="mt-8">
+              <ScenarioComparison profile={profile} isPlus={isPlus} />
+            </div>
+          </TabsContent>
 
-        <div className="mt-8">
-          <ExpenseTemplates />
-        </div>
-
-        <div className="mt-8">
-          <TaxSummary expenses={expenses} />
-        </div>
-
-        <div className="mt-8">
-          <GrowthProjection profile={profile} loading={loading} />
-        </div>
-
-        <div className="mt-8">
-          <ScenarioComparison profile={profile} isPlus={isPlus} />
-        </div>
-
-        <div className="mt-8">
-          <IrsLimitsTable />
-        </div>
+          <TabsContent value="tax">
+            <div className="mt-6">
+              <TaxSummary expenses={expenses} />
+            </div>
+            <div className="mt-8">
+              <IrsLimitsTable />
+            </div>
+          </TabsContent>
+        </Tabs>
 
         {!isPlus && (
           <div className="mt-8 rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50/50 to-orange-50/50 p-6 text-center">
