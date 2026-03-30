@@ -45,7 +45,7 @@ export default function PrivacyPolicy() {
           Privacy Policy
         </h1>
         <p className="text-sm text-[#94A3B8] mb-12">
-          Effective date: March 29, 2025 &middot; Last updated: March 29, 2025
+          Effective date: March 29, 2025 &middot; Last updated: March 30, 2026
         </p>
 
         <div className="prose-policy space-y-10 text-[15px] leading-relaxed text-[#475569]">
@@ -222,26 +222,16 @@ export default function PrivacyPolicy() {
 
               <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
                 <p className="font-semibold text-[#0C1220] text-sm mb-1">
-                  OpenAI (Eligibility Verification)
+                  Anthropic Claude (AI receipt scanning)
                 </p>
                 <p className="text-sm text-[#64748B]">
-                  Expense descriptions may be sent to OpenAI&apos;s API to help verify HSA
-                  eligibility. No personally identifiable information (names, dates of birth,
-                  or financial details) is included in these requests. OpenAI does not use
-                  API data for model training.
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-[#E2E8F0] bg-white p-5">
-                <p className="font-semibold text-[#0C1220] text-sm mb-1">
-                  Anthropic Claude (Receipt Scanning)
-                </p>
-                <p className="text-sm text-[#64748B]">
-                  Receipt images uploaded by Plus subscribers may be sent to Anthropic&apos;s
-                  Claude API for automated data extraction (provider name, amount, date, and
-                  expense category). Only the receipt image is transmitted &mdash; no
-                  personally identifiable information from your profile is included. Anthropic
-                  does not use API data for model training per their commercial terms.
+                  For Plus subscribers, receipt images you choose to scan are sent to
+                  Anthropic&apos;s Claude vision API to extract structured fields (provider name,
+                  amount, date of service, expense category, and related line items). This is
+                  the only third-party AI processing we use for expense data. Only the receipt
+                  image is transmitted &mdash; no personally identifiable information from your
+                  profile is included. Anthropic does not use API data for model training per
+                  their commercial terms.
                 </p>
               </div>
             </div>

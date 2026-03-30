@@ -18,7 +18,6 @@ import type { Claim } from "@/lib/claims/types";
 import { getPlanLimits, getPlanType, isPlusUser } from "@/lib/plans";
 import { computeNotifications } from "@/lib/notifications";
 import { NotificationBell } from "./notification-bell";
-import { UpgradeBadge } from "@/components/ui/upgrade-badge";
 import { Sparkles } from "lucide-react";
 import { StatsCards } from "./stats-cards";
 import { ExpenseTable } from "./expense-table";
@@ -42,6 +41,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogOut, Plus, RefreshCw, UserCog, Calculator, KeyRound, Lock, Receipt, TrendingUp, FileText } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import Image from "next/image";
 import { Toaster, toast } from "sonner";
 import Link from "next/link";
@@ -178,6 +183,14 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
 
   const claimExpenseIds = new Set(claims.map((c) => c.expense_id));
 
+  const hasInFlightClaims = useMemo(
+    () =>
+      claims.some((c) =>
+        ["draft", "submitted", "processing"].includes(c.status),
+      ),
+    [claims],
+  );
+
   const profileName = profile
     ? `${profile.first_name} ${profile.last_name}`.trim()
     : "";
@@ -244,10 +257,20 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
                 {planLimits.maxExpenses}/{planLimits.maxExpenses} expenses
               </Button>
             ) : (
-              <Button size="sm" asChild>
-                <Link href="/dashboard/expenses/new">
-                  <Plus className="h-3.5 w-3.5 mr-1.5" />
-                  Add expense{!isPlus && ` (${expenseCount}/${planLimits.maxExpenses})`}
+              <Button size="sm" asChild className="max-sm:px-2.5">
+                <Link
+                  href="/dashboard/expenses/new"
+                  className="inline-flex items-center gap-1.5"
+                  aria-label={
+                    !isPlus
+                      ? `Add expense, ${expenseCount} of ${planLimits.maxExpenses} used`
+                      : "Add expense"
+                  }
+                >
+                  <Plus className="h-3.5 w-3.5 shrink-0" />
+                  <span className="hidden sm:inline">
+                    Add expense{!isPlus && ` (${expenseCount}/${planLimits.maxExpenses})`}
+                  </span>
                 </Link>
               </Button>
             )}
@@ -316,16 +339,19 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
         <StatsCards stats={stats} loading={loading} />
 
         <Tabs value={activeTab} onValueChange={handleTabChange} className="mt-8">
-          <TabsList variant="line" className="w-full justify-start border-b border-[#E2E8F0] pb-0">
-            <TabsTrigger value="expenses">
+          <TabsList
+            variant="line"
+            className="w-full min-w-0 justify-start gap-0 border-b border-[#E2E8F0] pb-0 overflow-x-auto no-scrollbar flex-nowrap"
+          >
+            <TabsTrigger value="expenses" className="shrink-0">
               <Receipt className="h-4 w-4" />
               Expenses
             </TabsTrigger>
-            <TabsTrigger value="strategy">
+            <TabsTrigger value="strategy" className="shrink-0">
               <TrendingUp className="h-4 w-4" />
               Strategy
             </TabsTrigger>
-            <TabsTrigger value="tax">
+            <TabsTrigger value="tax" className="shrink-0">
               <FileText className="h-4 w-4" />
               Tax &amp; Compliance
             </TabsTrigger>
@@ -344,32 +370,96 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
                 isPlus={isPlus}
               />
             </div>
-            <div className="mt-8">
+            <div className="mt-8 hidden md:block space-y-8">
               <ClaimsList claims={claims} expenses={expenses} loading={loading} />
-            </div>
-            <div className="mt-8">
               <ExpenseTemplates />
+            </div>
+            <div className="mt-6 md:hidden rounded-xl border border-[#E2E8F0] bg-white px-2 shadow-sm">
+              <Accordion
+                type="single"
+                collapsible
+                {...(hasInFlightClaims ? { defaultValue: "claims" } : {})}
+              >
+                <AccordionItem value="claims" className="border-0">
+                  <AccordionTrigger className="px-3 py-3 text-[#0C1220] hover:no-underline">
+                    Claims &amp; submissions
+                  </AccordionTrigger>
+                  <AccordionContent className="px-1 pb-3">
+                    <ClaimsList claims={claims} expenses={expenses} loading={loading} />
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="templates" className="border-0 border-t border-[#F1F5F9]">
+                  <AccordionTrigger className="px-3 py-3 text-[#0C1220] hover:no-underline">
+                    Expense templates
+                  </AccordionTrigger>
+                  <AccordionContent className="px-1 pb-3">
+                    <ExpenseTemplates />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           </TabsContent>
 
           <TabsContent value="strategy">
-            <div className="mt-6">
+            <div className="mt-6 hidden md:block space-y-8">
               <ReimbursementOptimizer expenses={expenses} profile={profile} isPlus={isPlus} />
-            </div>
-            <div className="mt-8">
               <GrowthProjection profile={profile} loading={loading} />
-            </div>
-            <div className="mt-8">
               <ScenarioComparison profile={profile} isPlus={isPlus} />
+            </div>
+            <div className="mt-6 md:hidden rounded-xl border border-[#E2E8F0] bg-white px-2 shadow-sm">
+              <Accordion type="single" collapsible defaultValue="optimizer">
+                <AccordionItem value="optimizer" className="border-0">
+                  <AccordionTrigger className="px-3 py-3 text-[#0C1220] hover:no-underline">
+                    Reimbursement optimizer
+                  </AccordionTrigger>
+                  <AccordionContent className="px-1 pb-3">
+                    <ReimbursementOptimizer expenses={expenses} profile={profile} isPlus={isPlus} />
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="growth" className="border-0 border-t border-[#F1F5F9]">
+                  <AccordionTrigger className="px-3 py-3 text-[#0C1220] hover:no-underline">
+                    Growth projection
+                  </AccordionTrigger>
+                  <AccordionContent className="px-1 pb-3">
+                    <GrowthProjection profile={profile} loading={loading} />
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="scenario" className="border-0 border-t border-[#F1F5F9]">
+                  <AccordionTrigger className="px-3 py-3 text-[#0C1220] hover:no-underline">
+                    Scenario comparison
+                  </AccordionTrigger>
+                  <AccordionContent className="px-1 pb-3">
+                    <ScenarioComparison profile={profile} isPlus={isPlus} />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           </TabsContent>
 
           <TabsContent value="tax">
-            <div className="mt-6">
+            <div className="mt-6 hidden md:block space-y-8">
               <TaxSummary expenses={expenses} />
-            </div>
-            <div className="mt-8">
               <IrsLimitsTable />
+            </div>
+            <div className="mt-6 md:hidden rounded-xl border border-[#E2E8F0] bg-white px-2 shadow-sm">
+              <Accordion type="single" collapsible defaultValue="summary">
+                <AccordionItem value="summary" className="border-0">
+                  <AccordionTrigger className="px-3 py-3 text-[#0C1220] hover:no-underline">
+                    Tax summary
+                  </AccordionTrigger>
+                  <AccordionContent className="px-1 pb-3">
+                    <TaxSummary expenses={expenses} />
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="irs" className="border-0 border-t border-[#F1F5F9]">
+                  <AccordionTrigger className="px-3 py-3 text-[#0C1220] hover:no-underline">
+                    IRS limits &amp; reference
+                  </AccordionTrigger>
+                  <AccordionContent className="px-1 pb-3">
+                    <IrsLimitsTable />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           </TabsContent>
         </Tabs>

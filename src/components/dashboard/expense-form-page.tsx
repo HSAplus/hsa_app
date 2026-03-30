@@ -314,22 +314,24 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
 
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0]/80 bg-white/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="flex items-center gap-2.5">
-              <Image src="/logo.png" alt="HSA Plus" width={56} height={37} className="rounded-lg" />
-              <span className="text-base font-semibold tracking-tight">HSA Plus</span>
+        <div className="mx-auto flex h-14 sm:h-16 max-w-6xl items-center justify-between gap-2 px-4 sm:px-6">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <Link href="/dashboard" className="flex items-center gap-2 sm:gap-2.5 min-w-0 shrink">
+              <Image src="/logo.png" alt="HSA Plus" width={48} height={32} className="rounded-lg sm:w-[56px] sm:h-[37px] w-12 h-8 shrink-0" />
+              <span className="text-base font-semibold tracking-tight hidden sm:inline truncate">
+                HSA Plus
+              </span>
             </Link>
-            <span className="text-[#E2E8F0]">/</span>
-            <span className="text-sm font-medium text-[#64748B]">
-              {isEditing ? "Edit Expense" : "New Expense"}
+            <span className="text-[#E2E8F0] shrink-0 hidden sm:inline">/</span>
+            <span className="text-xs sm:text-sm font-medium text-[#64748B] truncate">
+              {isEditing ? "Edit expense" : "New expense"}
             </span>
           </div>
 
-          <Button variant="ghost" size="sm" asChild className="text-[13px] text-[#64748B] h-8">
+          <Button variant="ghost" size="sm" asChild className="text-[13px] text-[#64748B] h-8 shrink-0">
             <Link href="/dashboard">
-              <X className="h-3.5 w-3.5 mr-1" />
-              Cancel
+              <X className="h-3.5 w-3.5 sm:mr-1" />
+              <span className="hidden sm:inline">Cancel</span>
             </Link>
           </Button>
         </div>
@@ -392,8 +394,8 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
         </div>
       </div>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-6 py-8 max-w-2xl">
+      {/* Main Content — extra bottom padding on small screens for fixed action bar */}
+      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-2xl pb-28 sm:pb-8">
         {/* Step Title */}
         <div className="mb-6">
           <h1 className="text-xl font-semibold tracking-tight text-[#0C1220] dark:text-white">
@@ -464,12 +466,14 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-5">
                   <div className="space-y-2">
                     <Label htmlFor="amount">Amount ($) *</Label>
                     <Input
                       id="amount"
                       type="number"
+                      inputMode="decimal"
+                      autoComplete="transaction-amount"
                       step="0.01"
                       min="0"
                       value={form.amount || ""}
@@ -680,7 +684,7 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-5">
                   <div className="space-y-2">
                     <Label htmlFor="patient_name">Patient Name *</Label>
                     <Input
@@ -836,24 +840,36 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
             {/* ── Step 3: Upload Documents ── */}
             {step === 3 && (
               <div className="space-y-5 animate-in fade-in duration-200">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-sm text-muted-foreground">
                     Upload your supporting documents. They&apos;re stored securely in your private folder.
                   </p>
                   {currentAuditReady ? (
-                    <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 shrink-0 ml-3">
+                    <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 dark:text-emerald-400 shrink-0 sm:ml-3">
                       <ShieldCheck className="h-4 w-4" />
                       Audit Ready
                     </div>
                   ) : (
-                    <div className="flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-400 shrink-0 ml-3">
+                    <div className="flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-400 shrink-0 sm:ml-3">
                       <ShieldAlert className="h-4 w-4" />
                       Missing Docs
                     </div>
                   )}
                 </div>
 
-                <div className="rounded-lg bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 p-3 text-xs text-amber-700 dark:text-amber-300">
+                <details className="sm:hidden rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-900/10 dark:border-amber-800 group">
+                  <summary className="cursor-pointer list-none p-3 text-xs font-medium text-amber-900 dark:text-amber-200 [&::-webkit-details-marker]:hidden flex items-center justify-between gap-2">
+                    <span>Why receipts &amp; EOBs matter (IRS)</span>
+                    <span className="text-amber-600 text-[10px] group-open:rotate-180 transition-transform">▼</span>
+                  </summary>
+                  <div className="px-3 pb-3 text-xs text-amber-700 dark:text-amber-300 border-t border-amber-200/60 pt-2">
+                    Keep receipts for {IRS_RULES.RETENTION_YEARS}+ years. You face a{" "}
+                    {IRS_RULES.PENALTY_RATE * 100}% penalty + income tax on unproven HSA purchases. A{" "}
+                    <strong>receipt + (EOB or invoice)</strong> = audit ready.
+                  </div>
+                </details>
+
+                <div className="hidden sm:block rounded-lg bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 p-3 text-xs text-amber-700 dark:text-amber-300">
                   <strong>IRS Rule:</strong> Keep receipts for {IRS_RULES.RETENTION_YEARS}+ years.
                   You face a {IRS_RULES.PENALTY_RATE * 100}% penalty + income tax on unproven HSA
                   purchases. A <strong>receipt + (EOB or invoice)</strong> = audit ready ✓
@@ -915,7 +931,7 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                       ${form.amount.toFixed(2)}
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
                     <div>
                       <span className="text-muted-foreground">Provider:</span>{" "}
                       <span className="font-medium">{form.provider}</span>
@@ -1039,6 +1055,7 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                       <Input
                         id="reimbursed_amount"
                         type="number"
+                        inputMode="decimal"
                         step="0.01"
                         min="0"
                         value={form.reimbursed_amount ?? ""}
@@ -1072,24 +1089,25 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
           </CardContent>
         </Card>
 
-        {/* Footer Navigation */}
-        <div className="flex items-center justify-between mt-6 pb-8">
-          <div>
+        {/* Footer Navigation — fixed on small screens for thumb reach + keyboard overlap */}
+        <div
+          className="flex items-center justify-between mt-6 gap-3 sm:mt-6 sm:pb-8 fixed bottom-0 left-0 right-0 z-40 border-t border-[#E2E8F0] bg-[#FAFAF8]/95 backdrop-blur-md px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:static sm:z-auto sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none"
+        >
+          <div className="min-w-0">
             {step > 1 ? (
-              <Button type="button" variant="ghost" onClick={handleBack} className="text-[13px] text-[#64748B] h-9">
+              <Button type="button" variant="ghost" onClick={handleBack} className="text-[13px] text-[#64748B] h-10 sm:h-9">
                 <ArrowLeft className="h-3.5 w-3.5 mr-1.5" />
                 Back
               </Button>
             ) : (
-              <Button type="button" variant="ghost" asChild className="text-[13px] text-[#64748B] h-9">
+              <Button type="button" variant="ghost" asChild className="text-[13px] text-[#64748B] h-10 sm:h-9">
                 <Link href="/dashboard">Cancel</Link>
               </Button>
             )}
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Step dots for mobile */}
-            <div className="flex gap-1.5 mr-2 sm:hidden">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <div className="flex gap-1.5 mr-1 sm:hidden" aria-hidden>
               {STEPS.map((s) => (
                 <div
                   key={s.id}
@@ -1105,7 +1123,7 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                 type="button"
                 onClick={handleNext}
                 disabled={!canProceed()}
-                className="h-9 text-[13px]"
+                className="h-10 sm:h-9 text-[13px] min-w-[5.5rem]"
               >
                 Next
                 <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
@@ -1115,7 +1133,7 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
                 type="button"
                 onClick={handleSubmit}
                 disabled={saving}
-                className="h-9 text-[13px]"
+                className="h-10 sm:h-9 text-[13px]"
               >
                 {saving && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
                 {isEditing ? "Update Expense" : "Save Expense"}

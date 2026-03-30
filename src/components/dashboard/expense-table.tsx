@@ -77,6 +77,98 @@ const accountColors: Record<string, string> = {
   hcfsa: "bg-violet-50 text-violet-700 border-violet-200/50",
 };
 
+function docCount(expense: Expense) {
+  return (
+    (expense.receipt_urls?.length || 0) +
+    (expense.eob_urls?.length || 0) +
+    (expense.invoice_urls?.length || 0) +
+    (expense.credit_card_statement_urls?.length || 0)
+  );
+}
+
+function AuditIndicator({ expense }: { expense: Expense }) {
+  const auditOk = isAuditReady(expense);
+  const taxYear = expense.tax_year ?? new Date(expense.date_of_service).getFullYear();
+  const retention = getRetentionStatus(taxYear);
+  if (retention === "critical") {
+    return (
+      <span title={`Tax year ${taxYear} — past 7-year retention limit!`}>
+        <AlertTriangle className="h-3.5 w-3.5 text-red-500" />
+      </span>
+    );
+  }
+  if (retention === "warning") {
+    return (
+      <span title={`Tax year ${taxYear} — approaching 7-year limit`}>
+        <AlertTriangle className="h-3.5 w-3.5 text-amber-500" />
+      </span>
+    );
+  }
+  return auditOk ? (
+    <span title="Audit ready">
+      <ShieldCheck className="h-3.5 w-3.5 text-[#059669]" />
+    </span>
+  ) : (
+    <span title="Missing documentation">
+      <ShieldAlert className="h-3.5 w-3.5 text-[#E2E8F0]" />
+    </span>
+  );
+}
+
+function ExpenseRowMenu({
+  expense,
+  claimExpenseIds,
+  onEdit,
+  onDelete,
+  onMarkReimbursed,
+  onSubmitClaim,
+}: {
+  expense: Expense;
+  claimExpenseIds: Set<string>;
+  onEdit: (expense: Expense) => void;
+  onDelete: (id: string) => void;
+  onMarkReimbursed: (id: string, amount: number) => void;
+  onSubmitClaim: (expense: Expense) => void;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 text-[#94A3B8] hover:text-[#64748B]"
+          aria-label="Expense actions"
+        >
+          <MoreHorizontal className="h-3.5 w-3.5" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem onClick={() => onEdit(expense)}>
+          <Pencil className="mr-2 h-3.5 w-3.5" />
+          Edit
+        </DropdownMenuItem>
+        {!expense.reimbursed && !claimExpenseIds.has(expense.id) && isAuditReady(expense) && (
+          <DropdownMenuItem onClick={() => onSubmitClaim(expense)}>
+            <Send className="mr-2 h-3.5 w-3.5" />
+            Submit claim
+          </DropdownMenuItem>
+        )}
+        {!expense.reimbursed && (
+          <DropdownMenuItem onClick={() => onMarkReimbursed(expense.id, expense.amount)}>
+            <CheckCircle className="mr-2 h-3.5 w-3.5" />
+            Mark reimbursed
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuItem onClick={() => onDelete(expense.id)} className="text-red-600">
+          <Trash2 className="mr-2 h-3.5 w-3.5" />
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 export function ExpenseTable({
   expenses,
   loading,
@@ -87,6 +179,7 @@ export function ExpenseTable({
   claimExpenseIds,
   isPlus: _isPlus,
 }: ExpenseTableProps) {
+  void _isPlus;
   const [search, setSearch] = useState("");
   const [filterCategory, setFilterCategory] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -112,6 +205,8 @@ export function ExpenseTable({
   });
 
   useEffect(() => {
+    // Reset pagination when filters change (narrower result set).
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync page to filter changes
     setCurrentPage(1);
   }, [search, filterCategory, filterStatus, filterAccount]);
 
@@ -122,13 +217,12 @@ export function ExpenseTable({
     safePage * PAGE_SIZE
   );
 
-  const docCount = (expense: Expense) => {
-    return (
-      (expense.receipt_urls?.length || 0) +
-      (expense.eob_urls?.length || 0) +
-      (expense.invoice_urls?.length || 0) +
-      (expense.credit_card_statement_urls?.length || 0)
-    );
+  const menuProps = {
+    claimExpenseIds,
+    onEdit,
+    onDelete,
+    onMarkReimbursed,
+    onSubmitClaim,
   };
 
   return (
@@ -207,151 +301,154 @@ export function ExpenseTable({
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-[#F1F5F9] hover:bg-transparent">
-                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Date</TableHead>
-                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Description</TableHead>
-                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Patient</TableHead>
-                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Provider</TableHead>
-                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Category</TableHead>
-                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Acct</TableHead>
-                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono text-right">Amount</TableHead>
-                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono text-center">Status</TableHead>
-                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono text-center">Audit</TableHead>
-                  <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono text-center">Docs</TableHead>
-                  <TableHead className="w-10"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedExpenses.map((expense) => (
-                  <TableRow
-                    key={expense.id}
-                    className="border-[#F8FAFC] hover:bg-[#F8FAFC]"
-                  >
-                    <TableCell className="whitespace-nowrap text-[13px] text-[#64748B] tabular-nums font-mono">
-                      {format(new Date(expense.date_of_service), "MMM d, yyyy")}
-                    </TableCell>
-                    <TableCell className="text-[13px] font-medium text-[#0C1220] max-w-48 truncate">
-                      {expense.description}
-                    </TableCell>
-                    <TableCell className="text-[13px] text-[#64748B]">
-                      {expense.patient_name}
-                    </TableCell>
-                    <TableCell className="text-[13px] text-[#64748B]">
-                      {expense.provider}
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-[11px] font-medium text-[#475569]">
-                        {categoryLabels[expense.category]}
+          <>
+            {/* Mobile / tablet: card list */}
+            <div className="lg:hidden px-3 pb-2 pt-1 space-y-3">
+              {paginatedExpenses.map((expense) => (
+                <div
+                  key={expense.id}
+                  className="rounded-xl border border-[#F1F5F9] bg-[#FAFAF8] p-3 shadow-sm"
+                >
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-[#0C1220] leading-snug">
+                        {expense.description}
+                      </p>
+                      <p className="text-[11px] text-[#94A3B8] mt-1 font-mono tabular-nums">
+                        {format(new Date(expense.date_of_service), "MMM d, yyyy")} ·{" "}
+                        {categoryLabels[expense.category] ?? expense.category}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      <span className="text-sm font-semibold tabular-nums font-mono text-[#0C1220]">
+                        ${expense.amount.toFixed(2)}
                       </span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className={`text-[10px] font-medium border ${accountColors[expense.account_type] || "bg-[#F1F5F9] text-[#475569]"}`}
-                      >
-                        {accountLabels[expense.account_type] || expense.account_type}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right text-[13px] font-medium tabular-nums font-mono text-[#0C1220]">
-                      ${expense.amount.toFixed(2)}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {expense.reimbursed ? (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#059669]">
-                          <CheckCircle className="h-3 w-3" />
-                          Yes
+                      <ExpenseRowMenu expense={expense} {...menuProps} />
+                    </div>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[#64748B]">
+                    <span className="truncate max-w-full">{expense.patient_name}</span>
+                    <span className="text-[#E2E8F0]">·</span>
+                    <span className="truncate max-w-[12rem]">{expense.provider}</span>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <Badge
+                      variant="secondary"
+                      className={`text-[10px] font-medium border ${accountColors[expense.account_type] || "bg-[#F1F5F9] text-[#475569]"}`}
+                    >
+                      {accountLabels[expense.account_type] || expense.account_type}
+                    </Badge>
+                    {expense.reimbursed ? (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#059669]">
+                        <CheckCircle className="h-3 w-3" />
+                        Reimbursed
+                      </span>
+                    ) : (
+                      <span className="text-[11px] font-medium text-[#94A3B8]">Pending</span>
+                    )}
+                    <span className="inline-flex items-center gap-1 text-[11px] text-[#64748B]">
+                      <span className="sr-only">Audit</span>
+                      <AuditIndicator expense={expense} />
+                    </span>
+                    {docCount(expense) > 0 ? (
+                      <span className="text-[11px] font-mono tabular-nums text-[#64748B]">
+                        {docCount(expense)} doc{docCount(expense) !== 1 ? "s" : ""}
+                      </span>
+                    ) : (
+                      <span className="text-[11px] text-[#E2E8F0]">No docs</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop: wide table */}
+            <div className="hidden lg:block overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-[#F1F5F9] hover:bg-transparent">
+                    <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Date</TableHead>
+                    <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Description</TableHead>
+                    <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Patient</TableHead>
+                    <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Provider</TableHead>
+                    <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Category</TableHead>
+                    <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono">Acct</TableHead>
+                    <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono text-right">Amount</TableHead>
+                    <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono text-center">Status</TableHead>
+                    <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono text-center">Audit</TableHead>
+                    <TableHead className="text-[11px] font-medium text-[#94A3B8] uppercase tracking-wider font-mono text-center">Docs</TableHead>
+                    <TableHead className="w-10"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedExpenses.map((expense) => (
+                    <TableRow
+                      key={expense.id}
+                      className="border-[#F8FAFC] hover:bg-[#F8FAFC]"
+                    >
+                      <TableCell className="whitespace-nowrap text-[13px] text-[#64748B] tabular-nums font-mono">
+                        {format(new Date(expense.date_of_service), "MMM d, yyyy")}
+                      </TableCell>
+                      <TableCell className="text-[13px] font-medium text-[#0C1220] max-w-48 truncate">
+                        {expense.description}
+                      </TableCell>
+                      <TableCell className="text-[13px] text-[#64748B]">
+                        {expense.patient_name}
+                      </TableCell>
+                      <TableCell className="text-[13px] text-[#64748B]">
+                        {expense.provider}
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-[11px] font-medium text-[#475569]">
+                          {categoryLabels[expense.category]}
                         </span>
-                      ) : (
-                        <span className="text-[11px] font-medium text-[#94A3B8]">
-                          No
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {(() => {
-                        const auditOk = isAuditReady(expense);
-                        const taxYear = expense.tax_year ?? new Date(expense.date_of_service).getFullYear();
-                        const retention = getRetentionStatus(taxYear);
-                        if (retention === "critical") {
-                          return (
-                            <span title={`Tax year ${taxYear} — past 7-year retention limit!`}>
-                              <AlertTriangle className="h-3.5 w-3.5 text-red-500 mx-auto" />
-                            </span>
-                          );
-                        }
-                        if (retention === "warning") {
-                          return (
-                            <span title={`Tax year ${taxYear} — approaching 7-year limit`}>
-                              <AlertTriangle className="h-3.5 w-3.5 text-amber-500 mx-auto" />
-                            </span>
-                          );
-                        }
-                        return auditOk ? (
-                          <span title="Audit ready">
-                            <ShieldCheck className="h-3.5 w-3.5 text-[#059669] mx-auto" />
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant="secondary"
+                          className={`text-[10px] font-medium border ${accountColors[expense.account_type] || "bg-[#F1F5F9] text-[#475569]"}`}
+                        >
+                          {accountLabels[expense.account_type] || expense.account_type}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right text-[13px] font-medium tabular-nums font-mono text-[#0C1220]">
+                        ${expense.amount.toFixed(2)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {expense.reimbursed ? (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#059669]">
+                            <CheckCircle className="h-3 w-3" />
+                            Yes
                           </span>
                         ) : (
-                          <span title="Missing documentation">
-                            <ShieldAlert className="h-3.5 w-3.5 text-[#E2E8F0] mx-auto" />
+                          <span className="text-[11px] font-medium text-[#94A3B8]">
+                            No
                           </span>
-                        );
-                      })()}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {docCount(expense) > 0 ? (
-                        <span className="text-[11px] font-medium text-[#64748B] tabular-nums font-mono">
-                          {docCount(expense)}
-                        </span>
-                      ) : (
-                        <span className="text-[11px] text-[#E2E8F0]">&mdash;</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-[#94A3B8] hover:text-[#64748B]">
-                            <MoreHorizontal className="h-3.5 w-3.5" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => onEdit(expense)}>
-                            <Pencil className="mr-2 h-3.5 w-3.5" />
-                            Edit
-                          </DropdownMenuItem>
-                          {!expense.reimbursed && !claimExpenseIds.has(expense.id) && isAuditReady(expense) && (
-                            <DropdownMenuItem onClick={() => onSubmitClaim(expense)}>
-                              <Send className="mr-2 h-3.5 w-3.5" />
-                              Submit claim
-                            </DropdownMenuItem>
-                          )}
-                          {!expense.reimbursed && (
-                            <DropdownMenuItem
-                              onClick={() =>
-                                onMarkReimbursed(expense.id, expense.amount)
-                              }
-                            >
-                              <CheckCircle className="mr-2 h-3.5 w-3.5" />
-                              Mark reimbursed
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuItem
-                            onClick={() => onDelete(expense.id)}
-                            className="text-red-600"
-                          >
-                            <Trash2 className="mr-2 h-3.5 w-3.5" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <div className="flex justify-center">
+                          <AuditIndicator expense={expense} />
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {docCount(expense) > 0 ? (
+                          <span className="text-[11px] font-medium text-[#64748B] tabular-nums font-mono">
+                            {docCount(expense)}
+                          </span>
+                        ) : (
+                          <span className="text-[11px] text-[#E2E8F0]">&mdash;</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <ExpenseRowMenu expense={expense} {...menuProps} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </>
         )}
       </div>
 
