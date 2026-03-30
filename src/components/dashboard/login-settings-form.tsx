@@ -90,8 +90,7 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
     setMfaPendingFactorId(data.id);
   };
 
-  const handleMfaConfirmEnroll = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleMfaConfirmEnroll = async () => {
     if (!mfaPendingFactorId || mfaVerifyCode.length !== 6) return;
 
     setMfaVerifying(true);
@@ -334,7 +333,7 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
                   )}
                 </div>
 
-                <form onSubmit={handleMfaConfirmEnroll} className="space-y-3">
+                <div className="space-y-3">
                   <div className="space-y-2">
                     <Label htmlFor="mfaCode" className="text-[13px] text-[#475569]">
                       Enter the 6-digit code from your app
@@ -354,10 +353,11 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
                   </div>
                   <div className="flex gap-2">
                     <Button
-                      type="submit"
+                      type="button"
                       size="sm"
                       className="text-[13px] h-8"
                       disabled={mfaVerifying || mfaVerifyCode.length !== 6}
+                      onClick={handleMfaConfirmEnroll}
                     >
                       {mfaVerifying && <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />}
                       Verify &amp; enable
@@ -372,7 +372,7 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
                       Cancel
                     </Button>
                   </div>
-                </form>
+                </div>
               </div>
             )}
 
