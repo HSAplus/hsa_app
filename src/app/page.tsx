@@ -77,6 +77,12 @@ export default async function Home() {
               How It Works
             </a>
             <Link
+              href="/pricing"
+              className="rounded-sm hover:text-[#0C1220] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/50 focus-visible:ring-offset-2"
+            >
+              Pricing
+            </Link>
+            <Link
               href="/calculator"
               className="rounded-sm hover:text-[#0C1220] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/50 focus-visible:ring-offset-2"
             >
@@ -542,6 +548,102 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ─── Pricing (teaser → /pricing) ─── */}
+      <section id="pricing" className="scroll-mt-24 py-24 md:py-36 border-t border-[#E2E8F0]">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="text-center mb-12 md:mb-14">
+            <div className="inline-flex items-center gap-3 rounded-full border border-[#059669]/20 bg-[#059669]/[0.04] px-4 py-1.5 mb-6">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#059669] animate-pulse-dot" />
+              <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-[#059669] font-medium">
+                Pricing
+              </span>
+            </div>
+            <h2 className="text-3xl sm:text-[3.25rem] leading-[1.1] tracking-tight text-[#0C1220]">
+              Free to start.{" "}
+              <span className="gradient-text">Plus when you&apos;re ready.</span>
+            </h2>
+            <p className="mt-4 text-[#64748B] text-lg max-w-xl mx-auto leading-relaxed">
+              Same app everyone uses in the dashboard — pick the tier that matches how you track expenses and reimbursements.
+            </p>
+          </div>
+
+          <div className="mx-auto max-w-4xl grid md:grid-cols-2 gap-6 md:gap-8">
+            <div className="rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-surface">
+              <p className="text-sm font-semibold text-[#64748B] uppercase tracking-wider mb-1">Free</p>
+              <div className="flex items-baseline gap-1 mb-4">
+                <span className="text-4xl font-bold font-mono text-[#0C1220]">$0</span>
+                <span className="text-sm text-[#94A3B8]">forever</span>
+              </div>
+              <p className="text-sm text-[#64748B] mb-6 leading-relaxed">
+                Core HSA tracking and audit readiness — ideal for getting organized.
+              </p>
+              <ul className="space-y-2.5 mb-8">
+                {[
+                  "Up to 10 expenses · 5 uploads each",
+                  "Audit scoring, retention alerts, CSV export",
+                  "Growth charts & 2 what-if scenarios",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-[#475569]">
+                    <CheckCircle2 className="h-4 w-4 text-[#059669] shrink-0 mt-0.5" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/signup" className="block">
+                <Button variant="outline" className="w-full font-semibold">
+                  Start free
+                </Button>
+              </Link>
+            </div>
+
+            <div className="relative rounded-2xl border-2 border-[#F59E0B]/40 bg-gradient-to-br from-white to-amber-50/40 p-8 shadow-surface-lg">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="inline-flex items-center rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm">
+                  Most popular
+                </span>
+              </div>
+              <p className="text-sm font-semibold text-amber-800 uppercase tracking-wider mb-1">Plus</p>
+              <div className="flex items-baseline gap-1 mb-1">
+                <span className="text-4xl font-bold font-mono text-[#0C1220]">$5</span>
+                <span className="text-sm text-[#94A3B8]">/mo</span>
+              </div>
+              <p className="text-sm text-[#64748B] mb-6">
+                or <span className="font-mono font-medium text-[#0C1220]">$48/year</span> (save 20%)
+              </p>
+              <ul className="space-y-2.5 mb-8">
+                {[
+                  "Unlimited expenses & uploads",
+                  "Dependents, LPFSA/HCFSA, 4 scenarios",
+                  "AI receipt scanning, claims, Plaid, digests",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-[#475569]">
+                    <CheckCircle2 className="h-4 w-4 text-[#059669] shrink-0 mt-0.5" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/pricing" className="block">
+                <Button className="w-full shadow-accent font-semibold">
+                  Compare plans &amp; upgrade
+                  <ChevronRight className="ml-1 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          <p className="text-center mt-8 text-sm text-[#94A3B8]">
+            Full side-by-side feature list, annual billing, and checkout on the{" "}
+            <Link
+              href="/pricing"
+              className="font-medium text-[#059669] hover:underline underline-offset-2"
+            >
+              pricing page
+            </Link>
+            .
+          </p>
+        </div>
+      </section>
+
       {/* ─── How It Works ─── */}
       <section id="how-it-works" className="scroll-mt-24 bg-[#F1F5F9] py-24 md:py-36">
         <div className="mx-auto max-w-6xl px-6">
@@ -754,6 +856,12 @@ export default async function Home() {
               className="rounded-sm hover:text-[#64748B] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/40 focus-visible:ring-offset-2"
             >
               Calculator
+            </Link>
+            <Link
+              href="/pricing"
+              className="rounded-sm hover:text-[#64748B] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/40 focus-visible:ring-offset-2"
+            >
+              Pricing
             </Link>
             <Link
               href="/privacy"
