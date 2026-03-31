@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   Loader2,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 import type { PlanType } from "@/lib/types";
 
 interface PricingContentProps {
@@ -100,9 +101,9 @@ export function PricingContent({ planType, isLoggedIn }: PricingContentProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
+    <div className="min-h-screen bg-[#FAFAF8] dark:bg-background">
       {/* Nav */}
-      <header className="border-b border-[#E2E8F0]/80 bg-white/80 backdrop-blur-xl sticky top-0 z-50">
+      <header className="border-b border-[#E2E8F0]/80 dark:border-border bg-white/80 dark:bg-card/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2.5">
             <Image
@@ -112,11 +113,12 @@ export function PricingContent({ planType, isLoggedIn }: PricingContentProps) {
               height={37}
               className="rounded-lg"
             />
-            <span className="text-base font-bold tracking-tight">
+            <span className="text-base font-bold tracking-tight text-foreground">
               HSA Plus
             </span>
           </Link>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             {isLoggedIn ? (
               <Link href="/dashboard">
                 <Button variant="ghost" size="sm" className="text-[13px] font-medium text-[#64748B]">

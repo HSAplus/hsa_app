@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -44,7 +45,11 @@ export function MobileNav() {
                 {item.label}
               </a>
             ))}
-            <div className="border-t border-[#E2E8F0] mt-2 pt-3 flex flex-col gap-2">
+            <div className="border-t border-[#E2E8F0] dark:border-border mt-2 pt-3 flex flex-col gap-3">
+              <div className="flex items-center justify-between px-3 py-1">
+                <span className="text-sm font-medium text-[#64748B] dark:text-muted-foreground">Theme</span>
+                <ThemeToggle />
+              </div>
               <Link href="/login" onClick={() => setOpen(false)}>
                 <Button variant="ghost" className="w-full justify-center text-sm font-medium">
                   Sign in

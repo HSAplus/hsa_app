@@ -23,6 +23,7 @@ import {
   Zap,
 } from "lucide-react";
 import { MobileNav } from "@/components/landing/mobile-nav";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -35,12 +36,12 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8] touch-manipulation [-webkit-tap-highlight-color:transparent]">
+    <div className="min-h-screen bg-[#FAFAF8] dark:bg-background touch-manipulation [-webkit-tap-highlight-color:transparent]">
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
       {/* ─── Nav ─── */}
-      <header className="border-b border-[#E2E8F0]/80 bg-white/80 backdrop-blur-xl sticky top-0 z-50">
+      <header className="border-b border-[#E2E8F0]/80 dark:border-border bg-white/80 dark:bg-card/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
             <Image
@@ -90,11 +91,14 @@ export default async function Home() {
             </Link>
           </nav>
           <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center">
+              <ThemeToggle />
+            </div>
             <Link
               href="/login"
               className="hidden sm:inline-flex rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/50 focus-visible:ring-offset-2"
             >
-              <Button variant="ghost" size="sm" className="text-[13px] font-medium text-[#64748B]">
+              <Button variant="ghost" size="sm" className="text-[13px] font-medium text-[#64748B] dark:text-muted-foreground">
                 Sign in
               </Button>
             </Link>

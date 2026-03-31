@@ -15,12 +15,13 @@ import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ArrowLeft, Loader2, Shield, Users, Plus, Pencil, Trash2, Mail, Send, Lock, CreditCard, Sparkles, ExternalLink } from "lucide-react";
-import { toast, Toaster } from "sonner";
+import { ArrowLeft, Loader2, Shield, Users, Plus, Pencil, Trash2, Mail, Send, CreditCard, Sparkles, ExternalLink } from "lucide-react";
+import { toast } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
 import { getPlanLimits, getPlanType } from "@/lib/plans";
 import { UpgradeBadge, UpgradeBlock } from "@/components/ui/upgrade-badge";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface ProfileFormProps {
   user: User;
@@ -210,22 +211,20 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
-      <Toaster richColors position="top-right" />
-
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0]/80 bg-white/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 w-full border-b border-border bg-card/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <Link href="/dashboard" className="flex items-center gap-2.5">
               <Image src="/logo.png" alt="HSA Plus" width={56} height={37} className="rounded-lg" />
-              <span className="text-base font-semibold tracking-tight">HSA Plus</span>
+              <span className="text-base font-semibold tracking-tight text-foreground">HSA Plus</span>
             </Link>
-            <span className="text-[#E2E8F0]">/</span>
-            <span className="text-sm font-medium text-[#64748B]">Profile</span>
+            <span className="text-border">/</span>
+            <span className="text-sm font-medium text-muted-foreground">Profile</span>
           </div>
 
-          <Button variant="ghost" size="sm" asChild className="text-[13px] text-[#64748B] h-8">
+          <Button variant="ghost" size="sm" asChild className="text-[13px] text-muted-foreground h-8">
             <Link href="/dashboard">
               <ArrowLeft className="h-3.5 w-3.5 mr-1.5" />
               Dashboard
@@ -244,10 +243,10 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
             </AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight text-[#0C1220] font-sans">
+            <h1 className="text-xl font-semibold tracking-tight text-foreground font-sans">
               {displayName || "Profile Settings"}
             </h1>
-            <p className="text-sm text-[#64748B]">
+            <p className="text-sm text-muted-foreground">
               {user.email}
               {isOAuthUser && (
                 <span className="inline-flex items-center gap-1 ml-2 text-xs text-[#94A3B8]">
@@ -289,11 +288,27 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
             </div>
           </section>
 
-          <Separator className="bg-[#F1F5F9]" />
+          <Separator />
+
+          {/* Appearance */}
+          <section>
+            <h2 className="text-sm font-semibold text-foreground mb-3 font-sans">Appearance</h2>
+            <p className="text-xs text-muted-foreground mb-3">
+              Theme applies across HSA Plus on this device.
+            </p>
+            <div className="flex items-center gap-3 rounded-lg border border-border bg-card px-4 py-3">
+              <span className="text-sm text-foreground">Color theme</span>
+              <div className="ml-auto">
+                <ThemeToggle />
+              </div>
+            </div>
+          </section>
+
+          <Separator />
 
           {/* HSA Investment Settings */}
           <section>
-            <h2 className="text-sm font-semibold text-[#0C1220] mb-1 font-sans">HSA investment settings</h2>
+            <h2 className="text-sm font-semibold text-foreground mb-1 font-sans">HSA investment settings</h2>
             <p className="text-xs text-[#94A3B8] mb-4">Used to project growth from delaying reimbursement</p>
             <div className="space-y-4">
               {/* Coverage type toggle */}

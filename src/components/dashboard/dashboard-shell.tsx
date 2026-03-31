@@ -48,8 +48,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import Image from "next/image";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 interface DashboardShellProps {
   user: User;
@@ -202,25 +203,23 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
       : "U";
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
-      <Toaster richColors position="top-right" />
-
+    <div className="min-h-screen bg-background text-foreground">
       {/* First-login onboarding popup */}
       <OnboardingDialog profile={profile} onComplete={loadData} />
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0]/80 bg-white/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 w-full border-b border-border bg-card/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
             <Image src="/logo.png" alt="HSA Plus" width={56} height={37} className="rounded-lg" />
-            <span className="text-base font-semibold tracking-tight">HSA Plus</span>
+            <span className="text-base font-semibold tracking-tight text-foreground">HSA Plus</span>
             {isPlus ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#059669]/10 to-[#34d399]/10 border border-[#059669]/20 px-2 py-0.5 text-[10px] font-semibold text-[#059669]">
+              <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-emerald-500/15 to-emerald-400/10 border border-emerald-500/25 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
                 <Sparkles className="h-2.5 w-2.5" />
                 Plus
               </span>
             ) : (
-              <span className="inline-flex items-center rounded-full bg-[#F1F5F9] px-2 py-0.5 text-[10px] font-medium text-[#94A3B8]">
+              <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                 Free
               </span>
             )}
@@ -232,18 +231,20 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
               size="sm"
               onClick={loadData}
               disabled={loading}
-              className="text-[#64748B] h-8 px-2.5"
+              className="text-muted-foreground h-8 px-2.5"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
             </Button>
 
             <NotificationBell notifications={notifications} />
 
+            <ThemeToggle />
+
             <Button
               variant="ghost"
               size="sm"
               asChild
-              className="text-[#64748B] h-8 hidden sm:inline-flex"
+              className="text-muted-foreground h-8 hidden sm:inline-flex"
             >
               <Link href="/calculator">
                 <Calculator className="h-3.5 w-3.5 mr-1.5" />
@@ -330,8 +331,8 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
       {/* Main Content */}
       <main className="mx-auto max-w-6xl px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-2xl tracking-tight text-[#0C1220]">Dashboard</h1>
-          <p className="text-sm text-[#64748B] mt-1">
+          <h1 className="text-2xl tracking-tight text-foreground">Dashboard</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Track your medical expenses and HSA reimbursements
           </p>
         </div>
@@ -341,7 +342,7 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
         <Tabs value={activeTab} onValueChange={handleTabChange} className="mt-8">
           <TabsList
             variant="line"
-            className="w-full min-w-0 justify-start gap-0 border-b border-[#E2E8F0] pb-0 overflow-x-auto no-scrollbar flex-nowrap"
+            className="w-full min-w-0 justify-start gap-0 border-b border-border pb-0 overflow-x-auto no-scrollbar flex-nowrap"
           >
             <TabsTrigger value="expenses" className="shrink-0">
               <Receipt className="h-4 w-4" />
@@ -374,22 +375,22 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
               <ClaimsList claims={claims} expenses={expenses} loading={loading} />
               <ExpenseTemplates />
             </div>
-            <div className="mt-6 md:hidden rounded-xl border border-[#E2E8F0] bg-white px-2 shadow-sm">
+            <div className="mt-6 md:hidden rounded-xl border border-border bg-card px-2 shadow-sm">
               <Accordion
                 type="single"
                 collapsible
                 {...(hasInFlightClaims ? { defaultValue: "claims" } : {})}
               >
                 <AccordionItem value="claims" className="border-0">
-                  <AccordionTrigger className="px-3 py-3 text-[#0C1220] hover:no-underline">
+                  <AccordionTrigger className="px-3 py-3 text-foreground hover:no-underline">
                     Claims &amp; submissions
                   </AccordionTrigger>
                   <AccordionContent className="px-1 pb-3">
                     <ClaimsList claims={claims} expenses={expenses} loading={loading} />
                   </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="templates" className="border-0 border-t border-[#F1F5F9]">
-                  <AccordionTrigger className="px-3 py-3 text-[#0C1220] hover:no-underline">
+                <AccordionItem value="templates" className="border-0 border-t border-border">
+                  <AccordionTrigger className="px-3 py-3 text-foreground hover:no-underline">
                     Expense templates
                   </AccordionTrigger>
                   <AccordionContent className="px-1 pb-3">
@@ -406,26 +407,26 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
               <GrowthProjection profile={profile} loading={loading} />
               <ScenarioComparison profile={profile} isPlus={isPlus} />
             </div>
-            <div className="mt-6 md:hidden rounded-xl border border-[#E2E8F0] bg-white px-2 shadow-sm">
+            <div className="mt-6 md:hidden rounded-xl border border-border bg-card px-2 shadow-sm">
               <Accordion type="single" collapsible defaultValue="optimizer">
                 <AccordionItem value="optimizer" className="border-0">
-                  <AccordionTrigger className="px-3 py-3 text-[#0C1220] hover:no-underline">
+                  <AccordionTrigger className="px-3 py-3 text-foreground hover:no-underline">
                     Reimbursement optimizer
                   </AccordionTrigger>
                   <AccordionContent className="px-1 pb-3">
                     <ReimbursementOptimizer expenses={expenses} profile={profile} isPlus={isPlus} />
                   </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="growth" className="border-0 border-t border-[#F1F5F9]">
-                  <AccordionTrigger className="px-3 py-3 text-[#0C1220] hover:no-underline">
+                <AccordionItem value="growth" className="border-0 border-t border-border">
+                  <AccordionTrigger className="px-3 py-3 text-foreground hover:no-underline">
                     Growth projection
                   </AccordionTrigger>
                   <AccordionContent className="px-1 pb-3">
                     <GrowthProjection profile={profile} loading={loading} />
                   </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="scenario" className="border-0 border-t border-[#F1F5F9]">
-                  <AccordionTrigger className="px-3 py-3 text-[#0C1220] hover:no-underline">
+                <AccordionItem value="scenario" className="border-0 border-t border-border">
+                  <AccordionTrigger className="px-3 py-3 text-foreground hover:no-underline">
                     Scenario comparison
                   </AccordionTrigger>
                   <AccordionContent className="px-1 pb-3">
@@ -441,18 +442,18 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
               <TaxSummary expenses={expenses} />
               <IrsLimitsTable />
             </div>
-            <div className="mt-6 md:hidden rounded-xl border border-[#E2E8F0] bg-white px-2 shadow-sm">
+            <div className="mt-6 md:hidden rounded-xl border border-border bg-card px-2 shadow-sm">
               <Accordion type="single" collapsible defaultValue="summary">
                 <AccordionItem value="summary" className="border-0">
-                  <AccordionTrigger className="px-3 py-3 text-[#0C1220] hover:no-underline">
+                  <AccordionTrigger className="px-3 py-3 text-foreground hover:no-underline">
                     Tax summary
                   </AccordionTrigger>
                   <AccordionContent className="px-1 pb-3">
                     <TaxSummary expenses={expenses} />
                   </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="irs" className="border-0 border-t border-[#F1F5F9]">
-                  <AccordionTrigger className="px-3 py-3 text-[#0C1220] hover:no-underline">
+                <AccordionItem value="irs" className="border-0 border-t border-border">
+                  <AccordionTrigger className="px-3 py-3 text-foreground hover:no-underline">
                     IRS limits &amp; reference
                   </AccordionTrigger>
                   <AccordionContent className="px-1 pb-3">
@@ -465,10 +466,10 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
         </Tabs>
 
         {!isPlus && (
-          <div className="mt-8 rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50/50 to-orange-50/50 p-6 text-center">
-            <Sparkles className="h-6 w-6 text-amber-500 mx-auto mb-2" />
-            <h3 className="text-base font-semibold text-[#0C1220]">Upgrade to HSA Plus</h3>
-            <p className="text-sm text-[#64748B] mt-1 max-w-md mx-auto">
+          <div className="mt-8 rounded-xl border border-amber-200/80 dark:border-amber-800/60 bg-gradient-to-br from-amber-50/50 to-orange-50/50 dark:from-amber-950/30 dark:to-orange-950/20 p-6 text-center">
+            <Sparkles className="h-6 w-6 text-amber-500 dark:text-amber-400 mx-auto mb-2" />
+            <h3 className="text-base font-semibold text-foreground">Upgrade to HSA Plus</h3>
+            <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">
               Unlimited expenses, Plaid sync, automated claims, family management, and more &mdash; $5/mo or $48/yr
             </p>
           </div>

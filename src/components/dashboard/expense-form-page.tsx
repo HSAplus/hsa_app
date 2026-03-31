@@ -34,7 +34,7 @@ import {
 import { FileUpload } from "@/components/ui/file-upload";
 import { ReceiptScanner } from "@/components/dashboard/receipt-scanner";
 import type { ReceiptScanResult, ConfidenceLevel } from "@/lib/receipt-scanner";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -309,9 +309,7 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]" onKeyDown={handleKeyDown}>
-      <Toaster richColors position="top-right" />
-
+    <div className="min-h-screen bg-background text-foreground" onKeyDown={handleKeyDown}>
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0]/80 bg-white/80 backdrop-blur-xl">
         <div className="mx-auto flex h-14 sm:h-16 max-w-6xl items-center justify-between gap-2 px-4 sm:px-6">

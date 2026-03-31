@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Calistoga, JetBrains_Mono } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -32,11 +34,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${jakarta.variable} ${calistoga.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider>
+          {children}
+          <Toaster richColors position="top-right" />
+        </ThemeProvider>
       </body>
     </html>
   );

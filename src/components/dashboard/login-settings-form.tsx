@@ -10,8 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ArrowLeft, Loader2, Shield, ShieldCheck, ShieldOff } from "lucide-react";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import Link from "next/link";
+import { ThemeToggle } from "@/components/theme-toggle";
 import Image from "next/image";
 
 interface LoginSettingsFormProps {
@@ -166,27 +167,28 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
   };
 
   return (
-    <div className="min-h-screen bg-[#FAFAF8]">
-      <Toaster richColors position="top-right" />
-
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0]/80 bg-white/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 w-full border-b border-border bg-card/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <Link href="/dashboard" className="flex items-center gap-2.5">
               <Image src="/logo.png" alt="HSA Plus" width={56} height={37} className="rounded-lg" />
-              <span className="text-base font-semibold tracking-tight">HSA Plus</span>
+              <span className="text-base font-semibold tracking-tight text-foreground">HSA Plus</span>
             </Link>
-            <span className="text-[#E2E8F0]">/</span>
-            <span className="text-sm font-medium text-[#64748B]">Login Settings</span>
+            <span className="text-border">/</span>
+            <span className="text-sm font-medium text-muted-foreground">Login Settings</span>
           </div>
 
-          <Button variant="ghost" size="sm" asChild className="text-[13px] text-[#64748B] h-8">
-            <Link href="/dashboard">
-              <ArrowLeft className="h-3.5 w-3.5 mr-1.5" />
-              Dashboard
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <Button variant="ghost" size="sm" asChild className="text-[13px] text-muted-foreground h-8">
+              <Link href="/dashboard">
+                <ArrowLeft className="h-3.5 w-3.5 mr-1.5" />
+                Dashboard
+              </Link>
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -200,10 +202,10 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
             </AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="text-xl font-semibold tracking-tight text-[#0C1220] font-sans">
+            <h1 className="text-xl font-semibold tracking-tight text-foreground font-sans">
               Login Settings
             </h1>
-            <p className="text-sm text-[#64748B]">
+            <p className="text-sm text-muted-foreground">
               {displayName || user.email}
               {isOAuthUser && (
                 <span className="inline-flex items-center gap-1 ml-2 text-xs text-[#94A3B8]">
