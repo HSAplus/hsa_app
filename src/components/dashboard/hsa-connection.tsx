@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Link2, RefreshCw, Unlink, Building2, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatCurrency } from "@/lib/hsa-constants";
-import type { HsaConnection } from "@/lib/types";
+import type { HsaConnectionPublic } from "@/lib/types";
 import {
   createPlaidLinkToken,
   connectHsaAccount,
@@ -16,7 +16,6 @@ import {
 } from "@/app/dashboard/actions";
 
 import { UpgradeBadge } from "@/components/ui/upgrade-badge";
-import { Sparkles } from "lucide-react";
 
 interface HsaConnectionProps {
   onBalanceUpdate?: (balance: number) => void;
@@ -24,7 +23,7 @@ interface HsaConnectionProps {
 }
 
 export function HsaConnectionWidget({ onBalanceUpdate, isPlus = false }: HsaConnectionProps) {
-  const [connection, setConnection] = useState<HsaConnection | null>(null);
+  const [connection, setConnection] = useState<HsaConnectionPublic | null>(null);
   const [loading, setLoading] = useState(true);
   const [linkToken, setLinkToken] = useState<string | null>(null);
   const [connecting, setConnecting] = useState(false);
@@ -129,8 +128,19 @@ export function HsaConnectionWidget({ onBalanceUpdate, isPlus = false }: HsaConn
         })
       : "Never";
 
+    const needsRelink =
+      connection.sync_status === "login_required" || connection.sync_status === "error";
+
     return (
-      <div className="rounded-lg border border-[#059669]/20 bg-[#059669]/5 p-4">
+      <div className="rounded-lg border border-[#059669]/20 bg-[#059669]/5 p-4 space-y-2">
+        {needsRelink && connection.sync_error && (
+          <p className="text-[11px] text-amber-800 dark:text-amber-200 bg-amber-500/10 rounded px-2 py-1.5">
+            Plaid: {connection.sync_error}{" "}
+            {connection.sync_status === "login_required"
+              ? "Reconnect your account from Plaid when convenient."
+              : ""}
+          </p>
+        )}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="rounded-lg p-2 bg-[#059669]/10">

@@ -13,7 +13,7 @@ import {
   getExpenseCount,
   getHsaConnection,
 } from "@/app/dashboard/actions";
-import type { Expense, DashboardStats, Profile, HsaConnection } from "@/lib/types";
+import type { Expense, DashboardStats, Profile, HsaConnectionPublic } from "@/lib/types";
 import type { Claim } from "@/lib/claims/types";
 import { getPlanLimits, getPlanType, isPlusUser } from "@/lib/plans";
 import { computeNotifications } from "@/lib/notifications";
@@ -21,6 +21,7 @@ import { NotificationBell } from "./notification-bell";
 import { Sparkles } from "lucide-react";
 import { StatsCards } from "./stats-cards";
 import { ExpenseTable } from "./expense-table";
+import { PlaidImportsPanel } from "./plaid-imports-panel";
 import { OnboardingDialog } from "./onboarding-dialog";
 import { GrowthProjection } from "./growth-projection";
 import { ExpenseTemplates } from "./expense-templates";
@@ -77,7 +78,7 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
   const [claimDialogOpen, setClaimDialogOpen] = useState(false);
   const [claimExpense, setClaimExpense] = useState<Expense | null>(null);
   const [expenseCount, setExpenseCount] = useState(0);
-  const [hsaConnection, setHsaConnection] = useState<HsaConnection | null>(null);
+  const [hsaConnection, setHsaConnection] = useState<HsaConnectionPublic | null>(null);
 
   const planType = getPlanType(profile);
   const planLimits = getPlanLimits(planType);
@@ -359,6 +360,14 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
           </TabsList>
 
           <TabsContent value="expenses">
+            {isPlus && (
+              <div className="mt-6 mb-6">
+                <PlaidImportsPanel
+                  expenses={expenses}
+                  onChanged={loadData}
+                />
+              </div>
+            )}
             <div className="mt-6">
               <ExpenseTable
                 expenses={expenses}

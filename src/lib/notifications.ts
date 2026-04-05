@@ -1,4 +1,4 @@
-import type { DashboardStats, Expense, Profile, HsaConnection } from "@/lib/types";
+import type { DashboardStats, Expense, Profile, HsaConnectionPublic } from "@/lib/types";
 import type { Claim } from "@/lib/claims/types";
 import type { PlanLimits } from "@/lib/plans";
 import { getContributionLimit } from "@/lib/hsa-constants";
@@ -28,7 +28,7 @@ interface ComputeParams {
   profile: Profile | null;
   claims: Claim[];
   expenses: Expense[];
-  hsaConnection: HsaConnection | null;
+  hsaConnection: HsaConnectionPublic | null;
   expenseCount: number;
   planLimits: PlanLimits;
   isPlus: boolean;
@@ -66,7 +66,7 @@ function auditReadinessNotification(stats: DashboardStats): Notification | null 
   };
 }
 
-function balanceStalenessNotification(hsaConnection: HsaConnection | null): Notification | null {
+function balanceStalenessNotification(hsaConnection: HsaConnectionPublic | null): Notification | null {
   if (!hsaConnection?.last_synced_at) return null;
   const daysSinceSync = Math.floor(
     (Date.now() - new Date(hsaConnection.last_synced_at).getTime()) / (1000 * 60 * 60 * 24)

@@ -139,6 +139,29 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
     }
   }, [searchParams, isEditing]);
 
+  // Pre-fill from Plaid import (dashboard "New expense" from bank activity)
+  useEffect(() => {
+    const fromPlaid = searchParams.get("fromPlaid") ?? searchParams.get("plaid_amount");
+    if (!fromPlaid || isEditing) return;
+
+    const amountStr = searchParams.get("plaid_amount");
+    const dateStr = searchParams.get("plaid_date");
+    const provider = searchParams.get("plaid_provider");
+    const desc = searchParams.get("plaid_desc");
+
+    const amount = amountStr ? parseFloat(amountStr) : NaN;
+    setForm((prev) => ({
+      ...prev,
+      ...(Number.isFinite(amount) && amount > 0 ? { amount } : {}),
+      ...(dateStr ? { date_of_service: dateStr } : {}),
+      ...(provider ? { provider } : {}),
+      ...(desc ? { description: desc } : {}),
+      account_type: "hsa",
+      payment_method: "hsa_card",
+    }));
+    toast.info("Prefilled from Plaid — add documentation before saving.");
+  }, [searchParams, isEditing]);
+
   const eligibleTypes = useMemo(
     () => ELIGIBLE_EXPENSES[form.category] || [],
     [form.category]

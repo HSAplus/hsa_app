@@ -146,3 +146,34 @@ CREATE TABLE public.profiles (
   CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id),
   CONSTRAINT profiles_hsa_administrator_id_fkey FOREIGN KEY (hsa_administrator_id) REFERENCES public.hsa_administrators(id)
 );
+
+-- Plaid sync + plaid_transactions: mirror supabase/migrations/plaid_sync_transactions.sql
+ALTER TABLE public.hsa_connections ADD COLUMN IF NOT EXISTS transactions_cursor text;
+ALTER TABLE public.hsa_connections ADD COLUMN IF NOT EXISTS last_transactions_sync_at timestamptz;
+ALTER TABLE public.hsa_connections ADD COLUMN IF NOT EXISTS sync_status text NOT NULL DEFAULT 'ok'
+  CHECK (sync_status IN ('ok', 'error', 'login_required'));
+ALTER TABLE public.hsa_connections ADD COLUMN IF NOT EXISTS sync_error text;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS plaid_inbound_ytd decimal(12,2);
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS last_plaid_contribution_sync_at timestamptz;
+CREATE TABLE IF NOT EXISTS public.plaid_transactions (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  plaid_transaction_id text NOT NULL,
+  account_id text,
+  amount decimal(12,2) NOT NULL,
+  iso_currency_code text NOT NULL DEFAULT 'USD',
+  date date NOT NULL,
+  name text NOT NULL DEFAULT '',
+  merchant_name text,
+  pending boolean NOT NULL DEFAULT false,
+  reconciliation_status text NOT NULL DEFAULT 'unmatched'
+    CHECK (reconciliation_status IN ('unmatched', 'matched', 'ignored', 'discrepancy')),
+  matched_expense_id uuid REFERENCES public.expenses(id) ON DELETE SET NULL,
+  raw jsonb,
+  created_at timestamptz DEFAULT now() NOT NULL,
+  updated_at timestamptz DEFAULT now() NOT NULL,
+  UNIQUE (user_id, plaid_transaction_id)
+);
+CREATE INDEX IF NOT EXISTS idx_plaid_transactions_user_date ON public.plaid_transactions (user_id, date DESC);
+CREATE INDEX IF NOT EXISTS idx_plaid_transactions_status ON public.plaid_transactions (user_id, reconciliation_status);
+-- RLS policies for plaid_transactions: see supabase/migrations/plaid_sync_transactions.sql

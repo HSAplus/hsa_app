@@ -52,6 +52,9 @@ export interface Profile {
   subscription_status: string;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
+  /** Sum of inbound credits (Plaid depository: negative amount) YTD — heuristic, not tax advice */
+  plaid_inbound_ytd?: number | null;
+  last_plaid_contribution_sync_at?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -89,6 +92,7 @@ export interface ExpenseTemplate {
 
 export type ExpenseTemplateFormData = Omit<ExpenseTemplate, "id" | "user_id" | "created_at" | "updated_at">;
 
+/** Full DB row — never return to the browser (contains Plaid access token). */
 export interface HsaConnection {
   id: string;
   user_id: string;
@@ -99,6 +103,49 @@ export interface HsaConnection {
   account_id: string | null;
   account_name: string | null;
   last_synced_at: string | null;
+  transactions_cursor: string | null;
+  last_transactions_sync_at: string | null;
+  sync_status: "ok" | "error" | "login_required";
+  sync_error: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Safe subset for client components and notifications (no secrets). */
+export interface HsaConnectionPublic {
+  id: string;
+  user_id: string;
+  institution_name: string;
+  institution_id: string;
+  account_id: string | null;
+  account_name: string | null;
+  last_synced_at: string | null;
+  last_transactions_sync_at: string | null;
+  sync_status: "ok" | "error" | "login_required";
+  sync_error: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type PlaidReconciliationStatus =
+  | "unmatched"
+  | "matched"
+  | "ignored"
+  | "discrepancy";
+
+export interface PlaidImportTransaction {
+  id: string;
+  user_id: string;
+  plaid_transaction_id: string;
+  account_id: string | null;
+  amount: number;
+  iso_currency_code: string;
+  date: string;
+  name: string;
+  merchant_name: string | null;
+  pending: boolean;
+  reconciliation_status: PlaidReconciliationStatus;
+  matched_expense_id: string | null;
   created_at: string;
   updated_at: string;
 }

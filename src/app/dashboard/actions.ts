@@ -650,13 +650,18 @@ export async function createPlaidLinkToken(): Promise<{ linkToken?: string; erro
     return { error: "Plaid HSA sync requires HSA Plus. Upgrade to auto-sync your balance." };
   }
 
+  const plaid = await import("@/lib/plaid");
+  if (!plaid.isPlaidConfigured()) {
+    return { error: plaid.plaidConfigErrorMessage() };
+  }
+
   try {
-    const { createLinkToken } = await import("@/lib/plaid");
-    const linkToken = await createLinkToken(user.id);
+    const linkToken = await plaid.createLinkToken(user.id);
     return { linkToken };
   } catch (err) {
     console.error("Error creating link token:", err);
-    return { error: "Failed to initialize connection. Check Plaid credentials." };
+    const msg = plaid.getPlaidErrorMessage(err);
+    return { error: msg || "Failed to initialize Plaid Link. Check credentials and Plaid dashboard settings." };
   }
 }
 
@@ -683,13 +688,13 @@ export async function connectHsaAccount(
   }
 
   try {
-    const { exchangePublicToken, getBalance } = await import("@/lib/plaid");
-    const { accessToken, itemId } = await exchangePublicToken(publicToken);
+    const plaid = await import("@/lib/plaid");
+    const { syncPlaidForConnection } = await import("@/lib/plaid-sync");
+    const { accessToken, itemId } = await plaid.exchangePublicToken(publicToken);
 
     const accountId = metadata.account?.id ?? null;
-    const balance = await getBalance(accessToken, accountId);
+    const now = new Date().toISOString();
 
-    // Upsert connection (one per user)
     const { error: connError } = await supabase
       .from("hsa_connections")
       .upsert(
@@ -701,8 +706,12 @@ export async function connectHsaAccount(
           institution_id: metadata.institution?.institution_id ?? "",
           account_id: accountId,
           account_name: metadata.account?.name ?? null,
-          last_synced_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+          last_synced_at: now,
+          updated_at: now,
+          sync_status: "ok",
+          sync_error: null,
+          transactions_cursor: null,
+          last_transactions_sync_at: null,
         },
         { onConflict: "user_id" }
       );
@@ -712,20 +721,34 @@ export async function connectHsaAccount(
       return { error: connError.message };
     }
 
-    // Update profile balance
-    await supabase
-      .from("profiles")
-      .update({
-        current_hsa_balance: balance,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", user.id);
+    const { data: row, error: fetchErr } = await supabase
+      .from("hsa_connections")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
+
+    if (fetchErr || !row) {
+      return { error: "Connected but could not load connection row." };
+    }
+
+    const syncResult = await syncPlaidForConnection(supabase, {
+      id: row.id as string,
+      user_id: row.user_id as string,
+      plaid_access_token: row.plaid_access_token as string,
+      account_id: (row.account_id as string | null) ?? null,
+      transactions_cursor: (row.transactions_cursor as string | null) ?? null,
+    });
+
+    if (!syncResult.ok) {
+      return { error: syncResult.error ?? "Connected but initial sync failed. Try Sync from profile." };
+    }
 
     revalidatePath("/dashboard");
     return {};
   } catch (err) {
     console.error("Error connecting HSA:", err);
-    return { error: "Failed to connect account" };
+    const plaid = await import("@/lib/plaid");
+    return { error: plaid.getPlaidErrorMessage(err) || "Failed to connect account" };
   }
 }
 
@@ -746,24 +769,26 @@ export async function syncHsaBalance(): Promise<{ balance?: number; error?: stri
   if (!conn) return { error: "No HSA connection found" };
 
   try {
-    const { getBalance } = await import("@/lib/plaid");
-    const balance = await getBalance(conn.plaid_access_token, conn.account_id);
+    const { syncPlaidForConnection } = await import("@/lib/plaid-sync");
+    const result = await syncPlaidForConnection(supabase, {
+      id: conn.id as string,
+      user_id: conn.user_id as string,
+      plaid_access_token: conn.plaid_access_token as string,
+      account_id: (conn.account_id as string | null) ?? null,
+      transactions_cursor: (conn.transactions_cursor as string | null) ?? null,
+    });
 
-    await supabase
-      .from("hsa_connections")
-      .update({ last_synced_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-      .eq("id", conn.id);
+    if (!result.ok) {
+      return { error: result.error ?? "Failed to sync with Plaid" };
+    }
 
-    await supabase
-      .from("profiles")
-      .update({ current_hsa_balance: balance, updated_at: new Date().toISOString() })
-      .eq("id", user.id);
-
+    const profile = await getProfile();
     revalidatePath("/dashboard");
-    return { balance };
+    return { balance: profile?.current_hsa_balance ?? 0 };
   } catch (err) {
     console.error("Error syncing balance:", err);
-    return { error: "Failed to sync balance" };
+    const plaid = await import("@/lib/plaid");
+    return { error: plaid.getPlaidErrorMessage(err) || "Failed to sync balance" };
   }
 }
 
@@ -785,10 +810,12 @@ export async function disconnectHsaAccount(): Promise<{ error?: string }> {
 
   try {
     const { removeItem } = await import("@/lib/plaid");
-    await removeItem(conn.plaid_access_token);
+    await removeItem(conn.plaid_access_token as string);
   } catch {
     // If Plaid removal fails, still remove from our DB
   }
+
+  await supabase.from("plaid_transactions").delete().eq("user_id", user.id);
 
   const { error } = await supabase
     .from("hsa_connections")
@@ -898,7 +925,7 @@ export async function sendTestDigest(): Promise<{ error?: string }> {
   }
 }
 
-export async function getHsaConnection(): Promise<import("@/lib/types").HsaConnection | null> {
+export async function getHsaConnection(): Promise<import("@/lib/types").HsaConnectionPublic | null> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -906,13 +933,117 @@ export async function getHsaConnection(): Promise<import("@/lib/types").HsaConne
 
   if (!user) return null;
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("hsa_connections")
+    .select(
+      "id, user_id, institution_name, institution_id, account_id, account_name, last_synced_at, last_transactions_sync_at, sync_status, sync_error, created_at, updated_at"
+    )
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error || !data) return null;
+
+  const row = data as Record<string, unknown>;
+  return {
+    id: row.id as string,
+    user_id: row.user_id as string,
+    institution_name: (row.institution_name as string) ?? "",
+    institution_id: (row.institution_id as string) ?? "",
+    account_id: (row.account_id as string | null) ?? null,
+    account_name: (row.account_name as string | null) ?? null,
+    last_synced_at: (row.last_synced_at as string | null) ?? null,
+    last_transactions_sync_at: (row.last_transactions_sync_at as string | null) ?? null,
+    sync_status: (row.sync_status as import("@/lib/types").HsaConnectionPublic["sync_status"]) ?? "ok",
+    sync_error: (row.sync_error as string | null) ?? null,
+    created_at: row.created_at as string,
+    updated_at: row.updated_at as string,
+  };
+}
+
+export async function getPlaidImportTransactions(): Promise<
+  import("@/lib/types").PlaidImportTransaction[]
+> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("plaid_transactions")
     .select("*")
     .eq("user_id", user.id)
-    .single();
+    .order("date", { ascending: false })
+    .limit(500);
 
-  return (data as import("@/lib/types").HsaConnection) ?? null;
+  if (error) {
+    console.error("getPlaidImportTransactions:", error);
+    return [];
+  }
+
+  return (data ?? []) as import("@/lib/types").PlaidImportTransaction[];
+}
+
+export async function reconcilePlaidToExpense(
+  plaidImportId: string,
+  expenseId: string
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const { data: exp } = await supabase
+    .from("expenses")
+    .select("id")
+    .eq("id", expenseId)
+    .eq("user_id", user.id)
+    .single();
+  if (!exp) return { error: "Expense not found" };
+
+  const { error } = await supabase
+    .from("plaid_transactions")
+    .update({
+      reconciliation_status: "matched",
+      matched_expense_id: expenseId,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", plaidImportId)
+    .eq("user_id", user.id);
+
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard");
+  return {};
+}
+
+export async function setPlaidImportStatus(
+  plaidImportId: string,
+  status: "ignored" | "discrepancy" | "unmatched"
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const patch: Record<string, unknown> = {
+    reconciliation_status: status,
+    updated_at: new Date().toISOString(),
+  };
+  if (status === "unmatched") {
+    patch.matched_expense_id = null;
+  }
+
+  const { error } = await supabase
+    .from("plaid_transactions")
+    .update(patch)
+    .eq("id", plaidImportId)
+    .eq("user_id", user.id);
+
+  if (error) return { error: error.message };
+  revalidatePath("/dashboard");
+  return {};
 }
 
 // ── Claims ───────────────────────────────────────────

@@ -209,9 +209,12 @@ Session management is handled through SSR cookies with automatic refresh via Nex
 - **Database**: Postgres with 7 tables — see [Database Schema](#database-schema)
 - **Storage**: `hsa-documents` bucket for receipt and document uploads
 
-### Plaid (planned — not yet enabled)
+### Plaid (HSA Plus)
 
-Scaffolding exists for HSA balance sync via Plaid Link (`src/lib/plaid.ts`, `src/components/dashboard/hsa-connection.tsx`), but the integration is not currently active in production.
+- **Link**: Profile → Connect HSA uses Plaid Link (`Products.Auth` + `Products.Transactions`). Set `PLAID_CLIENT_ID`, `PLAID_SECRET`, and `PLAID_ENV` (`sandbox` or `production`).
+- **Secrets**: `plaid_access_token` is never returned to the browser — only server actions and cron jobs read it.
+- **Cron**: `GET /api/plaid/sync` with `Authorization: Bearer CRON_SECRET` syncs all connections (see [`vercel.json`](vercel.json)). Requires `SUPABASE_SERVICE_ROLE_KEY`.
+- **DB**: Run migrations in `supabase/migrations/` (including `plaid_sync_transactions.sql`) so `hsa_connections`, `profiles`, and `plaid_transactions` have the expected columns.
 
 ### Anthropic Claude
 
@@ -230,7 +233,7 @@ Scaffolding exists for HSA balance sync via Plaid Link (`src/lib/plaid.ts`, `src
 
 ## Database Schema
 
-The app uses Supabase Postgres with 7 tables. Full schema is in [`Database.sql`](Database.sql).
+The app uses Supabase Postgres (core tables include `profiles`, `expenses`, `hsa_connections`, `plaid_transactions`, and others). Full schema is in [`Database.sql`](Database.sql) and [`supabase/schema.sql`](supabase/schema.sql).
 
 | Table | Purpose |
 | ----- | ------- |
@@ -240,7 +243,8 @@ The app uses Supabase Postgres with 7 tables. Full schema is in [`Database.sql`]
 | `expense_templates` | Reusable expense shortcuts with pre-filled fields and frequency |
 | `claims` | Claim submissions tied to an expense and HSA administrator, with status lifecycle (draft → submitted → processing → approved/denied → reimbursed) |
 | `hsa_administrators` | Reference table of HSA custodians with submission tiers (API, email, fax, portal) and contact details |
-| `hsa_connections` | Plaid-linked HSA accounts (not yet enabled in production) |
+| `hsa_connections` | Plaid-linked HSA accounts (access token server-only; cursor + sync status for recurring jobs) |
+| `plaid_transactions` | Imported Plaid lines for reconciliation with manual expenses |
 
 All user-owned tables enforce row-level security (RLS) scoped to `auth.uid() = user_id`. The `profiles` table is keyed directly to `auth.users(id)` and auto-created via a database trigger on signup.
 
