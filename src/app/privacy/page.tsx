@@ -6,8 +6,7 @@ import { ArrowLeft } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | HSA Plus",
-  description:
-    "Learn how HSA Plus collects, uses, and protects your personal, financial, and medical expense data.",
+  description: "Learn how HSA Plus protects your health and financial data.",
 };
 
 export default function PrivacyPolicy() {
