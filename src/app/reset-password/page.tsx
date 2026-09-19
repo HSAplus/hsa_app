@@ -15,7 +15,7 @@ export default async function ResetPasswordPage({
     <div className="min-h-screen flex items-center justify-center bg-[#FAFAF8] p-4">
       <div className="w-full max-w-sm">
         <div className="flex justify-center mb-6">
-          <Image src="/logo.png" alt="HSA Plus" width={72} height={48} className="rounded-lg" />
+          <Image src="/logo.png" alt="HSA Plus" width={48} height={48} className="rounded-lg" />
         </div>
         <h1 className="text-2xl tracking-tight text-[#0C1220] text-center font-sans font-bold">
           Reset password

@@ -47,8 +47,8 @@ export default async function Home() {
             <Image
               src="/logo.png"
               alt="HSA Plus"
-              width={56}
-              height={37}
+              width={36}
+              height={36}
               className="rounded-lg"
             />
             <span className="text-base font-bold tracking-tight">
@@ -846,8 +846,8 @@ export default async function Home() {
             <Image
               src="/logo.png"
               alt="HSA Plus"
-              width={28}
-              height={18}
+              width={22}
+              height={22}
               className="rounded"
             />
             <span>

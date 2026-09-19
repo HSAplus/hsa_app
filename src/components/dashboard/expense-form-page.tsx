@@ -338,7 +338,7 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
         <div className="mx-auto flex h-14 sm:h-16 max-w-6xl items-center justify-between gap-2 px-4 sm:px-6">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <Link href="/dashboard" className="flex items-center gap-2 sm:gap-2.5 min-w-0 shrink">
-              <Image src="/logo.png" alt="HSA Plus" width={48} height={32} className="rounded-lg sm:w-[56px] sm:h-[37px] w-12 h-8 shrink-0" />
+              <Image src="/logo.png" alt="HSA Plus" width={32} height={32} className="rounded-lg sm:w-9 sm:h-9 w-8 h-8 shrink-0" />
               <span className="text-base font-semibold tracking-tight hidden sm:inline truncate">
                 HSA Plus
               </span>

@@ -20,8 +20,8 @@ export default function PrivacyPolicy() {
             <Image
               src="/logo.png"
               alt="HSA Plus"
-              width={56}
-              height={37}
+              width={36}
+              height={36}
               className="rounded-lg"
             />
             <span className="text-base font-semibold tracking-tight font-sans">
@@ -471,8 +471,8 @@ export default function PrivacyPolicy() {
             <Image
               src="/logo.png"
               alt="HSA Plus"
-              width={28}
-              height={18}
+              width={22}
+              height={22}
               className="rounded"
             />
             <span>&copy; {new Date().getFullYear()} HSA Plus</span>
