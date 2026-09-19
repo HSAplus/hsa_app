@@ -1,0 +1,30 @@
+# HSA Plus
+> Turn medical expenses into tax-free wealth. Track expenses, project investment growth, manage family dependents, and stay IRS audit-ready.
+
+HSA Plus is a specialized financial application designed for individuals and families who treat their Health Savings Account (HSA) as a long-term investment vehicle rather than a short-term spending account.
+
+## Core Philosophy
+Under IRC Section 223 and IRS Notice 2004-50, there is no deadline by which an HSA holder must reimburse themselves for qualified medical expenses. By paying out of pocket for medical expenses today and storing verified itemized receipts, users keep their HSA capital invested in index funds where it compounds 100% tax-free. At any future date, users can withdraw the original expense amount completely tax-free.
+
+## Key Features
+- **Receipt & Document Storage**: Upload multiple files per expense (itemized receipts, doctor bills, Explanation of Benefits / EOBs).
+- **IRS Audit-Readiness Validation**: Automatically checks each logged expense against IRS requirements to avoid the 20% unqualified distribution penalty.
+- **7-Year Retention Tracking**: Tracks the 7-year retention requirements from the tax year of reimbursement.
+- **Investment Growth Projections**: Models the future value of unreimbursed medical receipts based on user-defined return rates and time horizons.
+- **Multi-Account & Family Tracking**: Attributes expenses across HSA, Limited Purpose FSA (LPFSA), and Healthcare FSA (HCFSA) accounts for spouses and dependents.
+- **AI Receipt Scanning (Plus)**: Extracts merchant, date, amount, and expense category from uploaded documents.
+- **Plaid Bank Sync (Plus)**: Connects bank and HSA accounts to match debit card transactions against logged receipts.
+- **Automated Claims (Plus)**: Generates pre-filled claim reimbursement forms to withdraw funds with a single click.
+
+## Pricing
+- **Free**: $0 forever. Up to 10 expenses, 5 document uploads per expense, IRS audit readiness scoring, 7-year retention alerts, 2 what-if growth scenarios, CSV export.
+- **Plus**: $5/month or $48/year (20% discount). Unlimited expenses, unlimited document uploads, AI receipt scanning, Plaid bank sync, automated claim generation, family dependent profiles, and multi-account support.
+
+## Important URLs
+- Homepage: https://hsa.plus
+- Free Growth Calculator: https://hsa.plus/calculator
+- Pricing & Features: https://hsa.plus/pricing
+- Delayed Reimbursement Strategy: https://hsa.plus/strategy/delayed-reimbursement
+- HSA Plus vs Spreadsheets: https://hsa.plus/vs/spreadsheets
+- Privacy Policy: https://hsa.plus/privacy
+- Sitemap: https://hsa.plus/sitemap.xml

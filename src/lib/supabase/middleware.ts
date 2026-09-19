@@ -49,6 +49,9 @@ export async function updateSession(request: NextRequest) {
     "/calculator",
     "/sitemap.xml",
     "/robots.txt",
+    "/llms.txt",
+    "/strategy",
+    "/vs",
   ];
   const isPublicPath =
     request.nextUrl.pathname === "/" ||

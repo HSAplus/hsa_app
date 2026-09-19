@@ -924,7 +924,19 @@ export default async function Home() {
               &copy; {new Date().getFullYear()} HSA Plus &middot; Tax-free wealth, made simple.
             </span>
           </div>
-          <div className="flex items-center gap-6 text-[13px] font-medium text-[#94A3B8] dark:text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-6 text-[13px] font-medium text-[#94A3B8] dark:text-muted-foreground">
+            <Link
+              href="/strategy/delayed-reimbursement"
+              className="rounded-sm hover:text-[#64748B] dark:hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/40 focus-visible:ring-offset-2"
+            >
+              HSA Strategy
+            </Link>
+            <Link
+              href="/vs/spreadsheets"
+              className="rounded-sm hover:text-[#64748B] dark:hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/40 focus-visible:ring-offset-2"
+            >
+              vs Spreadsheets
+            </Link>
             <Link
               href="/calculator"
               className="rounded-sm hover:text-[#64748B] dark:hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/40 focus-visible:ring-offset-2"
