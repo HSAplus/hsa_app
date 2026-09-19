@@ -31,7 +31,7 @@ export default async function LoginPage({
             <span className="gradient-text">smarter strategy.</span>
           </h2>
           <p className="text-white/50 text-sm leading-relaxed max-w-sm">
-            Track expenses, project investment growth, and stay IRS audit-ready — all in one place.
+            Track expenses, project investment growth, and stay IRS audit-ready in one place.
           </p>
         </div>
       </div>
