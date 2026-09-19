@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { signup } from "@/app/auth/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +7,12 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
+
+export const metadata: Metadata = {
+  title: "Create Your Free Account | HSA Plus",
+  description:
+    "Start tracking HSA expenses, managing family receipts, and optimizing your tax-free growth with HSA Plus.",
+};
 
 export default async function SignUpPage({
   searchParams,

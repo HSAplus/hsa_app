@@ -21,10 +21,94 @@ import {
   CircleDollarSign,
   AlertCircle,
   Zap,
+  HelpCircle,
+  ChevronDown,
 } from "lucide-react";
 import { MobileNav } from "@/components/landing/mobile-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ProductVideo, StoryMechanic } from "@/components/landing/product-video";
+
+const FAQS = [
+  {
+    question: "How long do I have to reimburse an HSA expense?",
+    answer:
+      "There is no IRS expiration deadline. As long as the qualified medical expense occurred after your HSA was established, you can reimburse yourself months, years, or even decades later, provided you keep the itemized receipt on file.",
+  },
+  {
+    question: "Why should I delay reimbursing myself from my HSA?",
+    answer:
+      "When you pay medical bills out of pocket and delay reimbursement, your HSA balance stays invested in index funds where it compounds completely tax-free. When you eventually choose to withdraw your money, it comes out 100% tax-free against your saved receipts.",
+  },
+  {
+    question: "What proof does the IRS require during an HSA audit?",
+    answer:
+      "The IRS requires documentation showing: (1) that the expense was a qualified medical expense, (2) that it was not reimbursed by insurance or other health plans, and (3) an itemized receipt or bill with the date, provider, and amount. HSA Plus validates each receipt against these requirements.",
+  },
+  {
+    question: "Can I track expenses for my spouse and children?",
+    answer:
+      "Yes. HSA Plus supports family member profiles, allowing you to attribute receipts to your spouse, children, or dependents across HSA, Limited Purpose FSA (LPFSA), and Healthcare FSA (HCFSA) accounts.",
+  },
+  {
+    question: "Is HSA Plus free to use?",
+    answer:
+      "Yes. HSA Plus is free forever for up to 10 expenses with full audit readiness checks, 5 document uploads per expense, and investment growth projections. Upgrading to Plus unlocks unlimited expenses, AI receipt scanning, Plaid bank sync, and automated claims.",
+  },
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "@id": "https://hsa.plus/#webapp",
+      "name": "HSA Plus",
+      "url": "https://hsa.plus",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "description":
+        "Turn medical expenses into tax-free wealth. Track expenses, project investment growth, manage family dependents, and stay IRS audit-ready.",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Free",
+          "price": "0",
+          "priceCurrency": "USD",
+          "description":
+            "Up to 10 expenses with full audit readiness checks and growth projections.",
+        },
+        {
+          "@type": "Offer",
+          "name": "Plus",
+          "price": "5",
+          "priceCurrency": "USD",
+          "billingDuration": "P1M",
+          "description":
+            "Unlimited expenses, AI receipt scanning, Plaid sync, and automated claims.",
+        },
+      ],
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://hsa.plus/#organization",
+      "name": "HSA Plus",
+      "url": "https://hsa.plus",
+      "logo": "https://hsa.plus/logo.png",
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://hsa.plus/#faq",
+      "mainEntity": FAQS.map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
+        },
+      })),
+    },
+  ],
+};
 
 export default async function Home() {
   const supabase = await createClient();
@@ -117,6 +201,10 @@ export default async function Home() {
       </header>
 
       <main id="main-content">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       {/* ─── Hero ─── */}
       <section className="relative overflow-hidden">
         <div className="absolute top-0 left-1/3 w-[800px] h-[800px] bg-[#059669]/[0.04] rounded-full blur-[200px] -translate-y-1/2" />
@@ -746,6 +834,46 @@ export default async function Home() {
                 <p className="text-sm font-semibold text-[#0C1220] dark:text-foreground">{item.title}</p>
                 <p className="text-xs text-[#64748B] dark:text-muted-foreground mt-1 leading-relaxed">{item.desc}</p>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Frequently Asked Questions ─── */}
+      <section id="faq" className="scroll-mt-24 py-24 md:py-32">
+        <div className="mx-auto max-w-4xl px-6">
+          <div className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#059669]/20 bg-[#059669]/[0.04] px-4 py-1.5 mb-6">
+              <HelpCircle className="h-3.5 w-3.5 text-[#059669]" />
+              <span className="font-mono text-[11px] uppercase tracking-[0.15em] text-[#059669] font-medium">
+                Common Questions
+              </span>
+            </div>
+            <h2 className="text-3xl sm:text-[3rem] leading-[1.1] tracking-tight text-[#0C1220] dark:text-foreground">
+              Frequently asked{" "}
+              <span className="gradient-text">questions</span>
+            </h2>
+            <p className="mt-4 text-[#64748B] dark:text-muted-foreground text-base max-w-lg mx-auto leading-relaxed">
+              Everything you need to know about delaying reimbursements, IRS audit rules, and how HSA Plus works.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {FAQS.map((faq) => (
+              <details
+                key={faq.question}
+                className="group rounded-2xl border border-[#E2E8F0] dark:border-border bg-white dark:bg-card p-6 shadow-surface transition-all [&_summary::-webkit-details-marker]:hidden"
+              >
+                <summary className="flex cursor-pointer items-center justify-between text-base sm:text-lg font-semibold text-[#0C1220] dark:text-foreground">
+                  <span>{faq.question}</span>
+                  <span className="ml-4 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#FAFAF8] dark:bg-muted text-[#64748B] dark:text-muted-foreground transition-transform duration-200 group-open:rotate-180">
+                    <ChevronDown className="h-4 w-4" />
+                  </span>
+                </summary>
+                <p className="mt-4 text-sm sm:text-[15px] leading-relaxed text-[#64748B] dark:text-slate-300 border-t border-[#E2E8F0]/60 dark:border-border/60 pt-4">
+                  {faq.answer}
+                </p>
+              </details>
             ))}
           </div>
         </div>
