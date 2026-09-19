@@ -69,6 +69,9 @@ export const metadata: Metadata = {
       "Track your medical expenses, let your HSA compound tax-free, and stay IRS audit-ready.",
     images: ["/og-image.jpg"],
   },
+  ...(process.env.NEXT_PUBLIC_FB_APP_ID
+    ? { facebook: { appId: process.env.NEXT_PUBLIC_FB_APP_ID } }
+    : {}),
   icons: {
     icon: "/icon.png",
     apple: "/apple-icon.png",

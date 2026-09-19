@@ -221,7 +221,7 @@ export function DigestEmail({
         {/* CTA */}
         <div style={{ textAlign: "center", margin: "24px 0" }}>
           <a
-            href={process.env.NEXT_PUBLIC_APP_URL ?? "https://hsaplus.app"}
+            href={process.env.NEXT_PUBLIC_APP_URL ?? "https://hsa.plus"}
             style={{
               display: "inline-block",
               background: "linear-gradient(135deg, #059669, #34d399)",
@@ -250,7 +250,7 @@ export function DigestEmail({
           You&apos;re receiving this because you enabled email digests in your HSA Plus
           profile settings. Manage your preferences in{" "}
           <a
-            href={`${process.env.NEXT_PUBLIC_APP_URL ?? "https://hsaplus.app"}/dashboard/profile`}
+            href={`${process.env.NEXT_PUBLIC_APP_URL ?? "https://hsa.plus"}/dashboard/profile`}
             style={{ color: "#059669", textDecoration: "underline" }}
           >
             Profile settings

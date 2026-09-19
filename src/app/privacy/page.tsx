@@ -452,10 +452,10 @@ export default function PrivacyPolicy() {
               <p className="text-sm text-[#64748B] mt-1">
                 Email:{" "}
                 <a
-                  href="mailto:privacy@hsaplus.app"
-                  className="text-[#059669] underline hover:text-[#047857]"
+                  href="mailto:privacy@hsa.plus"
+                  className="font-medium text-[#059669] hover:underline"
                 >
-                  privacy@hsaplus.app
+                  privacy@hsa.plus
                 </a>
               </p>
             </div>
