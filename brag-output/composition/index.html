@@ -39,6 +39,27 @@
         background-size:32px 32px; }
       .glow { position:absolute; border-radius:50%; pointer-events:none; }
 
+      /* S0 — title card: what HSA Plus is */
+      #s0-glow { width:1200px; height:1200px; left:360px; top:-200px;
+        background:radial-gradient(circle, rgba(5,150,105,0.34) 0%, rgba(5,150,105,0) 60%);
+        filter:blur(44px); }
+      #s0-col { position:relative; display:flex; flex-direction:column; align-items:center; }
+      #s0-lockup { display:flex; align-items:center; gap:30px; }
+      #s0-mark { display:block; width:128px; height:128px; border-radius:29px; }
+      #s0-name { font-size:110px; font-weight:800; color:#ffffff; letter-spacing:-0.035em; }
+      #s0-pill { display:inline-flex; align-items:center; gap:15px; border-radius:999px;
+        border:1px solid rgba(52,211,153,0.32); background:rgba(5,150,105,0.12);
+        padding:13px 28px; margin-top:30px; }
+      #s0-dot { display:block; width:11px; height:11px; border-radius:50%; background:var(--accent2); }
+      #s0-pill .lbl { font-size:21px; font-weight:500; letter-spacing:0.18em;
+        text-transform:uppercase; color:var(--accent2); }
+      #s0-head { display:block; font-family:"Calistoga", Georgia, serif; font-size:76px;
+        line-height:1.12; letter-spacing:-0.025em; color:#ffffff; text-align:center;
+        font-weight:400; margin-top:34px; }
+      #s0-head .grad { display:inline-block;
+        background:linear-gradient(to right,#059669,#34d399);
+        -webkit-background-clip:text; background-clip:text; color:transparent; }
+
       /* S1 — the receipt, then what the reflex costs */
       #s1-glow { width:1300px; height:1300px; left:310px; top:-280px;
         background:radial-gradient(circle, rgba(5,150,105,0.55) 0%, rgba(5,150,105,0) 62%);
@@ -53,11 +74,11 @@
       .rprov { font-size:27px; font-weight:700; color:var(--text); letter-spacing:-0.02em; }
       .rtag { display:inline-block; margin-top:9px; border-radius:7px; background:var(--subtle2);
         padding:5px 13px; font-size:15px; font-weight:600; letter-spacing:0.12em;
-        text-transform:uppercase; color:#616a77; }
+        text-transform:uppercase; color:#4d5563; }
       .ramt { display:block; font-size:54px; font-weight:500; color:var(--text);
         letter-spacing:-0.03em; margin-top:12px; }
       .rfoot { display:flex; justify-content:space-between; align-items:baseline; margin-top:14px; }
-      .rdate { font-size:18px; color:var(--muted); }
+      .rdate { font-size:18px; color:#565f6d; }
       .rpaid { font-size:14px; font-weight:500; letter-spacing:0.08em;
         text-transform:uppercase; color:#616a77; white-space:nowrap; }
       .rdate { white-space:nowrap; }
@@ -199,11 +220,36 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="25.57"
+    <div id="root" data-composition-id="main" data-start="0" data-duration="29.58"
          data-width="1920" data-height="1080">
 
+      <!-- S0 — title card: what HSA Plus is (0 -> 4.08) -->
+      <section id="s0" class="clip" data-start="0" data-duration="4.28" data-track-index="0" style="z-index:1">
+        <div id="s0-inner" class="fill">
+          <div class="fill dark-bg"></div>
+          <div class="dots"></div>
+          <div id="s0-glow" class="glow"></div>
+          <div class="stage">
+            <div id="s0-col">
+              <span id="s0-lockup">
+                <img id="s0-mark" src="assets/logo.png" alt="HSA Plus" />
+                <span id="s0-name">HSA Plus</span>
+              </span>
+              <span id="s0-pill">
+                <span id="s0-dot"></span>
+                <span class="lbl mono">HSA + LPFSA + HCFSA</span>
+              </span>
+              <span id="s0-head">
+                Turn medical expenses into
+                <span class="grad">tax-free wealth</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- S1 — the receipt, then what the reflex costs (0 -> 6.07) -->
-      <section id="s1" class="clip" data-start="0" data-duration="6.27" data-track-index="0" style="z-index:1">
+      <section id="s1" class="clip" data-start="4.01" data-duration="6.27" data-track-index="0" style="z-index:2">
         <div id="s1-inner" class="fill">
           <div class="fill dark-bg"></div>
           <div class="dots"></div>
@@ -235,7 +281,7 @@
       </section>
 
       <!-- S3 — save the receipt (6.07 -> 11.08) -->
-      <section id="s3" class="clip" data-start="6.07" data-duration="5.21" data-track-index="0" style="z-index:3">
+      <section id="s3" class="clip" data-start="10.08" data-duration="5.21" data-track-index="0" style="z-index:3">
         <div id="s3-inner" class="fill">
           <div class="fill light-bg"></div>
           <div class="stage">
@@ -302,7 +348,7 @@
       </section>
 
       <!-- S4 — it grows while it waits (11.08 -> 16.08) -->
-      <section id="s4" class="clip" data-start="11.08" data-duration="5.2" data-track-index="0" style="z-index:4">
+      <section id="s4" class="clip" data-start="15.09" data-duration="5.2" data-track-index="0" style="z-index:4">
         <div id="s4-inner" class="fill">
           <div class="fill light-bg"></div>
           <div class="stage">
@@ -358,7 +404,7 @@
       </section>
 
       <!-- S5 — claim it in one click (16.08 -> 21.57) -->
-      <section id="s5" class="clip" data-start="16.08" data-duration="5.69" data-track-index="0" style="z-index:5">
+      <section id="s5" class="clip" data-start="20.09" data-duration="5.69" data-track-index="0" style="z-index:5">
         <div id="s5-inner" class="fill">
           <div class="fill light-bg"></div>
           <div class="stage">
@@ -432,7 +478,7 @@
       </section>
 
       <!-- S6 — outro (21.57 -> 25.57) -->
-      <section id="s6" class="clip" data-start="21.57" data-duration="4" data-track-index="0" style="z-index:6">
+      <section id="s6" class="clip" data-start="25.58" data-duration="4" data-track-index="0" style="z-index:6">
         <div id="s6-inner" class="fill">
           <div class="fill dark-bg"></div>
           <div class="dots"></div>
@@ -467,38 +513,41 @@
 
       <!-- AUDIO -->
       <audio id="bgm" src="assets/music/bed-vol1-energetic.mp3"
-        data-start="0" data-duration="25.57" data-media-start="0"
+        data-start="0" data-duration="29.58" data-media-start="0"
         data-track-index="1" data-volume="1"
         data-fx-chain='{"version":1,"nodes":[{"type":"gain","id":"drive","params":{"gain":5}},{"type":"limiter","id":"lim","params":{"limit":-1.2,"attack":3,"release":60,"level_out":0}}]}'
-        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0.5},{"t":0.2,"v":0.86},{"t":2.08,"v":0.9},{"t":6.07,"v":0.74},{"t":11.08,"v":0.78},{"t":16.08,"v":0.76},{"t":21.57,"v":0.92},{"t":24.4,"v":0.55},{"t":25.57,"v":0}]}]}'></audio>
+        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0.5},{"t":0.2,"v":0.88},{"t":4.08,"v":0.84},{"t":6.09,"v":0.9},{"t":10.08,"v":0.74},{"t":15.09,"v":0.78},{"t":20.09,"v":0.76},{"t":25.58,"v":0.92},{"t":28.4,"v":0.55},{"t":29.58,"v":0}]}]}'></audio>
 
-      <audio id="sfx-rcpt"  src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="0.07" data-duration="0.18" data-track-index="2" data-volume="0.62"></audio>
-      <audio id="sfx-num"   src="assets/sfx/impact/impactSoft_heavy_000.ogg" data-start="2.08"  data-duration="0.51" data-track-index="2" data-volume="0.72"></audio>
-      <audio id="sfx-l1"    src="assets/sfx/ui/rollover2.ogg"                data-start="3.08"  data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
-      <audio id="sfx-l2"    src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="4.08" data-duration="0.15" data-track-index="2" data-volume="0.6"></audio>
-      <audio id="sfx-note"  src="assets/sfx/interface/bong_001.ogg"          data-start="4.57"  data-duration="0.12" data-track-index="3" data-volume="0.42"></audio>
-      <audio id="sfx-s3"    src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="6.07" data-duration="0.15" data-track-index="2" data-volume="0.55"></audio>
-      <audio id="sfx-click" src="assets/sfx/ui/click2.ogg"                   data-start="6.57"  data-duration="0.06" data-track-index="3" data-volume="0.62"></audio>
-      <audio id="sfx-f1"    src="assets/sfx/ui/rollover2.ogg"                data-start="7.58"  data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
-      <audio id="sfx-f2"    src="assets/sfx/ui/rollover2.ogg"                data-start="8.08"  data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
-      <audio id="sfx-f3"    src="assets/sfx/ui/rollover2.ogg"                data-start="8.58"  data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
-      <audio id="sfx-f4"    src="assets/sfx/ui/rollover2.ogg"                data-start="9.08"  data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
-      <audio id="sfx-badge" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="9.58" data-duration="0.18" data-track-index="2" data-volume="0.66"></audio>
-      <audio id="sfx-s4"    src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="11.08" data-duration="0.15" data-track-index="2" data-volume="0.55"></audio>
-      <audio id="sfx-now"   src="assets/sfx/ui/rollover2.ogg"                data-start="11.58" data-duration="0.06" data-track-index="3" data-volume="0.38"></audio>
-      <audio id="sfx-later" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="12.07" data-duration="0.18" data-track-index="2" data-volume="0.62"></audio>
-      <audio id="sfx-top"   src="assets/sfx/impact/impactSoft_heavy_000.ogg" data-start="13.4"  data-duration="0.51" data-track-index="2" data-volume="0.54"></audio>
-      <audio id="sfx-s5"    src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="16.08" data-duration="0.15" data-track-index="2" data-volume="0.55"></audio>
-      <audio id="sfx-click2" src="assets/sfx/ui/click2.ogg"                  data-start="17.07" data-duration="0.06" data-track-index="3" data-volume="0.62"></audio>
-      <audio id="sfx-st1"   src="assets/sfx/ui/rollover2.ogg"                data-start="17.58" data-duration="0.06" data-track-index="3" data-volume="0.42"></audio>
-      <audio id="sfx-st2"   src="assets/sfx/ui/rollover2.ogg"                data-start="18.08" data-duration="0.06" data-track-index="3" data-volume="0.42"></audio>
-      <audio id="sfx-st3"   src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="18.58" data-duration="0.18" data-track-index="2" data-volume="0.68"></audio>
-      <audio id="sfx-o1"    src="assets/sfx/ui/rollover2.ogg"                data-start="19.08" data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
-      <audio id="sfx-o2"    src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="19.57" data-duration="0.18" data-track-index="2" data-volume="0.6"></audio>
-      <audio id="sfx-t1"    src="assets/sfx/interface/bong_001.ogg"          data-start="21.57" data-duration="0.12" data-track-index="3" data-volume="0.42"></audio>
-      <audio id="sfx-t2"    src="assets/sfx/interface/bong_001.ogg"          data-start="21.82" data-duration="0.12" data-track-index="3" data-volume="0.42"></audio>
-      <audio id="sfx-t3"    src="assets/sfx/interface/bong_001.ogg"          data-start="22.07" data-duration="0.12" data-track-index="3" data-volume="0.42"></audio>
-      <audio id="sfx-mark"  src="assets/sfx/impact/impactSoft_heavy_000.ogg" data-start="23.58" data-duration="0.51" data-track-index="2" data-volume="0.7"></audio>
+      <audio id="sfx-logo"  src="assets/sfx/impact/impactSoft_heavy_000.ogg" data-start="0.07" data-duration="0.51" data-track-index="2" data-volume="0.72"></audio>
+      <audio id="sfx-pill"  src="assets/sfx/ui/rollover2.ogg"                data-start="0.57" data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
+      <audio id="sfx-tag"   src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="1.07" data-duration="0.18" data-track-index="2" data-volume="0.6"></audio>
+      <audio id="sfx-rcpt"  src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="4.08" data-duration="0.18" data-track-index="2" data-volume="0.62"></audio>
+      <audio id="sfx-num"   src="assets/sfx/impact/impactSoft_heavy_000.ogg" data-start="6.09"  data-duration="0.51" data-track-index="2" data-volume="0.72"></audio>
+      <audio id="sfx-l1"    src="assets/sfx/ui/rollover2.ogg"                data-start="7.09"  data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
+      <audio id="sfx-l2"    src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="8.09" data-duration="0.15" data-track-index="2" data-volume="0.6"></audio>
+      <audio id="sfx-note"  src="assets/sfx/interface/bong_001.ogg"          data-start="8.58"  data-duration="0.12" data-track-index="3" data-volume="0.42"></audio>
+      <audio id="sfx-s3"    src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="10.08" data-duration="0.15" data-track-index="2" data-volume="0.55"></audio>
+      <audio id="sfx-click" src="assets/sfx/ui/click2.ogg"                   data-start="10.58"  data-duration="0.06" data-track-index="3" data-volume="0.62"></audio>
+      <audio id="sfx-f1"    src="assets/sfx/ui/rollover2.ogg"                data-start="11.59"  data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
+      <audio id="sfx-f2"    src="assets/sfx/ui/rollover2.ogg"                data-start="12.09"  data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
+      <audio id="sfx-f3"    src="assets/sfx/ui/rollover2.ogg"                data-start="12.59"  data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
+      <audio id="sfx-f4"    src="assets/sfx/ui/rollover2.ogg"                data-start="13.09"  data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
+      <audio id="sfx-badge" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="13.59" data-duration="0.18" data-track-index="2" data-volume="0.66"></audio>
+      <audio id="sfx-s4"    src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="15.09" data-duration="0.15" data-track-index="2" data-volume="0.55"></audio>
+      <audio id="sfx-now"   src="assets/sfx/ui/rollover2.ogg"                data-start="15.59" data-duration="0.06" data-track-index="3" data-volume="0.38"></audio>
+      <audio id="sfx-later" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="16.08" data-duration="0.18" data-track-index="2" data-volume="0.62"></audio>
+      <audio id="sfx-top"   src="assets/sfx/impact/impactSoft_heavy_000.ogg" data-start="17.41"  data-duration="0.51" data-track-index="2" data-volume="0.54"></audio>
+      <audio id="sfx-s5"    src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="20.09" data-duration="0.15" data-track-index="2" data-volume="0.55"></audio>
+      <audio id="sfx-click2" src="assets/sfx/ui/click2.ogg"                  data-start="21.08" data-duration="0.06" data-track-index="3" data-volume="0.62"></audio>
+      <audio id="sfx-st1"   src="assets/sfx/ui/rollover2.ogg"                data-start="21.59" data-duration="0.06" data-track-index="3" data-volume="0.42"></audio>
+      <audio id="sfx-st2"   src="assets/sfx/ui/rollover2.ogg"                data-start="22.09" data-duration="0.06" data-track-index="3" data-volume="0.42"></audio>
+      <audio id="sfx-st3"   src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="22.59" data-duration="0.18" data-track-index="2" data-volume="0.68"></audio>
+      <audio id="sfx-o1"    src="assets/sfx/ui/rollover2.ogg"                data-start="23.09" data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
+      <audio id="sfx-o2"    src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="23.58" data-duration="0.18" data-track-index="2" data-volume="0.6"></audio>
+      <audio id="sfx-t1"    src="assets/sfx/interface/bong_001.ogg"          data-start="25.58" data-duration="0.12" data-track-index="3" data-volume="0.42"></audio>
+      <audio id="sfx-t2"    src="assets/sfx/interface/bong_001.ogg"          data-start="25.83" data-duration="0.12" data-track-index="3" data-volume="0.42"></audio>
+      <audio id="sfx-t3"    src="assets/sfx/interface/bong_001.ogg"          data-start="26.08" data-duration="0.12" data-track-index="3" data-volume="0.42"></audio>
+      <audio id="sfx-mark"  src="assets/sfx/impact/impactSoft_heavy_000.ogg" data-start="27.59" data-duration="0.51" data-track-index="2" data-volume="0.7"></audio>
     </div>
 
     <script>
@@ -507,154 +556,172 @@
         var SLAM = "power4.out";
         var OUT = "power3.out";
 
+        /* ===== S0 — title card: what HSA Plus is (0 -> 4.08) ===== */
+        tl.fromTo("#s0-lockup", { scale: 1.16, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.4, ease: SLAM }, 0.07);   // beat
+        tl.fromTo("#s0-pill", { y: 16, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.28, ease: OUT }, 0.57);       // beat
+        // settles ~1.55 and holds to 4.08 (2.5s; floor for 6 words is 1.8s)
+        tl.fromTo("#s0-head", { y: 24, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.34, ease: OUT }, 1.07);       // beat
+        tl.set("#s0-col", { opacity: 0 }, 4.08);                        // hard cut
+
+        /* Everything below is the explainer proper. It is built on a nested
+           timeline and dropped in at 4.01s (8 beats at 120.19 BPM) so the title
+           card can sit in front of it without every cue being re-typed. */
+        var body = gsap.timeline();
+
         /* ===== S1 — the receipt, then what the reflex costs (0 -> 6.07) =====
            Lead with the concrete thing: a $340 copay you paid yourself. Only
            once that has landed does the abstract number arrive. */
         // beat-locked 0.07: the receipt lands
-        tl.fromTo("#s1-rwrap", { scale: 1.12, y: 18, opacity: 0 },
+        body.fromTo("#s1-rwrap", { scale: 1.12, y: 18, opacity: 0 },
           { scale: 1, y: 0, opacity: 1, duration: 0.38, ease: SLAM }, 0.07);
         // the column reserves room for the number, so start it low enough that the
         // receipt reads centred, then lift the whole stack when the number lands
-        tl.set("#s1-col", { y: 205 }, 0);
-        tl.to("#s1-col", { y: 0, duration: 0.5, ease: OUT }, 2.08);
+        body.set("#s1-col", { y: 205 }, 0);
+        body.to("#s1-col", { y: 0, duration: 0.5, ease: OUT }, 2.08);
         // the receipt reads alone for ~2s, then steps back as the number takes over
-        tl.to("#s1-receipt", { borderColor: "#059669", duration: 0.25, ease: OUT }, 2.08);
-        tl.to("#s1-rwrap", { scale: 0.86, opacity: 0.62, duration: 0.42, ease: OUT }, 2.08);
+        body.to("#s1-receipt", { borderColor: "#059669", duration: 0.25, ease: OUT }, 2.08);
+        body.to("#s1-rwrap", { scale: 0.82, opacity: 0.92, duration: 0.42, ease: OUT }, 2.08);
         // beat-locked 2.08 (bar): $976 SLAMS in, it does not fade up
-        tl.fromTo("#s1-kicker", { y: -12, opacity: 0 },
+        body.fromTo("#s1-kicker", { y: -12, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.26, ease: OUT }, 2.08);
-        tl.fromTo("#s1-num", { scale: 1.3, opacity: 0 },
+        body.fromTo("#s1-num", { scale: 1.3, opacity: 0 },
           { scale: 1, opacity: 1, duration: 0.42, ease: SLAM }, 2.08);
         // sentence completes across two beats, then the frame holds to 6.07
-        tl.fromTo("#s1-l1", { y: 22, opacity: 0 },
+        body.fromTo("#s1-l1", { y: 22, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.28, ease: OUT }, 3.08);
-        tl.fromTo("#s1-l2", { y: 22, opacity: 0 },
+        body.fromTo("#s1-l2", { y: 22, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.28, ease: OUT }, 4.08);
-        tl.fromTo("#s1-note", { opacity: 0 },
+        body.fromTo("#s1-note", { opacity: 0 },
           { opacity: 1, duration: 0.28, ease: OUT }, 4.57);  // beat-locked 4.57 (strong 0.99)
 
         /* ===== S3 — save the receipt (6.07 -> 11.08) ===== */
         // beat-locked 6.07 (strongCue 1.00) — hard cut, card punches in
-        tl.fromTo("#s3-card", { scale: 0.965, opacity: 0 },
+        body.fromTo("#s3-card", { scale: 0.965, opacity: 0 },
           { scale: 1, opacity: 1, duration: 0.3, ease: SLAM }, 6.07);
-        tl.set("#s3-cursor", { x: 900, y: 250, opacity: 0 }, 0);
-        tl.to("#s3-cursor", { opacity: 1, duration: 0.12 }, 6.2);
-        tl.to("#s3-cursor", { x: 1128, y: 68, duration: 0.33, ease: "power2.inOut" }, 6.2);
-        tl.to("#s3-btn", { scale: 0.94, duration: 0.08, ease: "power2.out" }, 6.57);
-        tl.to("#s3-btn", { scale: 1, duration: 0.18, ease: "back.out(3)" }, 6.65);
-        tl.to("#s3-cursor", { x: 1176, y: 140, opacity: 0, duration: 0.28, ease: "power1.in" }, 6.85);
+        body.set("#s3-cursor", { x: 900, y: 250, opacity: 0 }, 0);
+        body.to("#s3-cursor", { opacity: 1, duration: 0.12 }, 6.2);
+        body.to("#s3-cursor", { x: 1128, y: 68, duration: 0.33, ease: "power2.inOut" }, 6.2);
+        body.to("#s3-btn", { scale: 0.94, duration: 0.08, ease: "power2.out" }, 6.57);
+        body.to("#s3-btn", { scale: 1, duration: 0.18, ease: "back.out(3)" }, 6.65);
+        body.to("#s3-cursor", { x: 1176, y: 140, opacity: 0, duration: 0.28, ease: "power1.in" }, 6.85);
 
-        tl.set("#s3-statusblock", { opacity: 0 }, 0);
-        tl.set("#s3-bar", { scaleX: 0 }, 0);
-        tl.to("#s3-statusblock", { opacity: 1, duration: 0.18, ease: OUT }, 6.7);
-        tl.to("#s3-bar", { scaleX: 1, duration: 1.7, ease: "power1.inOut" }, 6.75);
+        body.set("#s3-statusblock", { opacity: 0 }, 0);
+        body.set("#s3-bar", { scaleX: 0 }, 0);
+        body.to("#s3-statusblock", { opacity: 1, duration: 0.18, ease: OUT }, 6.7);
+        body.to("#s3-bar", { scaleX: 1, duration: 1.7, ease: "power1.inOut" }, 6.75);
         var pct = { v: 0 };
-        tl.to(pct, { v: 100, duration: 1.7, ease: "power1.inOut",
+        body.to(pct, { v: 100, duration: 1.7, ease: "power1.inOut",
           onUpdate: function () {
             var e = document.getElementById("s3-status-pct");
             if (e) e.textContent = Math.round(pct.v) + "%";
           } }, 6.75);
-        tl.call(setS3, ["Saved — claim it any time"], 8.5);
+        body.call(setS3, ["Saved — claim it any time"], 8.5);
 
         // beat-grid: 7.58 / 8.08 / 8.58 / 9.08
         var fs = ["#s3-f1", "#s3-f2", "#s3-f3", "#s3-f4"];
         var fb = [7.58, 8.08, 8.58, 9.08];
-        tl.set(fs, { opacity: 0 }, 0);
+        body.set(fs, { opacity: 0 }, 0);
         for (var i = 0; i < fs.length; i++) {
-          tl.fromTo(fs[i], { y: 18, opacity: 0, scale: 0.98 },
+          body.fromTo(fs[i], { y: 18, opacity: 0, scale: 0.98 },
             { y: 0, opacity: 1, scale: 1, duration: 0.26, ease: SLAM }, fb[i]);
         }
         // beat-locked 9.58; set holds to 11.08 (1.5s)
-        tl.set("#s3-badge", { opacity: 0 }, 0);
-        tl.fromTo("#s3-badge", { scale: 0.86, opacity: 0 },
+        body.set("#s3-badge", { opacity: 0 }, 0);
+        body.fromTo("#s3-badge", { scale: 0.86, opacity: 0 },
           { scale: 1, opacity: 1, duration: 0.34, ease: "back.out(2.2)" }, 9.58);
 
         /* ===== S4 — it grows while it waits (11.08 -> 16.08) ===== */
         // beat-locked 11.08 (strongCue 1.00)
-        tl.fromTo("#s4-chip", { y: -18, opacity: 0 },
+        body.fromTo("#s4-chip", { y: -18, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.3, ease: SLAM }, 11.08);
-        tl.set(["#s4-now", "#s4-later"], { opacity: 0 }, 0);
-        tl.fromTo("#s4-now", { y: 22, opacity: 0 },
+        body.set(["#s4-now", "#s4-later"], { opacity: 0 }, 0);
+        body.fromTo("#s4-now", { y: 22, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.3, ease: SLAM }, 11.58);
-        tl.fromTo("#s4-later", { y: 22, opacity: 0 },
+        body.fromTo("#s4-later", { y: 22, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.32, ease: SLAM }, 12.07);
 
         // 340 * 1.07^20 = 1316
-        tl.set("#s4-revealrect", { attr: { width: 0 } }, 0);
-        tl.set("#s4-tip", { opacity: 0, transformOrigin: "50% 50%" }, 0);
-        tl.to("#s4-revealrect", { attr: { width: 460 }, duration: 1.15, ease: "power1.inOut" }, 12.3);
+        body.set("#s4-revealrect", { attr: { width: 0 } }, 0);
+        body.set("#s4-tip", { opacity: 0, transformOrigin: "50% 50%" }, 0);
+        body.to("#s4-revealrect", { attr: { width: 460 }, duration: 1.15, ease: "power1.inOut" }, 12.3);
         var m = { v: 340 };
-        tl.to(m, { v: 1316, duration: 1.15, ease: "power1.inOut",
+        body.to(m, { v: 1316, duration: 1.15, ease: "power1.inOut",
           onUpdate: function () {
             var e = document.getElementById("s4-grow");
             if (e) e.textContent = "$" + Math.round(m.v).toLocaleString("en-US");
           } }, 12.3);
-        tl.fromTo("#s4-tip", { scale: 0.2, opacity: 0 },
+        body.fromTo("#s4-tip", { scale: 0.2, opacity: 0 },
           { scale: 1, opacity: 1, duration: 0.26, ease: "back.out(2.4)" }, 13.4);
         // settles 13.88, holds to 16.08 (2.2s; floor for 7 words is 2.1s)
-        tl.fromTo("#s4-line", { y: 20, opacity: 0 },
+        body.fromTo("#s4-line", { y: 20, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.3, ease: OUT }, 13.58);
 
         /* ===== S5 — claim it in one click (16.08 -> 21.57) ===== */
         // beat-locked 16.08
-        tl.fromTo("#s5-card", { scale: 0.965, opacity: 0 },
+        body.fromTo("#s5-card", { scale: 0.965, opacity: 0 },
           { scale: 1, opacity: 1, duration: 0.3, ease: SLAM }, 16.08);
-        tl.set("#s5-cursor", { x: 900, y: 250, opacity: 0 }, 0);
-        tl.to("#s5-cursor", { opacity: 1, duration: 0.12 }, 16.5);
-        tl.to("#s5-cursor", { x: 1132, y: 68, duration: 0.42, ease: "power2.inOut" }, 16.5);
+        body.set("#s5-cursor", { x: 900, y: 250, opacity: 0 }, 0);
+        body.to("#s5-cursor", { opacity: 1, duration: 0.12 }, 16.5);
+        body.to("#s5-cursor", { x: 1132, y: 68, duration: 0.42, ease: "power2.inOut" }, 16.5);
         // beat-locked 17.07 (strongCue 1.00) — the one click
-        tl.to("#s5-btn", { scale: 0.93, duration: 0.08, ease: "power2.out" }, 17.07);
-        tl.to("#s5-btn", { scale: 1, duration: 0.2, ease: "back.out(3)" }, 17.15);
-        tl.to("#s5-cursor", { x: 1180, y: 140, opacity: 0, duration: 0.28, ease: "power1.in" }, 17.3);
+        body.to("#s5-btn", { scale: 0.93, duration: 0.08, ease: "power2.out" }, 17.07);
+        body.to("#s5-btn", { scale: 1, duration: 0.2, ease: "back.out(3)" }, 17.15);
+        body.to("#s5-cursor", { x: 1180, y: 140, opacity: 0, duration: 0.28, ease: "power1.in" }, 17.3);
 
         // status marches on the beat: Submitted -> Processing -> Reimbursed
-        tl.set(["#s5-st1", "#s5-st2", "#s5-st3", "#s5-badge", "#s5-a1", "#s5-a2"],
+        body.set(["#s5-st1", "#s5-st2", "#s5-st3", "#s5-badge", "#s5-a1", "#s5-a2"],
           { opacity: 0 }, 0);
-        tl.fromTo("#s5-st1", { y: 14, opacity: 0 },
+        body.fromTo("#s5-st1", { y: 14, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.24, ease: SLAM }, 17.58);
-        tl.call(lightStep, ["s5-st1"], 17.58);
-        tl.to("#s5-a1", { opacity: 1, duration: 0.18 }, 18.02);
-        tl.fromTo("#s5-st2", { y: 14, opacity: 0 },
+        body.call(lightStep, ["s5-st1"], 17.58);
+        body.to("#s5-a1", { opacity: 1, duration: 0.18 }, 18.02);
+        body.fromTo("#s5-st2", { y: 14, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.24, ease: SLAM }, 18.08);
-        tl.call(lightStep, ["s5-st2"], 18.08);
-        tl.to("#s5-a2", { opacity: 1, duration: 0.18 }, 18.52);
-        tl.fromTo("#s5-st3", { y: 14, opacity: 0 },
+        body.call(lightStep, ["s5-st2"], 18.08);
+        body.to("#s5-a2", { opacity: 1, duration: 0.18 }, 18.52);
+        body.fromTo("#s5-st3", { y: 14, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.24, ease: SLAM }, 18.58);
-        tl.call(lightStep, ["s5-st3"], 18.58);
-        tl.fromTo("#s5-badge", { scale: 0.86, opacity: 0 },
+        body.call(lightStep, ["s5-st3"], 18.58);
+        body.fromTo("#s5-badge", { scale: 0.86, opacity: 0 },
           { scale: 1, opacity: 1, duration: 0.32, ease: "back.out(2.2)" }, 18.58);
 
         // the split: what comes back to you vs what keeps compounding
-        tl.set(["#s5-o1", "#s5-o2"], { opacity: 0 }, 0);
-        tl.fromTo("#s5-o1", { y: 18, opacity: 0 },
+        body.set(["#s5-o1", "#s5-o2"], { opacity: 0 }, 0);
+        body.fromTo("#s5-o1", { y: 18, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.28, ease: SLAM }, 19.08);  // beat-locked 19.08
-        tl.fromTo("#s5-o2", { y: 18, opacity: 0 },
+        body.fromTo("#s5-o2", { y: 18, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.3, ease: SLAM }, 19.57);
         // settles 20.37, holds to 21.57 (1.2s); 7 words across two clauses
-        tl.fromTo("#s5-line", { y: 20, opacity: 0 },
+        body.fromTo("#s5-line", { y: 20, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.28, ease: OUT }, 20.07);
 
         /* ===== S6 — outro (21.57 -> 25.57) ===== */
         var tls = ["#s6-l1", "#s6-l2", "#s6-l3"];
         var tts = [21.57, 21.82, 22.07]; // eighth-notes; third lands on strongCue 22.07
-        tl.set(tls, { opacity: 0 }, 0);
+        body.set(tls, { opacity: 0 }, 0);
         for (var j = 0; j < tls.length; j++) {
-          tl.fromTo(tls[j], { x: -26, opacity: 0 },
+          body.fromTo(tls[j], { x: -26, opacity: 0 },
             { x: 0, opacity: 1, duration: 0.26, ease: SLAM }, tts[j]);
         }
         // set holds to 23.58 (1.18s on the last line)
-        tl.to("#s6-lines", { y: -24, opacity: 0, duration: 0.24, ease: "power2.in" }, 23.34);
-        tl.set("#s6-out", { opacity: 0 }, 0);
-        tl.fromTo("#s6-out", { scale: 1.1, opacity: 0 },
+        body.to("#s6-lines", { y: -24, opacity: 0, duration: 0.24, ease: "power2.in" }, 23.34);
+        body.set("#s6-out", { opacity: 0 }, 0);
+        body.fromTo("#s6-out", { scale: 1.1, opacity: 0 },
           { scale: 1, opacity: 1, duration: 0.4, ease: SLAM }, 23.58);
 
         /* Hard cuts: the outgoing scene's content is gone in ~0.14s while the
            incoming scene is already at full opacity on top. Punchy, and it
            keeps two text blocks from ever being legible in one frame. */
-        tl.set("#s1-col", { opacity: 0 }, 6.07);
-        tl.set("#s3-card", { opacity: 0 }, 11.08);
-        tl.set("#s4-panel", { opacity: 0 }, 16.08);
-        tl.set("#s5-wrap", { opacity: 0 }, 21.57);
+        body.set("#s1-col", { opacity: 0 }, 6.07);
+        body.set("#s3-card", { opacity: 0 }, 11.08);
+        body.set("#s4-panel", { opacity: 0 }, 16.08);
+        body.set("#s5-wrap", { opacity: 0 }, 21.57);
+
+
+        tl.add(body, 4.01);
 
         function setS3(t) {
           var e = document.getElementById("s3-status-text");

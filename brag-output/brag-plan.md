@@ -61,7 +61,13 @@ once, in Scene 2, purely as a frame around the flow.
   governing style. This is a product about other people's money; confidence sells it.
 
 ## Format: landscape — 1920x1080
-## Duration: 25.6 seconds
+## Duration: 29.6 seconds
+
+> Past the skill's 15–25s guideline. The title card, the receipt-first open and the
+> claim scene were each added on request; at 29.6s this is a 30-second explainer
+> rather than a short social teaser. Both are valid formats — a cut-down is easy
+> if a shorter one is wanted (the scan scene and the title card are the two most
+> compressible).
 
 ## Visual identity (from the project)
 - Background (light): `#FAFAF8` · Surface `#FFFFFF` · Border `#E2E8F0` · Subtle `#F8FAFC` / `#F1F5F9`
@@ -104,6 +110,15 @@ whenever you want — the IRS never put an expiration date on it.
 
 Cuts land on bar lines of a 120 BPM bed. Transitions are **hard cuts**: the outgoing
 scene's content drops in one frame while the incoming scene is already opaque on top.
+
+### Scene 0 — Title card: what HSA Plus is — 4.08s
+Near-black. The mark and **HSA Plus** punch in at 0.07 (scale 1.16 → 1), the
+`HSA + LPFSA + HCFSA` pill at 0.57, then the product's own hero line in Calistoga
+at 1.07: **"Turn medical expenses into tax-free wealth"** with the emerald
+gradient on the last two words. Holds to 4.08 (2.5s settled).
+Says what the thing *is* before the explanation starts, and bookends with the
+outro, which returns to the same lockup.
+→ hard cut
 
 ### Scene 1 — The receipt, then what the reflex costs — 6.07s
 Near-black. A receipt lands at 0.07 (scale 1.12 → 1) and reads **alone for two
@@ -152,6 +167,6 @@ Set holds 1.18s, then the wordmark punches in with `hsa.plus` and
 **Music:** `bed-vol1-energetic.mp3` — 27s cut from 49.94s into Happy Beats Vol. 1
 (120.19 BPM), chosen because that section sustains energy with no breakdown. Beat
 grid measured by running the analyzer on the trimmed file, so every lock is real.
-Chain `gain +5dB → limiter -1.2dB`; delivered at −13.9 LUFS / −1.5 dB peak.
+Chain `gain +5dB → limiter -1.2dB`; delivered at −13.8 LUFS / −1.5 dB peak. The bed is a 30.5s cut.
 **Audio summary:** A driving bed that is part of the edit, every SFX matched to a
 visible event, wordmark landing on a heavy impact.

@@ -8,7 +8,7 @@ claim the reimbursement whenever you want.
 ## Output
 - Composition directory: `brag-output/composition/`
 - Rendered video: `brag-output/brag.mp4`
-- Format: landscape — 1920x1080 · Duration: 25.6s
+- Format: landscape — 1920x1080 · Duration: 29.6s (past the 15–25s guideline; see brag-plan.md)
 
 ## Source Material
 - Project root: `/home/user/hsa_app`
@@ -67,6 +67,9 @@ required." — that line is removed and must not come back. The outro closes on
 ## Storyboard
 `brag-output/brag-plan.md` is the creative contract.
 
+0. **Title card** — 4.08s — mark + **HSA Plus** + `HSA + LPFSA + HCFSA` + the hero line
+   "Turn medical expenses into tax-free wealth". Establishes what the product is before any
+   explanation, and bookends with the outro.
 1. **The receipt, then the cost** — 6.07s — a $340 COPAY receipt marked "paid with your own
    card" reads alone for 2s, then $976 SLAMS in: "of tax-free growth on this one receipt."
 2. **Park the receipt** — 5.01s — cursor clicks Scan Receipt → four fields on the beat grid →

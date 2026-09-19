@@ -6,8 +6,8 @@ A 22-second launch video for HSA Plus, generated with the
 
 | File | What it is |
 |---|---|
-| `brag.mp4` | The video — 1920x1080, 25.6s, H.264 + AAC. The poster is baked as frame 0 so platform thumbnail grabbers pick it up. |
-| `brag.jpg` | Poster still (the $976 reveal at 5.4s). Use as `poster=` on a `<video>`, or as the custom thumbnail where a platform accepts an upload. |
+| `brag.mp4` | The video — 1920x1080, 29.6s, H.264 + AAC. The poster is baked as frame 0 so platform thumbnail grabbers pick it up. |
+| `brag.jpg` | Poster still (the $976 reveal at 9.4s). Use as `poster=` on a `<video>`, or as the custom thumbnail where a platform accepts an upload. |
 | `share-copy.txt` | The share caption. |
 | `brag-plan.md` | Creative plan and beat-by-beat storyboard. |
 | `composition-brief.md` | The handoff brief given to Hyperframes. |
