@@ -2,18 +2,18 @@
      role="img" aria-label="HSA Plus">
   <title>HSA Plus</title>
   <defs>
-    <linearGradient id="hsaPlusEmerald" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0" stop-color="#047857"/>
+    <linearGradient id="hsaPlusEmerald" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#065f46"/>
       <stop offset="1" stop-color="#34d399"/>
     </linearGradient>
   </defs>
-  <!-- Squircle with the plus knocked out. The plus is the brand's sacred
-       geometry; its top arm comes to a point so the same glyph also reads as
-       growth. The point is deliberately restrained (24 units against a
-       14-unit arm) so the mark reads plus-first, not arrow-first. Arms are
-       14 units so the knockout still holds at 16px. -->
-  <path fill="url(#hsaPlusEmerald)" fill-rule="evenodd"
-        d="M24,2 h48 a22,22 0 0 1 22,22 v48 a22,22 0 0 1 -22,22
-           h-48 a22,22 0 0 1 -22,-22 v-48 a22,22 0 0 1 22,-22 Z
-           M41,78 L41,60 L20,60 L20,46 L41,46 L41,36 L36,36 L48,22 L60,36 L55,36 L55,46 L76,46 L76,60 L55,60 L55,78 Z"/>
+  <!-- The H of HSA, built to climb: the right stem stands taller than the left
+       and the crossbar is pitched up between them. Corners are milled almost
+       square (r=2) rather than rounded, for the precision the brand's design
+       philosophy asks for. No cross, no medical read. -->
+  <g fill="url(#hsaPlusEmerald)">
+    <rect x="16" y="32" width="15" height="50" rx="2"/>
+    <rect x="65" y="14" width="15" height="68" rx="2"/>
+    <path d="M31,53 L65,37 L65,51 L31,67 Z"/>
+  </g>
 </svg>
