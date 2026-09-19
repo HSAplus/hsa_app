@@ -8,7 +8,7 @@ claim the reimbursement whenever you want.
 ## Output
 - Composition directory: `brag-output/composition/`
 - Rendered video: `brag-output/brag.mp4`
-- Format: landscape — 1920x1080 · Duration: 23.3s
+- Format: landscape — 1920x1080 · Duration: 25.6s
 
 ## Source Material
 - Project root: `/home/user/hsa_app`
@@ -37,8 +37,11 @@ required." — that line is removed and must not come back. The outro closes on
 `Built for the HSA power user.` instead.
 
 ## Creative Direction
-- Tone preset: `polished` · Direction: quiet premium fintech product film
-- Interpretation: restraint is the flex — long settled holds, soft crossfades, no hype verbs.
+- Tone preset: `app-store` energy on `polished` brand discipline
+- Interpretation: the first cut read as generic product-video filler — slow fades, a sleepy
+  bed, uniform pacing. This pass fixes that: numbers SLAM rather than fade, transitions are
+  hard cuts on bar lines, and the music is a driving 120 BPM bed that is part of the edit.
+  Holds still honor the readability floors; the energy comes from entrances and cuts.
   The repo's "Verdant Precision" philosophy governs: emerald corridor, near-black gravity,
   deliberate geometry, negative space as oxygen.
 - Angle: everyone reflexively takes the money back out of the HSA. That reflex is the
