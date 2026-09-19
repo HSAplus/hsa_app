@@ -100,61 +100,58 @@ whenever you want — the IRS never put an expiration date on it.
 - Restraint rule: no risers, no braams, no whoosh per cut, no stinger on plain text. This is a
   financial product — it must not sound like a mobile game ad.
 
-## Storyboard  *(recut — energetic pass)*
+## Storyboard  *(receipt-first open, explicit withdrawal split)*
 
-Cuts land on bar lines of a 120 BPM bed. Transitions are **hard cuts**, not
-crossfades: the outgoing scene's content drops out in one frame while the
-incoming scene is already opaque on top.
+Cuts land on bar lines of a 120 BPM bed. Transitions are **hard cuts**: the outgoing
+scene's content drops in one frame while the incoming scene is already opaque on top.
 
-### Scene 1 — What the reflex costs — 4.08s
-Near-black. `ON ONE $340 RECEIPT` in mono, then **$976** SLAMS in at 268px
-emerald (scale 1.32 → 1, power4.out — it does not fade up). Sentence lands in
-two beats: *"That's the growth you give up"* (1.07) / *"by reimbursing yourself
-today."* (2.08). Footnote `20 years at 7%` at 2.58 (beat-locked).
-Audio: a heavy soft impact on the number. Full bed from frame one.
+### Scene 1 — The receipt, then what the reflex costs — 6.07s
+Near-black. A receipt lands at 0.07 (scale 1.12 → 1) and reads **alone for two
+seconds** — `Dr. Smith Visit` · **COPAY** · `$340.00` · `Mar 12, 2026` ·
+`PAID WITH YOUR OWN CARD`. Concrete first: a real bill you paid yourself.
+At 2.08 (bar) the receipt dims to 62%, its border goes emerald, the whole stack
+lifts, and **$976** SLAMS in at 196px under the kicker
+`REIMBURSE IT TODAY AND YOU GIVE UP`. Sentence completes across two beats —
+*"of tax-free growth"* (3.08) / *"on this one receipt."* (4.08) — then the
+footnote `20 years at 7%` at 4.57 (beat-locked). Holds to 6.07.
 → hard cut
 
-### Scene 2 — Brand sting — 1.99s
-Logo + **HSA Plus** punch in (scale 1.18 → 1). At 4.57 (strong cue):
-*"Keep the growth."* Short, deliberate — the pivot from problem to product.
-→ hard cut
-
-### Scene 3 — Park the receipt — 5.01s
+### Scene 2 — Park the receipt — 5.01s
 `Scan a Receipt` / *"Pay out of pocket — then park it here"*. Cursor presses
-**Scan Receipt** at 6.57; progress fills; four fields land on the beat grid
-(7.58 / 8.08 / 8.58 / 9.08); status resolves to **`Saved — claim it any time`**;
-`Audit Ready · 100%` at 9.58. Set holds 1.5s.
+**Scan Receipt** at 6.57; four fields land on the beat grid (7.58 / 8.08 / 8.58 /
+9.08); status resolves to **`Saved — claim it any time`**; `Audit Ready · 100%`
+at 9.58, holding 1.5s.
 → hard cut
 
-### Scene 4 — It grows while it waits — 5.0s
-Chip: `Dr. Smith Visit | $340.00 | saved in HSA Plus`. Two cards, one beat
-apart: **Reimburse today → $340**, flat dashed rule, "The money leaves your HSA.
-Done growing." vs **Leave it invested → $340 counting to $1,316**, emerald curve
+### Scene 3 — It grows while it waits — 5.0s
+Chip: `Dr. Smith Visit | $340.00 | saved in HSA Plus`. Two cards a beat apart:
+**Reimburse today → $340**, flat dashed rule, "The money leaves your HSA. Done
+growing." vs **Leave it invested → $340 counting to $1,316**, emerald curve
 drawing beneath, "Compounding the whole time — at 7% a year."
-Line at 13.58: *"Same receipt. Your HSA grows until you claim it."* (holds 2.2s)
+Line at 13.58: *"Same receipt. Your HSA grows until you claim it."*
 → hard cut
 
-### Scene 5 — Claim it in one click — 5.49s
-`Submit HSA Claim` / *"Whenever you're ready — one click"*. The expense row and
-the connected HSA administrator (channel: Portal). Cursor presses **Submit
-Claim** at 17.07 (strong cue). The status marches on the beat —
-`Submitted` (17.58) → `Processing` (18.08) → `Reimbursed` (18.58) — with a
-`Paid out · $340.00` badge. Connector arrows reveal with the step they point to.
-Line at 19.08 (strong cue): *"You get your $340 back. **The $976 it earned stays
-invested.**"* — closing the loop on the hook's number.
+### Scene 4 — Claim it in one click — 5.49s
+`Submit HSA Claim` / *"Whenever you're ready — one click"*, with the expense row
+and the connected administrator (channel: Portal). Cursor presses **Submit
+Claim** at 17.07 (strong cue). Status marches on the beat —
+`Submitted` (17.58) → `Processing` (18.08) → `Reimbursed` (18.58).
+Then the split, which is the whole point of the scene:
+- **Withdrawn to you — $340** · "The copay you paid, back tax-free" (19.08, strong cue)
+- **Stays invested — $976** · "Still growing, still tax-free" (19.57, emerald)
+
+Line at 20.07: *"Take back what you paid. **Let the rest keep growing.**"*
 → hard cut
 
-### Scene 6 — Outro — 4.0s
+### Scene 5 — Outro — 4.0s
 Three lines fly in from the left on eighth-notes (21.57 / 21.82 / 22.07, the
 third on a strong cue): **"Tax-free in." / "Tax-free growth." / "Tax-free out."**
-Set holds 1.18s, then the wordmark punches in (scale 1.1 → 1) with `hsa.plus`
-and **"Start with your next receipt."** — an action, not a price.
+Set holds 1.18s, then the wordmark punches in with `hsa.plus` and
+**"Start with your next receipt."** — an action, not a price.
 
 **Music:** `bed-vol1-energetic.mp3` — 27s cut from 49.94s into Happy Beats Vol. 1
-(120.19 BPM), chosen because that section sustains high energy with no
-breakdown. Beat grid verified by running the analyzer on the trimmed file, so
-every lock is measured rather than extrapolated. Chain: `gain +5dB → limiter
--1.2dB`, delivered at −14.2 LUFS / −1.5 dB peak.
-**Audio summary:** A driving bed that is part of the edit rather than a bed
-under it, with every SFX matched to a visible event and the wordmark landing on
-a heavy impact.
+(120.19 BPM), chosen because that section sustains energy with no breakdown. Beat
+grid measured by running the analyzer on the trimmed file, so every lock is real.
+Chain `gain +5dB → limiter -1.2dB`; delivered at −13.9 LUFS / −1.5 dB peak.
+**Audio summary:** A driving bed that is part of the edit, every SFX matched to a
+visible event, wordmark landing on a heavy impact.

@@ -7,7 +7,7 @@ A 22-second launch video for HSA Plus, generated with the
 | File | What it is |
 |---|---|
 | `brag.mp4` | The video — 1920x1080, 25.6s, H.264 + AAC. The poster is baked as frame 0 so platform thumbnail grabbers pick it up. |
-| `brag.jpg` | Poster still (the $976 hook at 3.4s). Use as `poster=` on a `<video>`, or as the custom thumbnail where a platform accepts an upload. |
+| `brag.jpg` | Poster still (the $976 reveal at 5.4s). Use as `poster=` on a `<video>`, or as the custom thumbnail where a platform accepts an upload. |
 | `share-copy.txt` | The share caption. |
 | `brag-plan.md` | Creative plan and beat-by-beat storyboard. |
 | `composition-brief.md` | The handoff brief given to Hyperframes. |
@@ -33,9 +33,14 @@ The dollar amounts on screen are illustrative, not real user data:
 - **$340 → $1,316** is 20 years at 7% a year (`340 * 1.07^20 = 1315.7`), the same
   compounding `reimbursement-optimizer.tsx` uses. 7% is the return assumption the
   landing page already states, and it is shown on screen next to the number.
-- **$976** (the hook, and the closing line) is `1316 - 340` — the growth forgone
-  by reimbursing yourself immediately instead of letting the balance ride. The
-  on-screen footnote says `20 years at 7%` so the number is never unqualified.
+- **$976** (the hook, and the claim-scene split) is `1316 - 340` — the growth
+  forgone by reimbursing yourself immediately instead of letting the balance
+  ride. The on-screen footnote says `20 years at 7%`, so the number is never
+  shown unqualified.
+- The claim scene splits the outcome explicitly: **$340 withdrawn to you**
+  (the documented expense, tax-free) and **$976 stays invested**. Only the
+  documented expense amount can be reimbursed; the remainder stays in the HSA
+  and keeps its tax advantage.
 - The claim flow shows `Submitted → Processing → Reimbursed`, the real statuses
   in `claim-status-badge.tsx`. Actual timing depends on your HSA administrator;
   the video compresses it for the edit.

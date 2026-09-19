@@ -67,15 +67,15 @@ required." — that line is removed and must not come back. The outro closes on
 ## Storyboard
 `brag-output/brag-plan.md` is the creative contract.
 
-1. **You paid it yourself** — 5.4s — receipt + "paid with your own card" chip on near-black;
-   "You paid this one out of pocket." → ignition at 3.70 → "Don't reimburse yourself *yet.*"
-2. **The promise** — 3.4s — pill + hero headline, emerald gradient, single reveal.
-3. **Where the receipt goes** — 5.1s — cursor clicks Scan Receipt → scanning → four fields on
-   the beat grid → "Saved — claim it any time" → `Audit Ready · 100%` at 12.65.
-4. **Claim now, or let it grow** — 5.4s — the fork. $340 flat vs $340→$1,316 with the curve,
-   then "Same receipt. Your HSA grows until you claim it."
-5. **Triple tax-free** — 4.0s — three staggered lines, then wordmark + hsa.plus + "Built for
-   the HSA power user."
+1. **The receipt, then the cost** — 6.07s — a $340 COPAY receipt marked "paid with your own
+   card" reads alone for 2s, then $976 SLAMS in: "of tax-free growth on this one receipt."
+2. **Park the receipt** — 5.01s — cursor clicks Scan Receipt → four fields on the beat grid →
+   "Saved — claim it any time" → `Audit Ready · 100%`.
+3. **It grows while it waits** — 5.0s — $340 flat vs $340→$1,316 with the curve.
+4. **Claim it in one click** — 5.49s — Submit Claim → Submitted → Processing → Reimbursed,
+   then the split: **Withdrawn to you $340** / **Stays invested $976**, and
+   "Take back what you paid. Let the rest keep growing."
+5. **Outro** — 4.0s — three tax-free lines, wordmark, "Start with your next receipt."
 
 ## Audio
 - Role: warm restrained bed. Arc: quiet → opens on the promise → crisp through the scan →

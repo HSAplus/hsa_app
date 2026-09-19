@@ -39,33 +39,41 @@
         background-size:32px 32px; }
       .glow { position:absolute; border-radius:50%; pointer-events:none; }
 
-      /* S1 — the cost of the reflex */
+      /* S1 — the receipt, then what the reflex costs */
       #s1-glow { width:1300px; height:1300px; left:310px; top:-280px;
         background:radial-gradient(circle, rgba(5,150,105,0.55) 0%, rgba(5,150,105,0) 62%);
         filter:blur(50px); }
-      #s1-col { position:relative; display:flex; flex-direction:column;
-        align-items:center; gap:0; }
-      #s1-kicker { font-size:24px; font-weight:500; letter-spacing:0.26em;
-        text-transform:uppercase; color:rgba(255,255,255,0.5); margin-bottom:18px; }
-      #s1-num { display:block; font-size:268px; font-weight:600; line-height:0.95;
-        letter-spacing:-0.045em; color:var(--accent2); }
-      #s1-l1 { display:block; font-size:62px; font-weight:300; letter-spacing:-0.02em;
-        color:#ffffff; margin-top:34px; }
-      #s1-l2 { display:block; font-size:62px; font-weight:700; letter-spacing:-0.025em;
-        color:#ffffff; margin-top:6px; }
-      #s1-note { display:block; font-size:25px; letter-spacing:0.1em;
-        color:rgba(255,255,255,0.45); margin-top:34px; }
-
-      /* S2 — brand sting */
-      #s2-glow { width:1100px; height:1100px; left:410px; top:-120px;
-        background:radial-gradient(circle, rgba(5,150,105,0.3) 0%, rgba(5,150,105,0) 60%);
-        filter:blur(40px); }
-      #s2-col { position:relative; display:flex; flex-direction:column; align-items:center; }
-      #s2-lockup { display:flex; align-items:center; gap:30px; }
-      #s2-mark { display:block; width:124px; height:124px; border-radius:28px; }
-      #s2-name { font-size:104px; font-weight:800; color:#ffffff; letter-spacing:-0.035em; }
-      #s2-line { display:block; font-size:54px; font-weight:400; color:var(--accent2);
-        letter-spacing:-0.02em; margin-top:26px; }
+      #s1-col { position:relative; display:flex; flex-direction:column; align-items:center; }
+      #s1-receipt { display:block; width:516px; background:var(--surface); border-radius:13px;
+        border:2px solid rgba(226,232,240,0); padding:26px 32px 30px;
+        box-shadow:0 26px 60px rgba(0,0,0,0.5); }
+      .rk { font-size:15px; font-weight:500; letter-spacing:0.22em;
+        text-transform:uppercase; color:#616a77; }
+      .rrule { display:block; width:100%; height:1px; background:var(--border); margin:14px 0 16px; }
+      .rprov { font-size:27px; font-weight:700; color:var(--text); letter-spacing:-0.02em; }
+      .rtag { display:inline-block; margin-top:9px; border-radius:7px; background:var(--subtle2);
+        padding:5px 13px; font-size:15px; font-weight:600; letter-spacing:0.12em;
+        text-transform:uppercase; color:#616a77; }
+      .ramt { display:block; font-size:54px; font-weight:500; color:var(--text);
+        letter-spacing:-0.03em; margin-top:12px; }
+      .rfoot { display:flex; justify-content:space-between; align-items:baseline; margin-top:14px; }
+      .rdate { font-size:18px; color:var(--muted); }
+      .rpaid { font-size:14px; font-weight:500; letter-spacing:0.08em;
+        text-transform:uppercase; color:#616a77; white-space:nowrap; }
+      .rdate { white-space:nowrap; }
+      .rperf { display:block; width:100%; height:10px; margin-top:20px;
+        background-image:radial-gradient(circle at 5px 10px, var(--bg-dark) 5px, transparent 5.5px);
+        background-size:17px 10px; opacity:0.9; }
+      #s1-kicker { font-size:25px; font-weight:500; letter-spacing:0.22em;
+        text-transform:uppercase; color:rgba(255,255,255,0.62); margin-top:34px; }
+      #s1-num { display:block; font-size:196px; font-weight:600; line-height:0.98;
+        letter-spacing:-0.045em; color:var(--accent2); margin-top:6px; }
+      #s1-l1 { display:block; font-size:52px; font-weight:300; letter-spacing:-0.02em;
+        color:#ffffff; margin-top:20px; }
+      #s1-l2 { display:block; font-size:52px; font-weight:700; letter-spacing:-0.025em;
+        color:#ffffff; margin-top:4px; }
+      #s1-note { display:block; font-size:22px; letter-spacing:0.1em;
+        color:rgba(255,255,255,0.45); margin-top:20px; }
 
       /* Shared product card */
       .pcard { position:relative; width:1310px; background:var(--surface);
@@ -155,6 +163,18 @@
       .s5-step.on { border-color:rgba(5,150,105,0.35); background:rgba(5,150,105,0.08); }
       .s5-step.on .t { color:var(--accent-text); }
       .s5-arrow { font-size:20px; color:#6a7483; }
+      #s5-split { display:grid; grid-template-columns:1fr 1fr; gap:28px; width:1310px; margin-top:26px; }
+      .s5-out { display:flex; flex-direction:column; border-radius:16px; padding:20px 26px 18px;
+        border:1px solid var(--border); background:var(--surface); }
+      .s5-out.on { border-color:rgba(5,150,105,0.32); background:rgba(5,150,105,0.06); }
+      .s5-out .lbl { font-size:16px; font-weight:500; letter-spacing:0.18em;
+        text-transform:uppercase; color:#616a77; }
+      .s5-out.on .lbl { color:var(--accent-text); }
+      .s5-out .amt { display:block; font-size:62px; font-weight:500; letter-spacing:-0.035em;
+        color:var(--muted); line-height:1.08; margin-top:4px; }
+      .s5-out.on .amt { color:var(--text); }
+      .s5-out .sub { font-size:19px; color:#616a77; margin-top:4px; }
+      .s5-out.on .sub { color:var(--accent-text); font-weight:600; }
       #s5-line { display:block; font-size:48px; font-weight:400; color:var(--text);
         letter-spacing:-0.02em; margin-top:38px; text-align:center; }
       #s5-line b { font-weight:700; }
@@ -182,37 +202,33 @@
     <div id="root" data-composition-id="main" data-start="0" data-duration="25.57"
          data-width="1920" data-height="1080">
 
-      <!-- S1 — what the reflex costs (0 -> 4.08) -->
-      <section id="s1" class="clip" data-start="0" data-duration="4.28" data-track-index="0" style="z-index:1">
+      <!-- S1 — the receipt, then what the reflex costs (0 -> 6.07) -->
+      <section id="s1" class="clip" data-start="0" data-duration="6.27" data-track-index="0" style="z-index:1">
         <div id="s1-inner" class="fill">
           <div class="fill dark-bg"></div>
           <div class="dots"></div>
           <div id="s1-glow" class="glow"></div>
           <div class="stage">
             <div id="s1-col">
-              <span id="s1-kicker" class="mono">On one $340 receipt</span>
+              <div id="s1-rwrap">
+                <div id="s1-receipt">
+                  <div class="rk mono">Medical Receipt</div>
+                  <span class="rrule"></span>
+                  <div class="rprov">Dr. Smith Visit</div>
+                  <span class="rtag mono">Copay</span>
+                  <span class="ramt mono">$340.00</span>
+                  <div class="rfoot">
+                    <span class="rdate mono">Mar 12, 2026</span>
+                    <span class="rpaid mono">Paid with your own card</span>
+                  </div>
+                  <span class="rperf"></span>
+                </div>
+              </div>
+              <span id="s1-kicker" class="mono">Reimburse it today and you give up</span>
               <span id="s1-num" class="mono">$976</span>
-              <span id="s1-l1">That&rsquo;s the growth you give up</span>
-              <span id="s1-l2">by reimbursing yourself today.</span>
+              <span id="s1-l1">of tax-free growth</span>
+              <span id="s1-l2">on this one receipt.</span>
               <span id="s1-note" class="mono">20 years at 7%</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- S2 — brand sting (4.08 -> 6.07) -->
-      <section id="s2" class="clip" data-start="4.08" data-duration="2.19" data-track-index="0" style="z-index:2">
-        <div id="s2-inner" class="fill">
-          <div class="fill dark-bg"></div>
-          <div class="dots"></div>
-          <div id="s2-glow" class="glow"></div>
-          <div class="stage">
-            <div id="s2-col">
-              <span id="s2-lockup">
-                <img id="s2-mark" src="assets/logo.png" alt="HSA Plus" />
-                <span id="s2-name">HSA Plus</span>
-              </span>
-              <span id="s2-line">Keep the growth.</span>
             </div>
           </div>
         </div>
@@ -389,8 +405,7 @@
                       <path d="m7.6 12.2 2.9 2.9 5.9-5.9" stroke="#047c57" stroke-width="2.6"
                         stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
-                    <span class="txt">Paid out</span>
-                    <span class="pct mono">&middot; $340.00</span>
+                    <span class="txt">Reimbursed</span>
                   </span>
                 </div>
                 <svg id="s5-cursor" class="pcursor" viewBox="0 0 34 44" fill="none" aria-hidden="true">
@@ -398,7 +413,19 @@
                     fill="#0C1220" stroke="#ffffff" stroke-width="2" stroke-linejoin="round" />
                 </svg>
               </div>
-              <span id="s5-line">You get your $340 back. <b>The $976 it earned stays invested.</b></span>
+              <div id="s5-split">
+                <span class="s5-out" id="s5-o1">
+                  <span class="lbl mono">Withdrawn to you</span>
+                  <span class="amt mono">$340</span>
+                  <span class="sub">The copay you paid, back tax-free</span>
+                </span>
+                <span class="s5-out on" id="s5-o2">
+                  <span class="lbl mono">Stays invested</span>
+                  <span class="amt mono">$976</span>
+                  <span class="sub">Still growing, still tax-free</span>
+                </span>
+              </div>
+              <span id="s5-line">Take back what you paid. <b>Let the rest keep growing.</b></span>
             </div>
           </div>
         </div>
@@ -443,13 +470,13 @@
         data-start="0" data-duration="25.57" data-media-start="0"
         data-track-index="1" data-volume="1"
         data-fx-chain='{"version":1,"nodes":[{"type":"gain","id":"drive","params":{"gain":5}},{"type":"limiter","id":"lim","params":{"limit":-1.2,"attack":3,"release":60,"level_out":0}}]}'
-        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0.5},{"t":0.2,"v":0.86},{"t":4.08,"v":0.9},{"t":6.07,"v":0.74},{"t":11.08,"v":0.78},{"t":16.08,"v":0.76},{"t":21.57,"v":0.92},{"t":24.4,"v":0.55},{"t":25.57,"v":0}]}]}'></audio>
+        data-automation='{"version":1,"lanes":[{"target":"volume","points":[{"t":0,"v":0.5},{"t":0.2,"v":0.86},{"t":2.08,"v":0.9},{"t":6.07,"v":0.74},{"t":11.08,"v":0.78},{"t":16.08,"v":0.76},{"t":21.57,"v":0.92},{"t":24.4,"v":0.55},{"t":25.57,"v":0}]}]}'></audio>
 
-      <audio id="sfx-num"   src="assets/sfx/impact/impactSoft_heavy_000.ogg" data-start="0.07"  data-duration="0.51" data-track-index="2" data-volume="0.7"></audio>
-      <audio id="sfx-l1"    src="assets/sfx/ui/rollover2.ogg"                data-start="1.07"  data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
-      <audio id="sfx-l2"    src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="2.08" data-duration="0.15" data-track-index="2" data-volume="0.6"></audio>
-      <audio id="sfx-sting" src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="4.08" data-duration="0.18" data-track-index="2" data-volume="0.72"></audio>
-      <audio id="sfx-keep"  src="assets/sfx/interface/bong_001.ogg"          data-start="4.57"  data-duration="0.12" data-track-index="3" data-volume="0.46"></audio>
+      <audio id="sfx-rcpt"  src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="0.07" data-duration="0.18" data-track-index="2" data-volume="0.62"></audio>
+      <audio id="sfx-num"   src="assets/sfx/impact/impactSoft_heavy_000.ogg" data-start="2.08"  data-duration="0.51" data-track-index="2" data-volume="0.72"></audio>
+      <audio id="sfx-l1"    src="assets/sfx/ui/rollover2.ogg"                data-start="3.08"  data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
+      <audio id="sfx-l2"    src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="4.08" data-duration="0.15" data-track-index="2" data-volume="0.6"></audio>
+      <audio id="sfx-note"  src="assets/sfx/interface/bong_001.ogg"          data-start="4.57"  data-duration="0.12" data-track-index="3" data-volume="0.42"></audio>
       <audio id="sfx-s3"    src="assets/sfx/impact/impactSoft_medium_004.ogg" data-start="6.07" data-duration="0.15" data-track-index="2" data-volume="0.55"></audio>
       <audio id="sfx-click" src="assets/sfx/ui/click2.ogg"                   data-start="6.57"  data-duration="0.06" data-track-index="3" data-volume="0.62"></audio>
       <audio id="sfx-f1"    src="assets/sfx/ui/rollover2.ogg"                data-start="7.58"  data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
@@ -466,6 +493,8 @@
       <audio id="sfx-st1"   src="assets/sfx/ui/rollover2.ogg"                data-start="17.58" data-duration="0.06" data-track-index="3" data-volume="0.42"></audio>
       <audio id="sfx-st2"   src="assets/sfx/ui/rollover2.ogg"                data-start="18.08" data-duration="0.06" data-track-index="3" data-volume="0.42"></audio>
       <audio id="sfx-st3"   src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="18.58" data-duration="0.18" data-track-index="2" data-volume="0.68"></audio>
+      <audio id="sfx-o1"    src="assets/sfx/ui/rollover2.ogg"                data-start="19.08" data-duration="0.06" data-track-index="3" data-volume="0.4"></audio>
+      <audio id="sfx-o2"    src="assets/sfx/impact/impactSoft_medium_001.ogg" data-start="19.57" data-duration="0.18" data-track-index="2" data-volume="0.6"></audio>
       <audio id="sfx-t1"    src="assets/sfx/interface/bong_001.ogg"          data-start="21.57" data-duration="0.12" data-track-index="3" data-volume="0.42"></audio>
       <audio id="sfx-t2"    src="assets/sfx/interface/bong_001.ogg"          data-start="21.82" data-duration="0.12" data-track-index="3" data-volume="0.42"></audio>
       <audio id="sfx-t3"    src="assets/sfx/interface/bong_001.ogg"          data-start="22.07" data-duration="0.12" data-track-index="3" data-volume="0.42"></audio>
@@ -478,26 +507,31 @@
         var SLAM = "power4.out";
         var OUT = "power3.out";
 
-        /* ===== S1 — what the reflex costs (0 -> 4.08) ===== */
-        // beat-locked 0.07: the number SLAMS, it does not fade up
-        tl.fromTo("#s1-kicker", { y: -14, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.3, ease: OUT }, 0.07);
-        tl.fromTo("#s1-num", { scale: 1.32, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.42, ease: SLAM }, 0.07);
-        // sentence lands in two beats, then the whole thing holds to 4.08
-        tl.fromTo("#s1-l1", { y: 26, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.3, ease: OUT }, 1.07);   // beat
-        tl.fromTo("#s1-l2", { y: 26, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.3, ease: OUT }, 2.08);   // beat (strong 0.99 at 2.58)
+        /* ===== S1 — the receipt, then what the reflex costs (0 -> 6.07) =====
+           Lead with the concrete thing: a $340 copay you paid yourself. Only
+           once that has landed does the abstract number arrive. */
+        // beat-locked 0.07: the receipt lands
+        tl.fromTo("#s1-rwrap", { scale: 1.12, y: 18, opacity: 0 },
+          { scale: 1, y: 0, opacity: 1, duration: 0.38, ease: SLAM }, 0.07);
+        // the column reserves room for the number, so start it low enough that the
+        // receipt reads centred, then lift the whole stack when the number lands
+        tl.set("#s1-col", { y: 205 }, 0);
+        tl.to("#s1-col", { y: 0, duration: 0.5, ease: OUT }, 2.08);
+        // the receipt reads alone for ~2s, then steps back as the number takes over
+        tl.to("#s1-receipt", { borderColor: "#059669", duration: 0.25, ease: OUT }, 2.08);
+        tl.to("#s1-rwrap", { scale: 0.86, opacity: 0.62, duration: 0.42, ease: OUT }, 2.08);
+        // beat-locked 2.08 (bar): $976 SLAMS in, it does not fade up
+        tl.fromTo("#s1-kicker", { y: -12, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.26, ease: OUT }, 2.08);
+        tl.fromTo("#s1-num", { scale: 1.3, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.42, ease: SLAM }, 2.08);
+        // sentence completes across two beats, then the frame holds to 6.07
+        tl.fromTo("#s1-l1", { y: 22, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.28, ease: OUT }, 3.08);
+        tl.fromTo("#s1-l2", { y: 22, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.28, ease: OUT }, 4.08);
         tl.fromTo("#s1-note", { opacity: 0 },
-          { opacity: 1, duration: 0.3, ease: OUT }, 2.58);          // beat-locked 2.58
-
-        /* ===== S2 — brand sting (4.08 -> 6.07) ===== */
-        tl.fromTo("#s2-lockup", { scale: 1.18, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.36, ease: SLAM }, 4.08);
-        // beat-locked 4.57 (strongCue 0.99)
-        tl.fromTo("#s2-line", { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.3, ease: OUT }, 4.57);
+          { opacity: 1, duration: 0.28, ease: OUT }, 4.57);  // beat-locked 4.57 (strong 0.99)
 
         /* ===== S3 — save the receipt (6.07 -> 11.08) ===== */
         // beat-locked 6.07 (strongCue 1.00) — hard cut, card punches in
@@ -590,9 +624,15 @@
         tl.fromTo("#s5-badge", { scale: 0.86, opacity: 0 },
           { scale: 1, opacity: 1, duration: 0.32, ease: "back.out(2.2)" }, 18.58);
 
-        // beat-locked 19.08 (strongCue 1.00); settles 19.38, holds to 21.57 (2.19s)
+        // the split: what comes back to you vs what keeps compounding
+        tl.set(["#s5-o1", "#s5-o2"], { opacity: 0 }, 0);
+        tl.fromTo("#s5-o1", { y: 18, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.28, ease: SLAM }, 19.08);  // beat-locked 19.08
+        tl.fromTo("#s5-o2", { y: 18, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.3, ease: SLAM }, 19.57);
+        // settles 20.37, holds to 21.57 (1.2s); 7 words across two clauses
         tl.fromTo("#s5-line", { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.3, ease: OUT }, 19.08);
+          { y: 0, opacity: 1, duration: 0.28, ease: OUT }, 20.07);
 
         /* ===== S6 — outro (21.57 -> 25.57) ===== */
         var tls = ["#s6-l1", "#s6-l2", "#s6-l3"];
@@ -611,8 +651,7 @@
         /* Hard cuts: the outgoing scene's content is gone in ~0.14s while the
            incoming scene is already at full opacity on top. Punchy, and it
            keeps two text blocks from ever being legible in one frame. */
-        tl.set("#s1-col", { opacity: 0 }, 4.08);
-        tl.set("#s2-col", { opacity: 0 }, 6.07);
+        tl.set("#s1-col", { opacity: 0 }, 6.07);
         tl.set("#s3-card", { opacity: 0 }, 11.08);
         tl.set("#s4-panel", { opacity: 0 }, 16.08);
         tl.set("#s5-wrap", { opacity: 0 }, 21.57);
@@ -631,7 +670,6 @@
         var A = window.HSA_AUDIO;
         if (A && A.totalFrames) {
           var g1 = document.getElementById("s1-glow");
-          var g2 = document.getElementById("s2-glow");
           var c4 = document.getElementById("s4-minichart");
           var g6 = document.getElementById("s6-glow");
           var m6 = document.getElementById("s6-mark");
@@ -640,8 +678,6 @@
               var b = A.bass[i] || 0, r = A.rms[i] || 0, t = A.treble[i] || 0;
               if (g1) { g1.style.opacity = (0.45 + b * 0.55).toFixed(3);
                 g1.style.transform = "scale(" + (0.9 + b * 0.14).toFixed(3) + ")"; }
-              if (g2) { g2.style.opacity = (0.5 + b * 0.5).toFixed(3);
-                g2.style.transform = "scale(" + (0.92 + b * 0.12).toFixed(3) + ")"; }
               if (c4) c4.style.opacity = (0.84 + r * 0.16).toFixed(3);
               if (g6) { g6.style.opacity = (0.5 + b * 0.5).toFixed(3);
                 g6.style.transform = "scale(" + (0.93 + b * 0.1).toFixed(3) + ")"; }
