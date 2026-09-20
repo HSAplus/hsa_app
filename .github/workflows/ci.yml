@@ -24,10 +24,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Guard: Check Public Schema Tables Have RLS
+      - name: "Guard: Check Public Schema Tables Have RLS"
         run: npm run check:rls
 
-      - name: Test: Storage Path Security & Traversal Defense
+      - name: "Test: Storage Path Security & Traversal Defense"
         run: npm run test:storage
 
       - name: "Test: Signup Attribution Channel Derivation"
