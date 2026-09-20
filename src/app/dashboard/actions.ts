@@ -426,7 +426,7 @@ export async function markAsReimbursed(
 
 export async function uploadFile(
   formData: FormData
-): Promise<{ url?: string; error?: string }> {
+): Promise<{ url?: string; path?: string; error?: string }> {
   const supabase = await createClient();
   const {
     data: { user },
