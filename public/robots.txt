@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /dashboard
+Disallow: /api
+Disallow: /login
+Disallow: /signup
+Disallow: /auth/
+Disallow: /verify-mfa
+Disallow: /reset-password
+Disallow: /forgot-password
+
+Sitemap: https://hsa.plus/sitemap.xml

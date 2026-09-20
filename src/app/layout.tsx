@@ -72,6 +72,9 @@ export const metadata: Metadata = {
   ...(process.env.NEXT_PUBLIC_FB_APP_ID
     ? { facebook: { appId: process.env.NEXT_PUBLIC_FB_APP_ID } }
     : {}),
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } }
+    : {}),
   icons: {
     icon: "/icon.png",
     apple: "/apple-icon.png",
