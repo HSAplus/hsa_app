@@ -2,6 +2,8 @@
 
 import { useState, useRef, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { normalizeStoragePath } from "@/lib/storage";
+import { getSignedUrlAction } from "@/app/dashboard/actions";
 import { Button } from "@/components/ui/button";
 import {
   Upload,
@@ -96,11 +98,8 @@ export function FileUpload({
           return;
         }
 
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("hsa-documents").getPublicUrl(fileName);
-
-        onChange([...value, publicUrl]);
+        // Store storage path instead of public URL
+        onChange([...value, fileName]);
       } catch (err) {
         console.error("Upload failed:", err);
         setError("Upload failed. Please try again.");
@@ -133,19 +132,41 @@ export function FileUpload({
     setDragActive(false);
   };
 
-  const handleRemove = async (url: string) => {
+  const handleView = async (urlOrPath: string) => {
+    try {
+      const filePath = normalizeStoragePath(urlOrPath);
+      const supabase = createClient();
+      const { data } = await supabase.storage
+        .from("hsa-documents")
+        .createSignedUrl(filePath, 60);
+
+      if (data?.signedUrl) {
+        window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+      } else {
+        const res = await getSignedUrlAction(filePath);
+        if (res.signedUrl) {
+          window.open(res.signedUrl, "_blank", "noopener,noreferrer");
+        } else {
+          setError("Failed to open document");
+        }
+      }
+    } catch {
+      setError("Failed to open document");
+    }
+  };
+
+  const handleRemove = async (urlOrPath: string) => {
     try {
       const supabase = createClient();
-      const parsed = new URL(url);
-      const pathMatch = parsed.pathname.match(/\/object\/public\/hsa-documents\/(.+)/);
-      if (pathMatch) {
-        await supabase.storage.from("hsa-documents").remove([pathMatch[1]]);
+      const filePath = normalizeStoragePath(urlOrPath);
+      if (filePath) {
+        await supabase.storage.from("hsa-documents").remove([filePath]);
       }
     } catch {
       // Silently fail
     }
 
-    onChange(value.filter((u) => u !== url));
+    onChange(value.filter((u) => u !== urlOrPath));
   };
 
   const getFileIcon = (url: string) => {
@@ -203,14 +224,16 @@ export function FileUpload({
                 {getFileName(url)}
               </p>
               <div className="flex items-center gap-1 shrink-0">
-                <a
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center h-7 w-7 rounded-md hover:bg-accent"
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                  onClick={() => handleView(url)}
+                  title="View document"
                 >
-                  <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
-                </a>
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </Button>
                 <Button
                   type="button"
                   variant="ghost"

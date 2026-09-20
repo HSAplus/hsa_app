@@ -217,9 +217,18 @@ create trigger on_auth_user_created
 -- 8. Create the hsa-documents storage bucket for file uploads
 -- Documents are stored per-user: {user_id}/{folder}/{timestamp}-{filename}
 -- Folders: receipt, eob, invoice, cc-statement
-insert into storage.buckets (id, name, public)
-values ('hsa-documents', 'hsa-documents', true)
-on conflict (id) do nothing;
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'hsa-documents',
+  'hsa-documents',
+  false,
+  10485760,
+  array['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'application/pdf']
+)
+on conflict (id) do update set
+  public = false,
+  file_size_limit = 10485760,
+  allowed_mime_types = array['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'application/pdf'];
 
 -- 7. Storage policies — users can only manage files in their own folder
 create policy "Users can upload their own documents"
@@ -253,12 +262,6 @@ create policy "Users can delete their own documents"
     bucket_id = 'hsa-documents'
     and auth.uid()::text = (storage.foldername(name))[1]
   );
-
--- 8. Allow public read access so uploaded doc URLs work (bucket is public)
-create policy "Public can read hsa-documents"
-  on storage.objects
-  for select
-  using (bucket_id = 'hsa-documents');
 
 -- ────────────────────────────────────────────────
 -- Expense Templates
@@ -372,3 +375,78 @@ create policy "Users can update own plaid transactions"
   on public.plaid_transactions for update using (auth.uid() = user_id);
 create policy "Users can delete own plaid transactions"
   on public.plaid_transactions for delete using (auth.uid() = user_id);
+
+-- ────────────────────────────────────────────────
+-- HSA Administrators & Claims
+-- ────────────────────────────────────────────────
+
+create table if not exists public.hsa_administrators (
+  id text primary key,
+  name text not null,
+  submission_tier text not null check (submission_tier in ('api', 'email', 'fax', 'portal')),
+  fax_number text,
+  email_address text,
+  portal_url text,
+  api_base_url text,
+  form_template_id text,
+  mailing_address text,
+  market_share_pct numeric,
+  logo_url text,
+  active boolean not null default true
+);
+
+alter table public.hsa_administrators enable row level security;
+
+create policy "Authenticated users can read hsa_administrators"
+  on public.hsa_administrators
+  for select
+  using (auth.role() = 'authenticated' or auth.role() = 'anon');
+
+create table if not exists public.claims (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  expense_id uuid not null unique references public.expenses(id) on delete cascade,
+  administrator_id text not null references public.hsa_administrators(id),
+  submission_tier text not null check (submission_tier in ('api', 'email', 'fax', 'portal')),
+  status text not null default 'draft' check (status in ('draft', 'submitted', 'processing', 'approved', 'denied', 'reimbursed')),
+  submitted_at timestamp with time zone,
+  submitted_via text,
+  external_claim_id text,
+  fax_confirmation_id text,
+  email_message_id text,
+  form_data jsonb not null default '{}'::jsonb,
+  document_urls text[] not null default '{}'::text[],
+  generated_pdf_url text,
+  denial_reason text,
+  reimbursed_amount numeric,
+  reimbursed_date date,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now()
+);
+
+alter table public.claims enable row level security;
+
+create policy "Users can view own claims"
+  on public.claims for select
+  using (auth.uid() = user_id);
+
+create policy "Users can insert own claims"
+  on public.claims for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can update own claims"
+  on public.claims for update
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+create policy "Users can delete own claims"
+  on public.claims for delete
+  using (auth.uid() = user_id);
+
+-- ────────────────────────────────────────────────
+-- Performance Indexes
+-- ────────────────────────────────────────────────
+
+create index if not exists idx_profiles_stripe_customer_id
+  on public.profiles (stripe_customer_id);
+

@@ -2,6 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { syncPlaidForConnection } from "@/lib/plaid-sync";
 import type { HsaConnectionRow } from "@/lib/plaid-sync";
+import crypto from "crypto";
+
+function safeCompare(a: string, b: string): boolean {
+  const hashA = crypto.createHash("sha256").update(a).digest();
+  const hashB = crypto.createHash("sha256").update(b).digest();
+  return crypto.timingSafeEqual(hashA, hashB);
+}
 
 /**
  * Cron-invokable: sync all Plaid HSA connections (balance + transactions).
@@ -11,7 +18,15 @@ export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret) {
+    console.error("CRON_SECRET not configured — refusing to run");
+    return NextResponse.json(
+      { error: "Server misconfiguration: CRON_SECRET not configured" },
+      { status: 500 }
+    );
+  }
+
+  if (!authHeader || !safeCompare(authHeader, `Bearer ${cronSecret}`)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

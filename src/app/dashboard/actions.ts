@@ -8,6 +8,7 @@ import type { Claim, HsaAdministrator } from "@/lib/claims/types";
 import { submitClaim as submitClaimService } from "@/lib/claims/submission";
 import { getPlanLimits } from "@/lib/plans";
 import type { PlanType } from "@/lib/types";
+import { normalizeStoragePath } from "@/lib/storage";
 
 export async function getProfile(): Promise<Profile | null> {
   const supabase = await createClient();
@@ -454,15 +455,12 @@ export async function uploadFile(
     return { error: error.message };
   }
 
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from("hsa-documents").getPublicUrl(fileName);
-
-  return { url: publicUrl };
+  // Store and return storage path instead of public URL for private bucket
+  return { url: fileName, path: fileName };
 }
 
 export async function deleteFile(
-  fileUrl: string
+  fileUrlOrPath: string
 ): Promise<{ error?: string }> {
   const supabase = await createClient();
   const {
@@ -472,11 +470,8 @@ export async function deleteFile(
   if (!user) return { error: "Not authenticated" };
 
   try {
-    const url = new URL(fileUrl);
-    const pathMatch = url.pathname.match(/\/object\/public\/hsa-documents\/(.+)/);
-    if (!pathMatch) return { error: "Invalid file URL" };
-
-    const filePath = pathMatch[1];
+    const filePath = normalizeStoragePath(fileUrlOrPath);
+    if (!filePath) return { error: "Invalid file path" };
 
     // Verify the file belongs to this user
     if (!filePath.startsWith(user.id)) {
@@ -495,6 +490,38 @@ export async function deleteFile(
     return {};
   } catch {
     return { error: "Failed to delete file" };
+  }
+}
+
+export async function getSignedUrlAction(
+  fileUrlOrPath: string
+): Promise<{ signedUrl?: string; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Not authenticated" };
+
+  try {
+    const filePath = normalizeStoragePath(fileUrlOrPath);
+    if (!filePath) return { error: "Invalid file path" };
+
+    if (!filePath.startsWith(user.id)) {
+      return { error: "Unauthorized" };
+    }
+
+    const { data, error } = await supabase.storage
+      .from("hsa-documents")
+      .createSignedUrl(filePath, 60);
+
+    if (error || !data?.signedUrl) {
+      return { error: error?.message || "Failed to generate signed URL" };
+    }
+
+    return { signedUrl: data.signedUrl };
+  } catch {
+    return { error: "Failed to generate signed URL" };
   }
 }
 

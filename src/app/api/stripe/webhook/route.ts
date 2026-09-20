@@ -23,6 +23,7 @@ async function updateProfile(
 
   if (error) {
     console.error("Failed to update profile:", error);
+    throw new Error(`Failed to update profile for customer ${customerId}: ${error.message}`);
   }
 }
 
@@ -65,53 +66,61 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  switch (event.type) {
-    case "checkout.session.completed": {
-      const session = event.data.object as Stripe.Checkout.Session;
-      if (session.customer && session.subscription) {
-        await updateProfile(session.customer as string, {
-          plan_type: "plus",
-          subscription_status: "active",
-          stripe_subscription_id: session.subscription as string,
+  try {
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        if (session.customer && session.subscription) {
+          await updateProfile(session.customer as string, {
+            plan_type: "plus",
+            subscription_status: "active",
+            stripe_subscription_id: session.subscription as string,
+          });
+        }
+        break;
+      }
+
+      case "customer.subscription.updated": {
+        const subscription = event.data.object as Stripe.Subscription;
+        const fields: Record<string, string> = {
+          subscription_status: mapSubscriptionStatus(subscription.status),
+        };
+        if (
+          subscription.status === "active" ||
+          subscription.status === "trialing"
+        ) {
+          fields.plan_type = "plus";
+        }
+        await updateProfile(subscription.customer as string, fields);
+        break;
+      }
+
+      case "customer.subscription.deleted": {
+        const subscription = event.data.object as Stripe.Subscription;
+        await updateProfile(subscription.customer as string, {
+          plan_type: "free",
+          subscription_status: "canceled",
         });
+        break;
       }
-      break;
+
+      case "invoice.payment_failed": {
+        const invoice = event.data.object as Stripe.Invoice;
+        if (invoice.customer) {
+          await updateProfile(invoice.customer as string, {
+            subscription_status: "past_due",
+          });
+        }
+        break;
+      }
     }
 
-    case "customer.subscription.updated": {
-      const subscription = event.data.object as Stripe.Subscription;
-      const fields: Record<string, string> = {
-        subscription_status: mapSubscriptionStatus(subscription.status),
-      };
-      if (
-        subscription.status === "active" ||
-        subscription.status === "trialing"
-      ) {
-        fields.plan_type = "plus";
-      }
-      await updateProfile(subscription.customer as string, fields);
-      break;
-    }
-
-    case "customer.subscription.deleted": {
-      const subscription = event.data.object as Stripe.Subscription;
-      await updateProfile(subscription.customer as string, {
-        plan_type: "free",
-        subscription_status: "canceled",
-      });
-      break;
-    }
-
-    case "invoice.payment_failed": {
-      const invoice = event.data.object as Stripe.Invoice;
-      if (invoice.customer) {
-        await updateProfile(invoice.customer as string, {
-          subscription_status: "past_due",
-        });
-      }
-      break;
-    }
+    return NextResponse.json({ received: true });
+  } catch (err) {
+    console.error("Webhook processing failed, returning 500 for retry:", err);
+    return NextResponse.json(
+      { error: "Internal processing error, please retry" },
+      { status: 500 }
+    );
   }
-
-  return NextResponse.json({ received: true });
 }

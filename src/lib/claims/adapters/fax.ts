@@ -1,6 +1,7 @@
 import type { ClaimAdapter, ClaimPayload, ClaimSubmissionResult } from "../types";
 import { sendFax } from "@/lib/westfax";
 import { generateClaimFormPdf } from "../form-generator";
+import { downloadDocumentBuffer } from "@/lib/storage";
 
 export const faxAdapter: ClaimAdapter = {
   tier: "fax",
@@ -25,16 +26,12 @@ export const faxAdapter: ClaimAdapter = {
         },
       ];
 
-      for (const url of payload.documentUrls) {
+      for (const urlOrPath of payload.documentUrls) {
         try {
-          const res = await fetch(url);
-          if (res.ok) {
-            const buffer = Buffer.from(await res.arrayBuffer());
-            const filename = url.split("/").pop() ?? "document.pdf";
-            pdfBuffers.push({ filename, buffer });
-          }
-        } catch {
-          // Skip documents that fail to download
+          const { buffer, filename } = await downloadDocumentBuffer(urlOrPath);
+          pdfBuffers.push({ filename, buffer });
+        } catch (err) {
+          console.error(`Failed to download attachment ${urlOrPath}:`, err);
         }
       }
 

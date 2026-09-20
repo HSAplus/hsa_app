@@ -25,13 +25,13 @@ export const portalAdapter: ClaimAdapter = {
         return { success: false, error: `Failed to upload claim form: ${uploadError.message}` };
       }
 
-      const { data: urlData } = supabase.storage
+      const { data: signedData } = await supabase.storage
         .from("hsa-documents")
-        .getPublicUrl(filename);
+        .createSignedUrl(filename, 3600);
 
       return {
         success: true,
-        generatedPdfUrl: urlData.publicUrl,
+        generatedPdfUrl: signedData?.signedUrl ?? filename,
         portalUrl: administrator.portal_url ?? undefined,
       };
     } catch (err) {

@@ -92,34 +92,28 @@ function resolveMediaType(
   return "image/jpeg";
 }
 
-async function fetchImageAsBase64(
-  imageUrl: string
+async function processImageBuffer(
+  buffer: Buffer,
+  contentType: string
 ): Promise<{ base64: string; mediaType: "image/jpeg" | "image/png" | "image/gif" | "image/webp" }> {
-  const response = await fetch(imageUrl);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
-  }
-
-  const contentType = response.headers.get("content-type") || "image/jpeg";
-  const arrayBuffer = await response.arrayBuffer();
-  let buffer = Buffer.from(arrayBuffer);
+  let buf = buffer;
 
   if (contentType.toLowerCase().includes("heic")) {
     const heicConvert = (await import("heic-convert")).default;
     const converted = await heicConvert({
-      buffer: new Uint8Array(buffer),
+      buffer: new Uint8Array(buf),
       format: "JPEG",
       quality: 0.9,
     });
-    buffer = Buffer.from(converted);
+    buf = Buffer.from(converted);
     return {
-      base64: buffer.toString("base64"),
+      base64: buf.toString("base64"),
       mediaType: "image/jpeg",
     };
   }
 
   return {
-    base64: buffer.toString("base64"),
+    base64: buf.toString("base64"),
     mediaType: resolveMediaType(contentType),
   };
 }
@@ -169,8 +163,9 @@ function sanitizeResult(raw: Record<string, unknown>): ReceiptScanResult {
   };
 }
 
-export async function extractReceiptData(
-  imageUrl: string
+export async function extractReceiptDataFromBuffer(
+  buffer: Buffer,
+  contentType: string
 ): Promise<ReceiptScanResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -178,7 +173,7 @@ export async function extractReceiptData(
   }
 
   const anthropic = new Anthropic({ apiKey });
-  const { base64, mediaType } = await fetchImageAsBase64(imageUrl);
+  const { base64, mediaType } = await processImageBuffer(buffer, contentType);
 
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",

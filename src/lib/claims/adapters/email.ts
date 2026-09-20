@@ -1,6 +1,7 @@
 import type { ClaimAdapter, ClaimPayload, ClaimSubmissionResult } from "../types";
 import { resend, EMAIL_FROM } from "@/lib/resend";
 import { generateClaimFormPdf } from "../form-generator";
+import { downloadDocumentBuffer } from "@/lib/storage";
 
 export const emailAdapter: ClaimAdapter = {
   tier: "email",
@@ -25,16 +26,12 @@ export const emailAdapter: ClaimAdapter = {
         },
       ];
 
-      for (const url of payload.documentUrls) {
+      for (const urlOrPath of payload.documentUrls) {
         try {
-          const res = await fetch(url);
-          if (res.ok) {
-            const buffer = Buffer.from(await res.arrayBuffer());
-            const filename = url.split("/").pop() ?? "document";
-            attachments.push({ filename, content: buffer });
-          }
-        } catch {
-          // Skip documents that fail to download
+          const { buffer, filename } = await downloadDocumentBuffer(urlOrPath);
+          attachments.push({ filename, content: buffer });
+        } catch (err) {
+          console.error(`Failed to download attachment ${urlOrPath}:`, err);
         }
       }
 

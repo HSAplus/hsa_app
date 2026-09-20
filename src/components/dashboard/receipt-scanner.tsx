@@ -61,16 +61,12 @@ export function ReceiptScanner({ onScanComplete, isPlus }: ReceiptScannerProps) 
           return;
         }
 
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("hsa-documents").getPublicUrl(fileName);
-
         setState("scanning");
 
         const response = await fetch("/api/receipts/scan", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageUrl: publicUrl }),
+          body: JSON.stringify({ filePath: fileName }),
         });
 
         const data = await response.json();
@@ -81,7 +77,7 @@ export function ReceiptScanner({ onScanComplete, isPlus }: ReceiptScannerProps) 
           return;
         }
 
-        onScanComplete(data as ReceiptScanResult, publicUrl);
+        onScanComplete(data as ReceiptScanResult, fileName);
         setState("idle");
       } catch (err) {
         console.error("Receipt scan failed:", err);
