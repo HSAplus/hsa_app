@@ -34,16 +34,16 @@ function CustomTooltip({
   );
 
   return (
-    <div className="rounded-lg border border-[#E2E8F0] bg-white p-3 shadow-lg">
-      <p className="text-xs font-medium font-mono text-[#94A3B8] mb-2">
+    <div className="rounded-lg border border-border bg-popover text-popover-foreground p-3 shadow-lg">
+      <p className="text-xs font-medium font-mono text-muted-foreground mb-2">
         Year {label}
       </p>
       <div className="space-y-1">
         {balance && (
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-[#059669]" />
-            <span className="text-xs text-[#64748B]">HSA Balance:</span>
-            <span className="text-xs font-mono font-semibold ml-auto text-[#0C1220]">
+            <span className="text-xs text-muted-foreground">HSA Balance:</span>
+            <span className="text-xs font-mono font-semibold ml-auto text-foreground">
               {formatCurrency(balance.value)}
             </span>
           </div>
@@ -51,16 +51,16 @@ function CustomTooltip({
         {contributions && (
           <div className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-blue-500" />
-            <span className="text-xs text-[#64748B]">Contributions:</span>
-            <span className="text-xs font-mono font-semibold ml-auto text-[#0C1220]">
+            <span className="text-xs text-muted-foreground">Contributions:</span>
+            <span className="text-xs font-mono font-semibold ml-auto text-foreground">
               {formatCurrency(contributions.value)}
             </span>
           </div>
         )}
         {balance && contributions && (
-          <div className="flex items-center gap-2 pt-1 border-t border-[#F1F5F9]">
+          <div className="flex items-center gap-2 pt-1 border-t border-border">
             <div className="h-2 w-2 rounded-full bg-[#34d399]" />
-            <span className="text-xs text-[#64748B]">Growth:</span>
+            <span className="text-xs text-muted-foreground">Growth:</span>
             <span className="text-xs font-mono font-semibold ml-auto text-[#059669]">
               {formatCurrency(balance.value - contributions.value)}
             </span>

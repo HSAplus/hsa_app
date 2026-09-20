@@ -67,7 +67,7 @@ export default function VerifyMfaPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#FAFAF8]">
+    <div className="min-h-screen flex bg-background">
       {/* Left brand panel */}
       <div className="hidden lg:flex lg:w-[45%] bg-[#0C1220] relative overflow-hidden items-end p-12">
         <div className="absolute inset-0 dot-pattern" />
@@ -88,30 +88,30 @@ export default function VerifyMfaPage() {
 
       {/* Right form panel */}
       <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-sm bg-card border border-border rounded-2xl p-8 shadow-surface-lg">
           <div className="lg:hidden flex justify-center mb-6">
             <Image src="/logo.png" alt="HSA Plus" width={72} height={48} className="rounded-lg" />
           </div>
 
           <div className="flex items-center gap-2.5 mb-2">
             <ShieldCheck className="h-6 w-6 text-[#059669]" />
-            <h1 className="text-2xl tracking-tight text-[#0C1220] font-sans font-bold">
+            <h1 className="text-2xl tracking-tight text-foreground font-sans font-bold">
               Two-factor verification
             </h1>
           </div>
-          <p className="mt-1.5 text-sm text-[#64748B] mb-8">
+          <p className="mt-1.5 text-sm text-muted-foreground mb-8">
             Open your authenticator app and enter the 6-digit code
           </p>
 
           {error && (
-            <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+            <div className="mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 px-4 py-3 text-sm text-red-700 dark:text-red-300">
               {error}
             </div>
           )}
 
           <form onSubmit={handleVerify} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="code" className="text-sm">Verification code</Label>
+              <Label htmlFor="code" className="text-sm text-foreground">Verification code</Label>
               <Input
                 id="code"
                 type="text"
@@ -141,7 +141,7 @@ export default function VerifyMfaPage() {
             <button
               type="button"
               onClick={handleSignOut}
-              className="inline-flex items-center gap-1.5 text-sm text-[#64748B] hover:text-[#0C1220] transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
             >
               <LogOut className="h-3.5 w-3.5" />
               Sign out

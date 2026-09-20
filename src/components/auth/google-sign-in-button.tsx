@@ -33,7 +33,7 @@ export function GoogleSignInButton() {
     <Button
       type="button"
       variant="outline"
-      className="w-full h-10 border-[#E2E8F0] text-[13px]"
+      className="w-full h-10 border-border text-[13px]"
       onClick={handleGoogleSignIn}
       disabled={loading}
     >

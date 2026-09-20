@@ -261,27 +261,27 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Personal Information */}
           <section>
-            <h2 className="text-sm font-semibold text-[#0C1220] mb-4 font-sans">Personal information</h2>
+            <h2 className="text-sm font-semibold text-foreground mb-4 font-sans">Personal information</h2>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-[13px] text-[#475569]">First name</Label>
+                  <Label htmlFor="firstName" className="text-[13px] text-muted-foreground">First name</Label>
                   <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="John" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-[13px] text-[#475569]">Last name</Label>
+                  <Label htmlFor="lastName" className="text-[13px] text-muted-foreground">Last name</Label>
                   <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Doe" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="middleName" className="text-[13px] text-[#475569]">
-                    Middle name <span className="text-[#94A3B8]">(optional)</span>
+                  <Label htmlFor="middleName" className="text-[13px] text-muted-foreground">
+                    Middle name <span className="text-muted-foreground/70">(optional)</span>
                   </Label>
                   <Input id="middleName" value={middleName} onChange={(e) => setMiddleName(e.target.value)} placeholder="Michael" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="dateOfBirth" className="text-[13px] text-[#475569]">Date of birth</Label>
+                  <Label htmlFor="dateOfBirth" className="text-[13px] text-muted-foreground">Date of birth</Label>
                   <Input id="dateOfBirth" type="date" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />
                 </div>
               </div>
@@ -309,12 +309,12 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
           {/* HSA Investment Settings */}
           <section>
             <h2 className="text-sm font-semibold text-foreground mb-1 font-sans">HSA investment settings</h2>
-            <p className="text-xs text-[#94A3B8] mb-4">Used to project growth from delaying reimbursement</p>
+            <p className="text-xs text-muted-foreground mb-4">Used to project growth from delaying reimbursement</p>
             <div className="space-y-4">
               {/* Coverage type toggle */}
               <div className="space-y-2">
-                <Label className="text-[13px] text-[#475569]">Coverage type</Label>
-                <div className="inline-flex rounded-lg border border-[#E2E8F0] p-0.5 bg-[#F8FAFC]">
+                <Label className="text-[13px] text-muted-foreground">Coverage type</Label>
+                <div className="inline-flex rounded-lg border border-border p-0.5 bg-muted/50">
                   {(["individual", "family"] as const).map((type) => (
                     <button
                       key={type}
@@ -328,8 +328,8 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                       }}
                       className={`px-4 py-1.5 text-[13px] font-medium rounded-md transition-all ${
                         coverageType === type
-                          ? "bg-white text-[#0C1220] shadow-sm"
-                          : "text-[#94A3B8] hover:text-[#64748B]"
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       {type === "individual" ? "Individual" : "Family"}
@@ -343,16 +343,16 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="hsaBalance" className="text-[13px] text-[#475569]">Current HSA balance</Label>
+                  <Label htmlFor="hsaBalance" className="text-[13px] text-muted-foreground">Current HSA balance</Label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8] text-sm">$</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
                     <Input id="hsaBalance" type="number" min="0" step="100" value={hsaBalance} onChange={(e) => setHsaBalance(e.target.value)} className="pl-7" placeholder="0" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="annualContribution" className="text-[13px] text-[#475569]">Annual contribution</Label>
+                  <Label htmlFor="annualContribution" className="text-[13px] text-muted-foreground">Annual contribution</Label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8] text-sm">$</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
                     <Input
                       id="annualContribution"
                       type="number"
@@ -371,7 +371,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                       placeholder={coverageType === "family" ? "8750" : "4400"}
                     />
                   </div>
-                  <p className="text-[11px] text-[#94A3B8]">
+                  <p className="text-[11px] text-muted-foreground">
                     {new Date().getFullYear()} {coverageType} max: ${getContributionLimit(coverageType, dateOfBirth).toLocaleString()}
                     {isCatchUpEligible(dateOfBirth) && (
                       <span className="text-[#059669] font-medium"> (incl. $1,000 catch-up 55+)</span>
@@ -379,7 +379,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                   </p>
                   <div className="space-y-1.5 pt-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-[#64748B]">Annual increase</span>
+                      <span className="text-[11px] text-muted-foreground">Annual increase</span>
                       {planLimits.allowContributionIncrease ? (
                         <span className="text-[11px] font-mono font-semibold text-[#059669]">
                           +{increasePercent}% / year
@@ -398,7 +398,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                       disabled={!planLimits.allowContributionIncrease}
                     />
                     {planLimits.allowContributionIncrease && increasePercent > 0 && (
-                      <p className="text-[11px] text-[#94A3B8]">
+                      <p className="text-[11px] text-muted-foreground">
                         Contribution grows from ${(parseFloat(annualContribution) || 0).toLocaleString()} to ~${Math.round((parseFloat(annualContribution) || 0) * Math.pow(1 + increasePercent / 100, parseFloat(timeHorizonYears) || 1)).toLocaleString()} by year {timeHorizonYears}
                       </p>
                     )}
@@ -407,16 +407,16 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="expectedAnnualReturn" className="text-[13px] text-[#475569]">Expected annual return</Label>
+                  <Label htmlFor="expectedAnnualReturn" className="text-[13px] text-muted-foreground">Expected annual return</Label>
                   <div className="relative">
                     <Input id="expectedAnnualReturn" type="number" step="0.5" min="0" max="30" value={expectedAnnualReturn} onChange={(e) => setExpectedAnnualReturn(e.target.value)} className="pr-7" placeholder="7" />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] text-sm">%</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">%</span>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="timeHorizonYears" className="text-[13px] text-[#475569]">Time horizon</Label>
-                    <div className="inline-flex rounded-md border border-[#E2E8F0] p-0.5 bg-[#F8FAFC]">
+                    <Label htmlFor="timeHorizonYears" className="text-[13px] text-muted-foreground">Time horizon</Label>
+                    <div className="inline-flex rounded-md border border-border p-0.5 bg-muted/50">
                       {(["years", "date"] as const).map((mode) => (
                         <button
                           key={mode}
@@ -427,8 +427,8 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                           }}
                           className={`px-2 py-0.5 text-[11px] font-medium rounded transition-all ${
                             horizonMode === mode
-                              ? "bg-white text-[#0C1220] shadow-sm"
-                              : "text-[#94A3B8] hover:text-[#64748B]"
+                              ? "bg-background text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
                           }`}
                         >
                           {mode === "years" ? "Years" : "Target date"}
@@ -439,7 +439,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                   {horizonMode === "years" ? (
                     <div className="relative">
                       <Input id="timeHorizonYears" type="number" step="1" min="1" max="50" value={timeHorizonYears} onChange={(e) => setTimeHorizonYears(e.target.value)} className="pr-9" placeholder="20" />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] text-sm">yrs</span>
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">yrs</span>
                     </div>
                   ) : (
                     <>
@@ -469,7 +469,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                         }}
                       />
                       {targetDate && (
-                        <p className="text-[11px] text-[#94A3B8]">~{timeHorizonYears} years from now</p>
+                        <p className="text-[11px] text-muted-foreground">~{timeHorizonYears} years from now</p>
                       )}
                     </>
                   )}
@@ -478,14 +478,14 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
             </div>
           </section>
 
-          <Separator className="bg-[#F1F5F9]" />
+          <Separator />
 
           {/* Tax Settings */}
           <section>
-            <h2 className="text-sm font-semibold text-[#0C1220] mb-4 font-sans">Tax settings</h2>
+            <h2 className="text-sm font-semibold text-foreground mb-4 font-sans">Tax settings</h2>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="federalBracket" className="text-[13px] text-[#475569]">Federal tax bracket</Label>
+                <Label htmlFor="federalBracket" className="text-[13px] text-muted-foreground">Federal tax bracket</Label>
                 <Select value={federalBracket} onValueChange={setFederalBracket}>
                   <SelectTrigger id="federalBracket">
                     <SelectValue />
@@ -498,23 +498,23 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="stateTaxRate" className="text-[13px] text-[#475569]">State tax rate</Label>
+                <Label htmlFor="stateTaxRate" className="text-[13px] text-muted-foreground">State tax rate</Label>
                 <div className="relative">
                   <Input id="stateTaxRate" type="number" min="0" max="15" step="0.1" value={stateTaxRate} onChange={(e) => setStateTaxRate(e.target.value)} className="pr-7" placeholder="5" />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94A3B8] text-sm">%</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">%</span>
                 </div>
               </div>
             </div>
           </section>
 
-          <Separator className="bg-[#F1F5F9]" />
+          <Separator />
 
           {/* Dependents */}
           <section>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-sm font-semibold text-[#0C1220] font-sans">Dependents</h2>
-                <p className="text-xs text-[#94A3B8] mt-0.5">Family members covered under your plan</p>
+                <h2 className="text-sm font-semibold text-foreground font-sans">Dependents</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">Family members covered under your plan</p>
               </div>
               {planLimits.allowDependents ? (
                 <Button type="button" size="sm" variant="outline" onClick={openAddDependent} className="h-8 text-[13px]">
@@ -532,10 +532,10 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                 description="Track expenses for spouse, children, and domestic partners with per-patient attribution"
               />
             ) : dependentsList.length === 0 ? (
-              <div className="text-center py-8 rounded-xl border border-dashed border-[#E2E8F0]">
-                <Users className="h-8 w-8 mx-auto mb-2 text-[#E2E8F0]" />
-                <p className="text-sm text-[#64748B]">No dependents added</p>
-                <p className="text-xs text-[#94A3B8] mt-0.5">
+              <div className="text-center py-8 rounded-xl border border-dashed border-border">
+                <Users className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+                <p className="text-sm text-muted-foreground">No dependents added</p>
+                <p className="text-xs text-muted-foreground/70 mt-0.5">
                   Add family members for quick selection when filing expenses
                 </p>
               </div>
@@ -544,19 +544,19 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                 {dependentsList.map((dep) => (
                   <div
                     key={dep.id}
-                    className="flex items-center justify-between p-3 rounded-lg border border-[#E2E8F0]"
+                    className="flex items-center justify-between p-3 rounded-lg border border-border bg-card"
                   >
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-[#F1F5F9] text-[#475569] text-[11px] font-medium">
+                        <AvatarFallback className="bg-muted text-muted-foreground text-[11px] font-medium">
                           {dep.first_name[0]}{dep.last_name[0]}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="text-sm font-medium text-[#0C1220]">
+                        <p className="text-sm font-medium text-foreground">
                           {dep.first_name} {dep.last_name}
                         </p>
-                        <p className="text-xs text-[#94A3B8]">
+                        <p className="text-xs text-muted-foreground">
                           {relationshipLabels[dep.relationship]}
                           {dep.date_of_birth && (
                             <> &middot; {new Date(dep.date_of_birth + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</>
@@ -565,14 +565,14 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                       </div>
                     </div>
                     <div className="flex items-center gap-1">
-                      <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-[#94A3B8] hover:text-[#64748B]" onClick={() => openEditDependent(dep)}>
+                      <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-foreground" onClick={() => openEditDependent(dep)}>
                         <Pencil className="h-3 w-3" />
                       </Button>
                       <Button
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 text-[#94A3B8] hover:text-red-500"
+                        className="h-7 w-7 text-muted-foreground hover:text-red-500"
                         disabled={depDeleting === dep.id}
                         onClick={() => handleDeleteDependent(dep.id)}
                       >
@@ -589,17 +589,17 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
             )}
           </section>
 
-          <Separator className="bg-[#F1F5F9]" />
+          <Separator />
 
           {/* Email Digest */}
           <section>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-sm font-semibold text-[#0C1220] font-sans flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-[#64748B]" />
+                <h2 className="text-sm font-semibold text-foreground font-sans flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
                   Email Digest
                 </h2>
-                <p className="text-xs text-[#94A3B8] mt-0.5">Get periodic summaries of your HSA activity</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Get periodic summaries of your HSA activity</p>
               </div>
               {!planLimits.allowEmailDigest && (
                 <UpgradeBadge message="Plus feature" />
@@ -614,10 +614,10 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
             ) : (
             <div className="space-y-4">
               {/* Enable toggle */}
-              <div className="flex items-center justify-between p-3 rounded-lg border border-[#E2E8F0]">
+              <div className="flex items-center justify-between p-3 rounded-lg border border-border bg-card">
                 <div>
-                  <p className="text-sm font-medium text-[#0C1220]">Enable email digest</p>
-                  <p className="text-xs text-[#94A3B8] mt-0.5">
+                  <p className="text-sm font-medium text-foreground">Enable email digest</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     Receive a summary of expenses, balances, and growth projections
                   </p>
                 </div>
@@ -625,7 +625,7 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                   type="button"
                   onClick={() => setEmailDigestEnabled(!emailDigestEnabled)}
                   className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                    emailDigestEnabled ? "bg-[#059669]" : "bg-[#E2E8F0]"
+                    emailDigestEnabled ? "bg-[#059669]" : "bg-muted"
                   }`}
                 >
                   <span
@@ -640,8 +640,8 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
               {emailDigestEnabled && (
                 <>
                   <div className="space-y-2">
-                    <Label className="text-[13px] text-[#475569]">Frequency</Label>
-                    <div className="inline-flex rounded-lg border border-[#E2E8F0] p-0.5 bg-[#F8FAFC]">
+                    <Label className="text-[13px] text-muted-foreground">Frequency</Label>
+                    <div className="inline-flex rounded-lg border border-border p-0.5 bg-muted/50">
                       {(["weekly", "monthly"] as const).map((freq) => (
                         <button
                           key={freq}
@@ -649,8 +649,8 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                           onClick={() => setEmailDigestFrequency(freq)}
                           className={`px-4 py-1.5 text-[13px] font-medium rounded-md transition-all ${
                             emailDigestFrequency === freq
-                              ? "bg-white text-[#0C1220] shadow-sm"
-                              : "text-[#94A3B8] hover:text-[#64748B]"
+                              ? "bg-background text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
                           }`}
                         >
                           {freq === "weekly" ? "Weekly (Mondays)" : "Monthly (1st)"}
@@ -660,10 +660,10 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                   </div>
 
                   {/* Send test */}
-                  <div className="flex items-center gap-3 p-3 rounded-lg bg-[#F8FAFC] border border-[#F1F5F9]">
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/40 border border-border">
                     <div className="flex-1">
-                      <p className="text-[12px] text-[#64748B]">
-                        Send a test email to <span className="font-medium text-[#0C1220]">{user.email}</span>
+                      <p className="text-[12px] text-muted-foreground">
+                        Send a test email to <span className="font-medium text-foreground">{user.email}</span>
                       </p>
                     </div>
                     <Button
@@ -697,28 +697,28 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
             )}
           </section>
 
-          <Separator className="bg-[#F1F5F9]" />
+          <Separator />
 
           {/* Subscription */}
           <section>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-sm font-semibold text-[#0C1220] font-sans flex items-center gap-2">
-                  <CreditCard className="h-4 w-4 text-[#64748B]" />
+                <h2 className="text-sm font-semibold text-foreground font-sans flex items-center gap-2">
+                  <CreditCard className="h-4 w-4 text-muted-foreground" />
                   Subscription
                 </h2>
-                <p className="text-xs text-[#94A3B8] mt-0.5">Manage your HSA Plus plan</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Manage your HSA Plus plan</p>
               </div>
             </div>
 
             {isPlus ? (
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-lg border border-amber-200 bg-amber-50/50">
+                <div className="flex items-center justify-between p-3 rounded-lg border border-amber-200 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-950/20">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-amber-600" />
+                    <Sparkles className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                     <div>
-                      <p className="text-sm font-medium text-[#0C1220]">HSA Plus</p>
-                      <p className="text-xs text-[#94A3B8]">Active subscription</p>
+                      <p className="text-sm font-medium text-foreground">HSA Plus</p>
+                      <p className="text-xs text-muted-foreground">Active subscription</p>
                     </div>
                   </div>
                   <Button
@@ -754,9 +754,9 @@ export function ProfileForm({ user, profile, dependents: initialDependents }: Pr
                 </div>
               </div>
             ) : (
-              <div className="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-4 text-center">
-                <p className="text-sm text-[#64748B] mb-3">
-                  You&apos;re on the <span className="font-semibold text-[#0C1220]">Free</span> plan
+              <div className="rounded-lg border border-border bg-muted/40 p-4 text-center">
+                <p className="text-sm text-muted-foreground mb-3">
+                  You&apos;re on the <span className="font-semibold text-foreground">Free</span> plan
                 </p>
                 <Button type="button" size="sm" asChild className="h-8 text-[13px]">
                   <Link href="/pricing">

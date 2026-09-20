@@ -49,17 +49,17 @@ export function ComparisonBars({
   return (
     <div className="space-y-8">
       {/* Info text */}
-      <p className="text-sm text-[#64748B]">
+      <p className="text-sm text-muted-foreground">
         Comparison after{" "}
-        <span className="font-semibold text-[#0C1220]">
+        <span className="font-semibold text-foreground">
           {inputs.timeHorizon} years
         </span>{" "}
         contributing{" "}
-        <span className="font-semibold text-[#0C1220]">
+        <span className="font-semibold text-foreground">
           {formatCurrency(inputs.annualContribution)}/yr
         </span>{" "}
         at{" "}
-        <span className="font-semibold text-[#0C1220]">
+        <span className="font-semibold text-foreground">
           {inputs.expectedReturn}% return
         </span>
       </p>
@@ -76,16 +76,16 @@ export function ComparisonBars({
           >
             <div className="flex items-baseline justify-between">
               <div>
-                <span className="text-sm font-medium text-[#0C1220]">{row.label}</span>
-                <p className="text-[11px] text-[#94A3B8]">
+                <span className="text-sm font-medium text-foreground">{row.label}</span>
+                <p className="text-[11px] text-muted-foreground">
                   {row.sublabel}
                 </p>
               </div>
-              <span className="text-sm font-mono font-bold text-[#0C1220]">
+              <span className="text-sm font-mono font-bold text-foreground">
                 {formatCurrency(row.value)}
               </span>
             </div>
-            <div className="h-4 rounded-full bg-[#F1F5F9] overflow-hidden">
+            <div className="h-4 rounded-full bg-muted overflow-hidden">
               <div
                 className={`h-full rounded-full ${row.barColor}`}
                 style={{
@@ -106,13 +106,13 @@ export function ComparisonBars({
         transition={{ delay: 0.4, duration: 0.4 }}
         className="rounded-xl p-[2px] bg-gradient-to-br from-[#059669] to-[#34d399] animate-pulse-glow"
       >
-        <div className="rounded-[calc(12px-2px)] bg-white p-5">
+        <div className="rounded-[calc(12px-2px)] bg-card p-5">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div>
-              <p className="text-sm font-semibold text-[#0C1220]">
+              <p className="text-sm font-semibold text-foreground">
                 HSA Triple-Tax Advantage
               </p>
-              <p className="text-xs text-[#64748B] mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 You keep more by using your HSA as an investment vehicle
               </p>
             </div>
@@ -127,20 +127,20 @@ export function ComparisonBars({
           </div>
 
           {/* Breakdown */}
-          <div className="mt-4 pt-4 border-t border-[#F1F5F9] grid grid-cols-2 gap-3">
+          <div className="mt-4 pt-4 border-t border-border grid grid-cols-2 gap-3">
             <div>
-              <p className="text-[11px] text-[#94A3B8]">
+              <p className="text-[11px] text-muted-foreground">
                 Tax-free contributions
               </p>
-              <p className="text-sm font-mono font-semibold text-[#0C1220]">
+              <p className="text-sm font-mono font-semibold text-foreground">
                 {formatCurrency(summary.totalTaxSavings)}
               </p>
             </div>
             <div>
-              <p className="text-[11px] text-[#94A3B8]">
+              <p className="text-[11px] text-muted-foreground">
                 Tax-free growth
               </p>
-              <p className="text-sm font-mono font-semibold text-[#0C1220]">
+              <p className="text-sm font-mono font-semibold text-foreground">
                 {formatCurrency(summary.totalGrowth)}
               </p>
             </div>

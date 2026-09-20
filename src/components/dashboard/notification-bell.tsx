@@ -26,9 +26,9 @@ interface NotificationBellProps {
 }
 
 const PRIORITY_STYLES: Record<NotificationPriority, { dot: string; icon: string; bg: string }> = {
-  critical: { dot: "bg-red-500", icon: "text-red-600", bg: "bg-red-50" },
-  warning: { dot: "bg-amber-500", icon: "text-amber-600", bg: "bg-amber-50" },
-  info: { dot: "bg-emerald-500", icon: "text-emerald-600", bg: "bg-emerald-50" },
+  critical: { dot: "bg-red-500", icon: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-950/40" },
+  warning: { dot: "bg-amber-500", icon: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-950/40" },
+  info: { dot: "bg-emerald-500", icon: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-950/40" },
 };
 
 const TYPE_ICONS: Record<string, typeof AlertTriangle> = {
@@ -61,7 +61,7 @@ export function NotificationBell({ notifications }: NotificationBellProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="relative text-[#64748B] h-8 w-8 p-0"
+          className="relative text-muted-foreground hover:text-foreground h-8 w-8 p-0"
           aria-label={count > 0 ? `${count} notifications` : "No notifications"}
         >
           <Bell className="h-3.5 w-3.5" />
@@ -77,14 +77,14 @@ export function NotificationBell({ notifications }: NotificationBellProps) {
         align="end"
         className="w-[360px] p-0 overflow-hidden"
       >
-        <div className="flex items-center justify-between border-b border-[#E2E8F0] px-4 py-3">
-          <h3 className="text-sm font-semibold text-[#0C1220]">
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+          <h3 className="text-sm font-semibold text-foreground">
             Notifications
           </h3>
           {count > 0 && (
             <button
               onClick={dismissAll}
-              className="text-xs text-[#64748B] hover:text-[#0C1220] transition-colors"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               Dismiss all
             </button>
@@ -95,19 +95,19 @@ export function NotificationBell({ notifications }: NotificationBellProps) {
           {active.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 px-4">
               <CheckCircle2 className="h-8 w-8 text-emerald-400 mb-2" />
-              <p className="text-sm font-medium text-[#0C1220]">All clear</p>
-              <p className="text-xs text-[#94A3B8] mt-0.5">
+              <p className="text-sm font-medium text-foreground">All clear</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
                 No alerts right now
               </p>
             </div>
           ) : (
-            <ul className="divide-y divide-[#E2E8F0]">
+            <ul className="divide-y divide-border">
               {active.map((n) => {
                 const styles = PRIORITY_STYLES[n.priority];
                 const Icon = TYPE_ICONS[n.type] ?? Bell;
 
                 const content = (
-                  <div className="flex items-start gap-3 px-4 py-3 hover:bg-[#F8FAFC] transition-colors group">
+                  <div className="flex items-start gap-3 px-4 py-3 hover:bg-muted/50 transition-colors group">
                     <div
                       className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${styles.bg}`}
                     >
@@ -118,11 +118,11 @@ export function NotificationBell({ notifications }: NotificationBellProps) {
                         <span
                           className={`h-1.5 w-1.5 rounded-full shrink-0 ${styles.dot}`}
                         />
-                        <p className="text-xs font-semibold text-[#0C1220] truncate">
+                        <p className="text-xs font-semibold text-foreground truncate">
                           {n.title}
                         </p>
                       </div>
-                      <p className="text-xs text-[#64748B] mt-0.5 leading-relaxed">
+                      <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
                         {n.description}
                       </p>
                     </div>
@@ -132,7 +132,7 @@ export function NotificationBell({ notifications }: NotificationBellProps) {
                         e.stopPropagation();
                         dismissOne(n.id);
                       }}
-                      className="mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity text-[#94A3B8] hover:text-[#64748B]"
+                      className="mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
                       aria-label={`Dismiss "${n.title}"`}
                     >
                       <X className="h-3.5 w-3.5" />

@@ -37,11 +37,11 @@ export function CalculatorInputsPanel({
       {/* Initial Balance */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label className="text-xs font-medium text-[#64748B]">
+          <Label className="text-xs font-medium text-muted-foreground">
             Current HSA Balance
           </Label>
           <div className="relative">
-            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-[#94A3B8]">
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
               $
             </span>
             <Input
@@ -70,7 +70,7 @@ export function CalculatorInputsPanel({
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <Label className="text-xs font-medium text-[#64748B]">
+            <Label className="text-xs font-medium text-muted-foreground">
               Annual Contribution
             </Label>
             <Badge
@@ -81,7 +81,7 @@ export function CalculatorInputsPanel({
             </Badge>
           </div>
           <div className="relative">
-            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-[#94A3B8]">
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
               $
             </span>
             <Input
@@ -100,7 +100,7 @@ export function CalculatorInputsPanel({
                 )
               }
               className="h-7 w-24 pl-5 text-xs text-right font-mono"
-              />
+            />
           </div>
         </div>
         <Slider
@@ -121,16 +121,16 @@ export function CalculatorInputsPanel({
                 update("annualContribution", newMax);
               }
             }}
-            className="h-3 w-3 rounded border-[#E2E8F0] text-[#059669] focus:ring-[#059669]"
+            className="h-3 w-3 rounded border-border text-[#059669] focus:ring-[#059669]"
           />
-          <span className="text-[10px] text-[#64748B]">Age 55+ catch-up (+${limits.catchUp55.toLocaleString()})</span>
+          <span className="text-[10px] text-muted-foreground">Age 55+ catch-up (+${limits.catchUp55.toLocaleString()})</span>
         </label>
       </div>
 
       {/* Expected Return */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label className="text-xs font-medium text-[#64748B]">
+          <Label className="text-xs font-medium text-muted-foreground">
             Expected Annual Return
           </Label>
           <div className="relative">
@@ -145,7 +145,7 @@ export function CalculatorInputsPanel({
               }
               className="h-7 w-16 text-xs text-right font-mono pr-5"
             />
-            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#94A3B8]">
+            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
               %
             </span>
           </div>
@@ -162,7 +162,7 @@ export function CalculatorInputsPanel({
       {/* Time Horizon */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Label className="text-xs font-medium text-[#64748B]">
+          <Label className="text-xs font-medium text-muted-foreground">
             Time Horizon
           </Label>
           <div className="flex items-center gap-1">
@@ -177,7 +177,7 @@ export function CalculatorInputsPanel({
               }
               className="h-7 w-14 text-xs text-right font-mono"
             />
-            <span className="text-xs text-[#94A3B8]">yrs</span>
+            <span className="text-xs text-muted-foreground">yrs</span>
           </div>
         </div>
         <Slider
@@ -192,7 +192,7 @@ export function CalculatorInputsPanel({
       {/* Advanced Toggle */}
       <button
         onClick={() => setShowAdvanced(!showAdvanced)}
-        className="flex items-center gap-1 text-xs text-[#64748B] hover:text-[#0C1220] transition-colors w-full"
+        className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors w-full"
       >
         {showAdvanced ? (
           <ChevronUp className="h-3 w-3" />
@@ -207,7 +207,7 @@ export function CalculatorInputsPanel({
           {/* Federal Tax Bracket */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-xs font-medium text-[#64748B]">
+              <Label className="text-xs font-medium text-muted-foreground">
                 Federal Tax Bracket
               </Label>
               <select
@@ -215,10 +215,10 @@ export function CalculatorInputsPanel({
                 onChange={(e) =>
                   update("taxBracket", Number(e.target.value))
                 }
-                className="h-7 rounded-lg border border-[#E2E8F0] bg-transparent px-2 text-xs font-mono"
+                className="h-7 rounded-lg border border-border bg-background dark:bg-card text-foreground px-2 text-xs font-mono"
               >
                 {FEDERAL_TAX_BRACKETS.map((b) => (
-                  <option key={b} value={b}>
+                  <option key={b} value={b} className="bg-background dark:bg-card text-foreground">
                     {b}%
                   </option>
                 ))}
@@ -229,7 +229,7 @@ export function CalculatorInputsPanel({
           {/* State Tax Rate */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label className="text-xs font-medium text-[#64748B]">
+              <Label className="text-xs font-medium text-muted-foreground">
                 State Tax Rate
               </Label>
               <div className="relative">
@@ -244,7 +244,7 @@ export function CalculatorInputsPanel({
                   }
                   className="h-7 w-16 text-xs text-right font-mono pr-5"
                 />
-                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[#94A3B8]">
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
                   %
                 </span>
               </div>

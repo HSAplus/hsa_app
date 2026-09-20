@@ -56,15 +56,15 @@ export function ProjectionSummary({ summary }: ProjectionSummaryProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.1, duration: 0.3 }}
         >
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-[#F8FAFC] border border-[#F1F5F9]">
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/40 border border-border">
             <div className="rounded-lg p-2 bg-gradient-to-br from-[#059669] to-[#34d399]">
               <card.icon className="h-4 w-4 text-white" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[11px] text-[#94A3B8]">{card.label}</p>
+              <p className="text-[11px] text-muted-foreground">{card.label}</p>
               <AnimatedValue
                 value={card.value}
-                className="text-lg font-bold font-mono"
+                className="text-lg font-bold font-mono text-foreground"
               />
             </div>
           </div>
