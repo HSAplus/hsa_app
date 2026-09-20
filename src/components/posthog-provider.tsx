@@ -12,8 +12,14 @@ const CONSENT_STORAGE_KEY = "hsa_posthog_consent";
 // silently being instrumented until someone notices HSA/medical data in
 // PostHog. This is the control that matters — autocapture/session-recording
 // being off is belt-and-braces behind it.
-const ALLOWLISTED_EXACT_PATHS = ["/", "/pricing", "/calculator", "/privacy"];
-const ALLOWLISTED_PREFIXES = ["/vs/", "/strategy/"];
+const ALLOWLISTED_EXACT_PATHS = [
+  "/",
+  "/pricing",
+  "/calculator",
+  "/privacy",
+  "/hsa-providers",
+];
+const ALLOWLISTED_PREFIXES = ["/vs/", "/strategy/", "/hsa-providers/"];
 
 function isAllowlistedPath(pathname: string): boolean {
   if (ALLOWLISTED_EXACT_PATHS.includes(pathname)) return true;
