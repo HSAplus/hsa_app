@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Plus_Jakarta_Sans, Calistoga, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -98,6 +99,7 @@ export default function RootLayout({
           <Toaster richColors position="top-right" />
           <AttributionCapture />
           <PostHogProvider />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>
