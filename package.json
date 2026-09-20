@@ -9,7 +9,8 @@
     "lint": "eslint",
     "check:rls": "node scripts/check-schema-rls.mjs",
     "test:storage": "node scripts/test-storage.mjs",
-    "test": "npm run check:rls && npm run test:storage"
+    "test:attribution": "node scripts/test-attribution.mjs",
+    "test": "npm run check:rls && npm run test:storage && npm run test:attribution"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",

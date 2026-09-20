@@ -8,6 +8,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Logo } from "@/components/ui/logo";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
+import { AttributionFields } from "@/components/auth/attribution-fields";
 
 export const metadata: Metadata = {
   title: "Create Your Free Account | HSA Plus",
@@ -77,6 +78,7 @@ export default async function SignUpPage({
             </div>
 
             <form className="space-y-4">
+              <AttributionFields />
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label htmlFor="firstName" className="text-sm">First name</Label>

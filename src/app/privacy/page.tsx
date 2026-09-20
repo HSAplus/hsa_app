@@ -335,9 +335,11 @@ export default function PrivacyPolicy() {
             </h2>
             <p>
               HSA Plus uses strictly necessary cookies for authentication and session management.
-              We do not use advertising cookies, tracking pixels, or third-party analytics
-              cookies. No cookie consent banner is required because we only use essential cookies
-              that are exempt under applicable privacy regulations.
+              We also record, in your browser&rsquo;s session storage, the website that referred
+              you to us and any campaign parameters in the link you followed. This information is
+              discarded when you close the tab, is never shared with any third party, and is used
+              only to record which channel your account came from if you choose to sign up. We do
+              not use advertising cookies, tracking pixels, or cross-site tracking.
             </p>
           </section>
 

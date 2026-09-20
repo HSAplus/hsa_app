@@ -30,6 +30,9 @@ jobs:
       - name: Test: Storage Path Security & Traversal Defense
         run: npm run test:storage
 
+      - name: "Test: Signup Attribution Channel Derivation"
+        run: npm run test:attribution
+
       - name: Run Linter
         run: npm run lint
 

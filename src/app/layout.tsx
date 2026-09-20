@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Calistoga, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { AttributionCapture } from "@/components/attribution-capture";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -94,6 +95,7 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
           <Toaster richColors position="top-right" />
+          <AttributionCapture />
         </ThemeProvider>
       </body>
     </html>

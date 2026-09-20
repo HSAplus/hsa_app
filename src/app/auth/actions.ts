@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { getContributionLimit, type CoverageType } from "@/lib/hsa-constants";
+import { sanitizeAttributionInput } from "@/lib/attribution";
 
 export async function login(formData: FormData) {
   const supabase = await createClient();
@@ -32,6 +33,17 @@ export async function signup(formData: FormData) {
   const firstName = (formData.get("firstName") as string)?.trim() || "";
   const lastName = (formData.get("lastName") as string)?.trim() || "";
 
+  const attribution = sanitizeAttributionInput({
+    signup_channel: formData.get("signup_channel"),
+    signup_referrer_host: formData.get("signup_referrer_host"),
+    signup_landing_path: formData.get("signup_landing_path"),
+    utm_source: formData.get("utm_source"),
+    utm_medium: formData.get("utm_medium"),
+    utm_campaign: formData.get("utm_campaign"),
+    utm_term: formData.get("utm_term"),
+    utm_content: formData.get("utm_content"),
+  });
+
   const { error } = await supabase.auth.signUp({
     email,
     password,
@@ -40,6 +52,7 @@ export async function signup(formData: FormData) {
         first_name: firstName,
         last_name: lastName,
         display_name: `${firstName} ${lastName}`.trim(),
+        ...attribution,
       },
     },
   });
