@@ -1,7 +1,7 @@
 import type { ClaimAdapter, ClaimPayload, ClaimSubmissionResult } from "../types";
 import { sendFax } from "@/lib/westfax";
 import { generateClaimFormPdf } from "../form-generator";
-import { downloadDocumentBuffer } from "@/lib/storage";
+import { downloadDocumentBuffer } from "@/lib/storage-server";
 
 export const faxAdapter: ClaimAdapter = {
   tier: "fax",

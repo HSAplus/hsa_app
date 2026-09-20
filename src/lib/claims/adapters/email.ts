@@ -1,7 +1,7 @@
 import type { ClaimAdapter, ClaimPayload, ClaimSubmissionResult } from "../types";
 import { resend, EMAIL_FROM } from "@/lib/resend";
 import { generateClaimFormPdf } from "../form-generator";
-import { downloadDocumentBuffer } from "@/lib/storage";
+import { downloadDocumentBuffer } from "@/lib/storage-server";
 
 export const emailAdapter: ClaimAdapter = {
   tier: "email",
