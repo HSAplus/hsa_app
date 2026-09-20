@@ -2,12 +2,45 @@
 
 A design philosophy rooted in the intersection of organic vitality and clinical exactness — the living pulse of growth rendered through the lens of geometric discipline.
 
-## Philosophy
+---
 
-Verdant Precision draws its language from the moment a seed breaks through measured soil — the tension between the wildness of life and the architecture of careful planning. Every mark on the canvas must feel as though it emerged from a system, yet carries the warmth of something alive. The palette is constrained to a narrow corridor of emerald, from deep forest shadow to bright leaf-light, grounded by the gravity of near-black. Color transitions are not decorative — they are structural, suggesting depth, directionality, and momentum. Every gradient must feel as if a master colorist spent hours calibrating its exact arc.
+## Core Philosophy
 
-Form follows the logic of crystalline growth: faceted, angular where necessary, but never cold. Rounded elements exist only where they serve to soften a critical junction — the way a river stone is shaped by precision over time, not accident. The plus sign, the cross, the intersection — these are sacred geometries here, representing accumulation, addition, and the quiet power of compounding. They appear not as afterthoughts but as the structural skeleton around which all other elements orbit. Every vertex, every edge, must be placed with the painstaking attention of a Swiss watchmaker.
+Verdant Precision draws its language from the moment a seed breaks through measured soil — the tension between the wildness of life and the architecture of careful planning. Every mark on the canvas must feel as though it emerged from a system, yet carries the warmth of something alive. 
 
-Typography is architectural — it carries weight without shouting, occupies space with authority, and breathes with generous tracking. Letterforms are chosen for their balance between modernity and permanence. Text is not information to be read; it is form to be experienced within the composition. The relationship between word and shape must appear labored over for countless hours, as if the designer tried a thousand positions before settling on the one that achieves gravitational equilibrium.
+The palette is constrained to a narrow corridor of emerald, from deep forest shadow (`#065f46`) to radiant leaf-light (`#34d399`), grounded by the gravity of deep obsidian slate (`#0C1220` / `#0F172A`). Color transitions are structural rather than decorative: they articulate depth, directionality, and compounding momentum.
 
-Negative space is not emptiness — it is the oxygen that allows the mark to breathe and the eye to rest. The composition must achieve what appears effortless but is in fact the product of deep expertise: a state where removing any single element would collapse the entire visual system. This is minimalism earned through maximum consideration, the hallmark of someone at the absolute top of their craft. Every pixel is deliberate. Every absence is deliberate. The final work must appear as though it took countless hours of meticulous refinement.
+---
+
+## The Core Mark: The Climbing 'H'
+
+### 1. The Geometry of Compounding
+The central mark is the **H of HSA, built to climb**:
+- **The Left Stem (Foundation)**: Stands at baseline height (50px), representing disciplined habit — the meticulous recording of qualified expenses, receipt preservation, and IRS audit readiness.
+- **The Right Stem (Ascent)**: Stands markedly taller (68px), reaching upward to represent the summit of long-term wealth accumulation, delayed reimbursement, and tax-free compound growth.
+- **The Pitched Crossbar (Momentum)**: Rather than resting flat, the crossbar ascends between the two stems at a calibrated angle. It is an active vector of compound returns, visually bridging daily healthcare costs with decades of future wealth.
+
+### 2. The "No Medical Read" Principle
+An HSA is not health insurance, a clinic, or a hospital. It is an investment vehicle with a triple-tax advantage. 
+
+The brand deliberately rejects medical crosses, first-aid badges, and clinical pill-shapes. In their place stands an architectural glyph that belongs in high finance and mathematical precision — clean, ascending, and unequivocally focused on wealth creation.
+
+### 3. Milled Precision (`r=2`)
+Corners are not rounded into soft, toy-like curves. They are milled with a micro-radius of 2px (`rx="2"`), echoing the sharp, chamfered tolerances of high-grade Swiss timepieces and machined aluminum. Rounded elements exist only in the squircle container of the app icon; the mark itself remains razor-sharp and exact.
+
+---
+
+## Typography & Architectural Balance
+
+Typography carries weight without shouting, occupies space with authority, and breathes with generous tracking:
+- **Display Headings**: Rendered in Calistoga / Georgia for a sense of permanence, heritage, and fiscal gravity.
+- **Interface & Metrics**: Set in Plus Jakarta Sans and JetBrains Mono. Numbers are never decorative; they are tabular, crisp, and sacred.
+- **Gravitational Equilibrium**: The relationship between wordmark and glyph is calibrated so that neither overpowers the other.
+
+---
+
+## Negative Space as Structural Oxygen
+
+Negative space is not emptiness — it is the oxygen that allows the mark to breathe and the eye to rest. The composition achieves what appears effortless but is the product of meticulous consideration: a state where removing any single element would collapse the visual architecture. 
+
+Every pixel is deliberate. Every absence is deliberate.

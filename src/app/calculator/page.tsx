@@ -41,7 +41,7 @@ export default async function CalculatorPage() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-2.5">
-              <Image src="/logo.png" alt="HSA Plus" width={56} height={37} className="rounded-lg" />
+              <Image src="/logo.png" alt="HSA Plus" width={32} height={32} className="rounded-lg aspect-square" />
               <span className="text-base font-semibold tracking-tight text-[#0C1220] dark:text-foreground">
                 HSA Plus
               </span>
