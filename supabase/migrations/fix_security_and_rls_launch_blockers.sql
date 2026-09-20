@@ -100,7 +100,7 @@ drop policy if exists "Anyone can read administrators" on public.hsa_administrat
 create policy "Authenticated users can read hsa_administrators"
   on public.hsa_administrators
   for select
-  using (auth.role() = 'authenticated' or auth.role() = 'anon');
+  using (auth.role() = 'authenticated');
 
 -- Ensure claims table exists and has RLS enabled
 create table if not exists public.claims (

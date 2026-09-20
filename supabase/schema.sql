@@ -400,7 +400,7 @@ alter table public.hsa_administrators enable row level security;
 create policy "Authenticated users can read hsa_administrators"
   on public.hsa_administrators
   for select
-  using (auth.role() = 'authenticated' or auth.role() = 'anon');
+  using (auth.role() = 'authenticated');
 
 create table if not exists public.claims (
   id uuid default gen_random_uuid() primary key,
