@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
@@ -16,13 +17,7 @@ export default function PrivacyPolicy() {
       <header className="border-b border-[#E2E8F0]/80 bg-white/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
-            <Image
-              src="/logo.png"
-              alt="HSA Plus"
-              width={56}
-              height={37}
-              className="rounded-lg"
-            />
+            <Logo size={32} />
             <span className="text-base font-semibold tracking-tight font-sans">
               HSA Plus
             </span>
@@ -467,13 +462,7 @@ export default function PrivacyPolicy() {
       <footer className="border-t border-[#E2E8F0] bg-white">
         <div className="mx-auto max-w-6xl px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-sm text-[#94A3B8]">
-            <Image
-              src="/logo.png"
-              alt="HSA Plus"
-              width={28}
-              height={18}
-              className="rounded"
-            />
+            <Logo size={22} />
             <span>&copy; {new Date().getFullYear()} HSA Plus</span>
           </div>
           <div className="flex items-center gap-6 text-[13px] text-[#94A3B8]">

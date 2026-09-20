@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Image from "next/image";
+import { Logo } from "@/components/ui/logo";
 
 interface LoginSettingsFormProps {
   user: User;
@@ -186,7 +187,7 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <Link href="/dashboard" className="flex items-center gap-2.5">
-              <Image src="/logo.png" alt="HSA Plus" width={32} height={32} className="rounded-lg aspect-square" />
+              <Logo size={32} />
               <span className="text-base font-semibold tracking-tight text-foreground">HSA Plus</span>
             </Link>
             <span className="text-border">/</span>

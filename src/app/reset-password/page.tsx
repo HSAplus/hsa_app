@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import { Logo } from "@/components/ui/logo";
 
 export default async function ResetPasswordPage({
   searchParams,
@@ -15,7 +16,7 @@ export default async function ResetPasswordPage({
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-sm bg-card border border-border rounded-2xl p-8 shadow-surface-lg">
         <div className="flex justify-center mb-6">
-          <Image src="/logo.png" alt="HSA Plus" width={48} height={48} className="rounded-xl aspect-square" />
+          <Logo size={48} />
         </div>
         <h1 className="text-2xl tracking-tight text-foreground text-center font-sans font-bold">
           Reset password

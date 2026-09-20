@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { Logo } from "@/components/ui/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export const metadata: Metadata = {
@@ -41,7 +42,7 @@ export default async function CalculatorPage() {
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <Link href={user ? "/dashboard" : "/"} className="flex items-center gap-2.5">
-              <Image src="/logo.png" alt="HSA Plus" width={32} height={32} className="rounded-lg aspect-square" />
+              <Logo size={32} />
               <span className="text-base font-semibold tracking-tight text-[#0C1220] dark:text-foreground">
                 HSA Plus
               </span>

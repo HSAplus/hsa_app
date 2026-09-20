@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
+import { Logo } from "@/components/ui/logo";
 import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
 
 export const metadata: Metadata = {
@@ -30,7 +31,7 @@ export default async function SignUpPage({
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#34d399]/8 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
 
         <div className="relative z-10">
-          <Image src="/logo.png" alt="HSA Plus" width={48} height={48} className="rounded-xl mb-8 aspect-square" />
+          <Logo size={48} className="mb-8" />
           <h2 className="text-3xl leading-tight mb-3 text-white">
             Start building<br />
             <span className="gradient-text">tax-free wealth.</span>
@@ -45,7 +46,7 @@ export default async function SignUpPage({
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm bg-card border border-border rounded-2xl p-8 shadow-surface-lg">
           <div className="lg:hidden flex justify-center mb-6">
-            <Image src="/logo.png" alt="HSA Plus" width={48} height={48} className="rounded-xl aspect-square" />
+            <Logo size={48} />
           </div>
           <h1 className="text-2xl tracking-tight text-foreground font-sans font-bold">
             Create an account

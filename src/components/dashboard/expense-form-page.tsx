@@ -37,6 +37,7 @@ import type { ReceiptScanResult, ConfidenceLevel } from "@/lib/receipt-scanner";
 import { toast } from "sonner";
 import Link from "next/link";
 import Image from "next/image";
+import { Logo } from "@/components/ui/logo";
 
 import { getPlanLimits, getPlanType } from "@/lib/plans";
 
@@ -338,7 +339,7 @@ export function ExpenseFormPage({ expense, profile, dependents = [] }: ExpenseFo
         <div className="mx-auto flex h-14 sm:h-16 max-w-6xl items-center justify-between gap-2 px-4 sm:px-6">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <Link href="/dashboard" className="flex items-center gap-2 sm:gap-2.5 min-w-0 shrink">
-              <Image src="/logo.png" alt="HSA Plus" width={32} height={32} className="rounded-lg aspect-square shrink-0" />
+              <Logo size={32} />
               <span className="text-base font-semibold tracking-tight hidden sm:inline truncate">
                 HSA Plus
               </span>

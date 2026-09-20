@@ -19,6 +19,7 @@ import { getPlanLimits, getPlanType, isPlusUser } from "@/lib/plans";
 import { computeNotifications } from "@/lib/notifications";
 import { NotificationBell } from "./notification-bell";
 import { Sparkles } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 import { StatsCards } from "./stats-cards";
 import { ExpenseTable } from "./expense-table";
 import { PlaidImportsPanel } from "./plaid-imports-panel";
@@ -212,7 +213,7 @@ export function DashboardShell({ user, profile }: DashboardShellProps) {
       <header className="sticky top-0 z-50 w-full border-b border-border bg-card/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-2.5">
-            <Image src="/logo.png" alt="HSA Plus" width={32} height={32} className="rounded-lg aspect-square" />
+            <Logo size={32} />
             <span className="text-base font-semibold tracking-tight text-foreground">HSA Plus</span>
             {isPlus ? (
               <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-emerald-500/15 to-emerald-400/10 border border-emerald-500/25 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-400">
