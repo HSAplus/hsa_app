@@ -16,6 +16,22 @@ export const emailAdapter: ClaimAdapter = {
       };
     }
 
+    // A claim carries PHI: patient name, provider, diagnosis-adjacent
+    // description, dollar amount. Ordinary SMTP gives no transport guarantee,
+    // so an administrator must have been individually verified as publishing
+    // a claims intake address that accepts it. The flag defaults to false and
+    // is checked here rather than at the call site — this is the last point
+    // before the data leaves our infrastructure.
+    if (!administrator.accepts_email_phi) {
+      return {
+        success: false,
+        error:
+          `${administrator.name} has not been verified to accept claim documents ` +
+          `by email. Sending health information over unencrypted email isn't ` +
+          `permitted, so this claim needs to go by fax or through their portal.`,
+      };
+    }
+
     try {
       const pdfBuffer = await generateClaimFormPdf(payload);
 

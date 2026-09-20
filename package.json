@@ -10,7 +10,9 @@
     "check:rls": "node scripts/check-schema-rls.mjs",
     "test:storage": "node scripts/test-storage.mjs",
     "test:attribution": "node scripts/test-attribution.mjs",
-    "test": "npm run check:rls && npm run test:storage && npm run test:attribution"
+    "test": "npm run check:rls && npm run test:storage && npm run test:attribution",
+    "import:providers": "node scripts/import-providers.mjs",
+    "export:providers": "node scripts/export-providers.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
