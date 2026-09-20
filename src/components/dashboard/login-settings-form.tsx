@@ -50,8 +50,21 @@ export function LoginSettingsForm({ user, displayName, initials }: LoginSettings
   }, [supabase]);
 
   useEffect(() => {
-    loadMfaFactors();
-  }, [loadMfaFactors]);
+    let ignore = false;
+    async function initMfa() {
+      const { data } = await supabase.auth.mfa.listFactors();
+      if (!ignore) {
+        const totp = data?.totp ?? [];
+        const verified = totp.find((f) => f.status === "verified");
+        setMfaFactorId(verified?.id ?? null);
+        setMfaLoaded(true);
+      }
+    }
+    initMfa();
+    return () => {
+      ignore = true;
+    };
+  }, [supabase]);
 
   const handleMfaEnroll = async () => {
     setMfaEnrolling(true);

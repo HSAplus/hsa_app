@@ -70,7 +70,7 @@ function ScenarioCard({
             <input
               type="text"
               value={scenario.name}
-              onChange={(e) =>
+              onChange={() =>
                 onUpdate(scenario.id, { ...scenario.inputs } as Partial<CalculatorInputs> & { __name?: string })
               }
               className="text-sm font-semibold text-[#0C1220] bg-transparent border-none outline-none truncate w-full"

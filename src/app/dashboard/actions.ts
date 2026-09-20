@@ -439,7 +439,6 @@ export async function uploadFile(
 
   if (!file) return { error: "No file provided" };
 
-  const fileExt = file.name.split(".").pop();
   const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_").substring(0, 50);
   const fileName = `${user.id}/${folder}/${Date.now()}-${safeName}`;
 

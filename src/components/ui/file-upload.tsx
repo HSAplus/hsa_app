@@ -107,7 +107,7 @@ export function FileUpload({
         setUploading(false);
       }
     },
-    [folder, onChange, value]
+    [folder, maxFiles, onChange, value]
   );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

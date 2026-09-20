@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import {
   TrendingUp,
   ShieldCheck,
-  Receipt,
   Calculator,
   ArrowRight,
   CheckCircle2,
