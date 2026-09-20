@@ -44,8 +44,8 @@ export function normalizeStoragePath(urlOrPath: string): string {
     return "";
   }
 
-  // Reject backslashes
-  if (/\\/.test(rawPath)) {
+  // Reject backslashes and control characters (CRLF, tabs, null bytes)
+  if (/[\\\x00-\x1f\x7f]/.test(rawPath)) {
     return "";
   }
 

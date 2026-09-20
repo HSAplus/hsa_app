@@ -37,6 +37,9 @@ const testCases = [
   { name: "Current directory dot segment", input: "me/./secret.pdf", expected: "" },
   { name: "Double slash empty segment", input: "me//secret.pdf", expected: "" },
   { name: "Backslash traversal", input: "me\\..\\victim\\secret.pdf", expected: "" },
+  { name: "CRLF injection", input: "me/receipt/a.pdf\r\nX: y", expected: "" },
+  { name: "Newline injection", input: "me/receipt/a.pdf\n", expected: "" },
+  { name: "Tab character", input: "me/receipt/\ta.pdf", expected: "" },
 
   // URL-based traversal attacks
   {
@@ -71,7 +74,7 @@ for (const tc of testCases) {
     assert.strictEqual(actual, tc.expected);
     console.log(`  ✓ ${tc.name}`);
     passed++;
-  } catch (err) {
+  } catch {
     console.error(`  ✗ ${tc.name}: expected '${tc.expected}', got '${actual}'`);
   }
 }
