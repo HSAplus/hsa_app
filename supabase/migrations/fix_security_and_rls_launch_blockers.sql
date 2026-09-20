@@ -95,6 +95,7 @@ alter table public.hsa_administrators enable row level security;
 
 drop policy if exists "Authenticated users can read hsa_administrators" on public.hsa_administrators;
 drop policy if exists "Users can read hsa_administrators" on public.hsa_administrators;
+drop policy if exists "Anyone can read administrators" on public.hsa_administrators;
 
 create policy "Authenticated users can read hsa_administrators"
   on public.hsa_administrators
