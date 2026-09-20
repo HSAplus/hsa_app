@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Calistoga, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { AttributionCapture } from "@/components/attribution-capture";
+import { PostHogProvider } from "@/components/posthog-provider";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -96,6 +97,7 @@ export default function RootLayout({
           {children}
           <Toaster richColors position="top-right" />
           <AttributionCapture />
+          <PostHogProvider />
         </ThemeProvider>
       </body>
     </html>

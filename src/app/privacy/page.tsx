@@ -338,8 +338,18 @@ export default function PrivacyPolicy() {
               We also record, in your browser&rsquo;s session storage, the website that referred
               you to us and any campaign parameters in the link you followed. This information is
               discarded when you close the tab, is never shared with any third party, and is used
-              only to record which channel your account came from if you choose to sign up. We do
-              not use advertising cookies, tracking pixels, or cross-site tracking.
+              only to record which channel your account came from if you choose to sign up.
+            </p>
+            <p className="mt-3">
+              On our marketing pages only (home, pricing, calculator, privacy, and our comparison
+              and strategy pages), we use PostHog, a privacy-focused analytics provider, to
+              understand which channels bring visitors to HSA Plus. This sets a cookie, but only
+              after you accept it via the banner shown on those pages &mdash; nothing is set by
+              default. PostHog is never loaded on your dashboard or any page where your HSA
+              balance, expenses, or other account data appears, and it is not used for advertising
+              or to track you across other websites. You can decline or change your choice at any
+              time; declining does not affect your ability to use HSA Plus. We do not use
+              advertising cookies or tracking pixels.
             </p>
           </section>
 
