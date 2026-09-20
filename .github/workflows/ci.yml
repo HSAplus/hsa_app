@@ -27,6 +27,9 @@ jobs:
       - name: Guard: Check Public Schema Tables Have RLS
         run: npm run check:rls
 
+      - name: Test: Storage Path Security & Traversal Defense
+        run: npm run test:storage
+
       - name: Run Linter
         run: npm run lint
 

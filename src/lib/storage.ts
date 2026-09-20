@@ -8,8 +8,11 @@
  * - Relative paths: <user_id>/<folder>/<file>
  *
  * Security:
- * - Prevents path traversal: rejects any path containing "..", ".", "%2e%2e", or empty segments.
- * - Returns "" if the path is invalid or malicious, triggering existing `if (!filePath)` checks.
+ * - Allowlist philosophy: Valid storage keys are strictly formatted as
+ *   `${user.id}/${folder}/${timestamp}-${filename}` using [a-zA-Z0-9._-].
+ * - Rejects any path containing '%' (blocks all percent-encoding variants: single, double, triple, null-byte).
+ * - Rejects any path containing '..' or '.' dot segments, backslashes, or empty segments ('//').
+ * - Returns "" for any invalid or malicious path, triggering existing `if (!filePath)` guards.
  */
 export function normalizeStoragePath(urlOrPath: string): string {
   if (!urlOrPath) return "";
@@ -24,29 +27,32 @@ export function normalizeStoragePath(urlOrPath: string): string {
         /\/object\/(?:public|sign)\/hsa-documents\/(.+)$/
       );
       if (match && match[1]) {
-        rawPath = decodeURIComponent(match[1]);
+        rawPath = match[1];
       } else {
         const fallbackMatch = url.pathname.match(/\/hsa-documents\/(.+)$/);
         if (fallbackMatch && fallbackMatch[1]) {
-          rawPath = decodeURIComponent(fallbackMatch[1]);
+          rawPath = fallbackMatch[1];
         }
       }
     } catch {
       return "";
     }
-  } else {
-    try {
-      rawPath = decodeURIComponent(rawPath);
-    } catch {
-      // Keep rawPath if malformed URI component
-    }
+  }
+
+  // Reject any percent-encoding (%2e, %252e, etc.). Valid storage keys never contain '%'
+  if (/%/.test(rawPath)) {
+    return "";
+  }
+
+  // Reject backslashes
+  if (/\\/.test(rawPath)) {
+    return "";
   }
 
   // Strip leading and trailing slashes
   const cleanPath = rawPath.replace(/^\/+/, "").replace(/\/+$/, "");
 
-  // Prevent path traversal and malformed paths:
-  // Reject any segment that is ".", "..", or empty (e.g. "//")
+  // Reject dot segments ('.', '..') and empty segments ('//')
   const segments = cleanPath.split("/");
   if (segments.some((seg) => seg === "." || seg === ".." || seg === "")) {
     return "";

@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "check:rls": "node scripts/check-schema-rls.mjs"
+    "check:rls": "node scripts/check-schema-rls.mjs",
+    "test:storage": "node scripts/test-storage.mjs",
+    "test": "npm run check:rls && npm run test:storage"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
