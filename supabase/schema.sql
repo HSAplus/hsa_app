@@ -135,6 +135,18 @@ create table if not exists public.profiles (
   email_digest_frequency text not null default 'monthly'
     check (email_digest_frequency in ('weekly', 'monthly')),
   onboarding_completed boolean not null default false,
+  -- Signup attribution (nullable: NULL means "unknown," true for every
+  -- pre-existing user). See src/lib/attribution.ts for channel derivation.
+  signup_channel text
+    check (signup_channel in ('direct', 'organic_search', 'social', 'referral', 'paid', 'internal')),
+  signup_referrer_host text,
+  signup_landing_path text,
+  utm_source text,
+  utm_medium text,
+  utm_campaign text,
+  utm_term text,
+  utm_content text,
+  signup_attributed_at timestamptz,
   created_at timestamptz default now() not null,
   updated_at timestamptz default now() not null
 );
@@ -149,6 +161,32 @@ create policy "Users can insert their own profile"
 
 create policy "Users can update their own profile"
   on public.profiles for update using (auth.uid() = id);
+
+-- Once signup attribution is set, silently discard attempts to change it via
+-- this policy so a user can't overwrite their own attribution through the API.
+-- Not a security boundary (this is analytics, not access control).
+create or replace function public.protect_signup_attribution()
+returns trigger as $$
+begin
+  if old.signup_attributed_at is not null then
+    new.signup_channel := old.signup_channel;
+    new.signup_referrer_host := old.signup_referrer_host;
+    new.signup_landing_path := old.signup_landing_path;
+    new.utm_source := old.utm_source;
+    new.utm_medium := old.utm_medium;
+    new.utm_campaign := old.utm_campaign;
+    new.utm_term := old.utm_term;
+    new.utm_content := old.utm_content;
+    new.signup_attributed_at := old.signup_attributed_at;
+  end if;
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger trg_protect_signup_attribution
+  before update on public.profiles
+  for each row
+  execute function public.protect_signup_attribution();
 
 -- 6b. Create dependents table (spouse, children, etc.)
 create table if not exists public.dependents (
@@ -187,12 +225,26 @@ create or replace function public.handle_new_user()
 returns trigger as $$
 begin
   -- Create profile row (extract name from metadata if available, e.g. Google OAuth)
-  insert into public.profiles (id, email, first_name, last_name)
+  insert into public.profiles (
+    id, email, first_name, last_name,
+    signup_channel, signup_referrer_host, signup_landing_path,
+    utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+    signup_attributed_at
+  )
   values (
     new.id,
     new.email,
     coalesce(new.raw_user_meta_data ->> 'first_name', split_part(coalesce(new.raw_user_meta_data ->> 'full_name', ''), ' ', 1), ''),
-    coalesce(new.raw_user_meta_data ->> 'last_name', nullif(substring(coalesce(new.raw_user_meta_data ->> 'full_name', '') from position(' ' in coalesce(new.raw_user_meta_data ->> 'full_name', '')) + 1), ''), '')
+    coalesce(new.raw_user_meta_data ->> 'last_name', nullif(substring(coalesce(new.raw_user_meta_data ->> 'full_name', '') from position(' ' in coalesce(new.raw_user_meta_data ->> 'full_name', '')) + 1), ''), ''),
+    new.raw_user_meta_data ->> 'signup_channel',
+    new.raw_user_meta_data ->> 'signup_referrer_host',
+    new.raw_user_meta_data ->> 'signup_landing_path',
+    new.raw_user_meta_data ->> 'utm_source',
+    new.raw_user_meta_data ->> 'utm_medium',
+    new.raw_user_meta_data ->> 'utm_campaign',
+    new.raw_user_meta_data ->> 'utm_term',
+    new.raw_user_meta_data ->> 'utm_content',
+    case when new.raw_user_meta_data ->> 'signup_channel' is not null then now() else null end
   );
 
   -- Initialize storage folders with a .keep placeholder

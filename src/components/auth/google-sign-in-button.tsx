@@ -4,12 +4,40 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { ATTRIBUTION_STORAGE_KEY } from "@/components/attribution-capture";
+
+const ATTRIBUTION_COOKIE_NAME = "hsa_attr";
+
+// The OAuth round-trip to Google destroys sessionStorage, so the attribution
+// record already captured there is handed off via a short-lived first-party
+// cookie instead. Read back and cleared by src/app/auth/callback/route.ts.
+function writeAttributionCookie() {
+  try {
+    const raw = sessionStorage.getItem(ATTRIBUTION_STORAGE_KEY);
+    if (!raw) return;
+
+    const isSecure = window.location.protocol === "https:";
+    const attrs = [
+      `${ATTRIBUTION_COOKIE_NAME}=${encodeURIComponent(raw)}`,
+      "Max-Age=600",
+      "Path=/",
+      // Strict would not be sent on the top-level redirect back from
+      // Google, so the cookie would silently appear empty on the callback.
+      "SameSite=Lax",
+    ];
+    if (isSecure) attrs.push("Secure");
+    document.cookie = attrs.join("; ");
+  } catch {
+    // Best-effort; OAuth signup proceeds unattributed.
+  }
+}
 
 export function GoogleSignInButton() {
   const [loading, setLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
+    writeAttributionCookie();
     const supabase = createClient();
 
     const { error } = await supabase.auth.signInWithOAuth({
