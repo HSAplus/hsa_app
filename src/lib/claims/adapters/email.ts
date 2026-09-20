@@ -1,5 +1,5 @@
 import type { ClaimAdapter, ClaimPayload, ClaimSubmissionResult } from "../types";
-import { resend, EMAIL_FROM } from "@/lib/resend";
+import { resend, EMAIL_FROM_CLAIMS } from "@/lib/resend";
 import { generateClaimFormPdf } from "../form-generator";
 import { downloadDocumentBuffer } from "@/lib/storage-server";
 
@@ -36,7 +36,7 @@ export const emailAdapter: ClaimAdapter = {
       }
 
       const { data, error } = await resend.emails.send({
-        from: EMAIL_FROM,
+        from: EMAIL_FROM_CLAIMS,
         to: administrator.email_address,
         subject: `HSA Reimbursement Claim — ${profile.first_name} ${profile.last_name} — $${expense.amount.toFixed(2)}`,
         text: [

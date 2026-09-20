@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { resend, EMAIL_FROM } from "@/lib/resend";
+import { resend, EMAIL_FROM_DIGEST } from "@/lib/resend";
 import { DigestEmail } from "@/lib/email-templates/digest";
 import { isAuditReady, calculateExpectedReturn } from "@/lib/types";
 import React from "react";
@@ -183,7 +183,7 @@ export async function GET(request: NextRequest) {
       );
 
       await resend.emails.send({
-        from: EMAIL_FROM,
+        from: EMAIL_FROM_DIGEST,
         to: profile.email,
         subject: `Your HSA Plus ${periodLabel} Summary`,
         html: emailHtml,

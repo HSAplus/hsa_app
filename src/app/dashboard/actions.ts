@@ -873,7 +873,7 @@ export async function sendTestDigest(): Promise<{ error?: string }> {
   const expenses = await getExpenses();
 
   try {
-    const { resend, EMAIL_FROM } = await import("@/lib/resend");
+    const { resend, EMAIL_FROM_DIGEST } = await import("@/lib/resend");
     const { DigestEmail } = await import("@/lib/email-templates/digest");
     const ReactDOMServer = await import("react-dom/server");
 
@@ -938,7 +938,7 @@ export async function sendTestDigest(): Promise<{ error?: string }> {
     const html = ReactDOMServer.renderToStaticMarkup(element);
 
     await resend.emails.send({
-      from: EMAIL_FROM,
+      from: EMAIL_FROM_DIGEST,
       to: profile.email,
       subject: `[Test] Your HSA Plus ${periodLabel} Summary`,
       html,
