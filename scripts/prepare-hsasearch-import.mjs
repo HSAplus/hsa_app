@@ -3,15 +3,13 @@
  * Turn the hsasearch.com provider table into a file import-providers.mjs
  * accepts.
  *
- *   node scripts/prepare-hsasearch-import.mjs <raw.tsv> <out.csv>
+ *   node scripts/prepare-hsasearch-import.mjs <source.csv|tsv> <out.csv>
  *
- * Input is the table copied as TSV, with a header row and the columns
- * name, state, monthly_fee, investments.
- *
- * The scraped source is deliberately NOT committed — only this script,
- * because what needs reviewing and reusing is the decisions in it: which
- * names map to providers we already have, how duplicates are disambiguated,
- * and what we choose not to import.
+ * Input is the table as exported, with a header row and the columns
+ * provider name, state, monthly fee, investment options — in that order.
+ * The header's own wording is ignored; hsasearch's first column header spans
+ * two lines ("HSA Provider\n(Click for more details)") and column position is
+ * the stable thing to key on.
  *
  * FEE AND INVESTMENT COLUMNS ARE READ AND DISCARDED. They are the
  * fastest-rotting data in the source: a monthly fee taken from a third-party
@@ -30,11 +28,69 @@ const [IN, OUT] = process.argv.slice(2);
 
 if (!IN || !OUT) {
   console.error(
-    "Usage: node scripts/prepare-hsasearch-import.mjs <raw.tsv> <out.csv>\n\n" +
-      "Input: the hsasearch.com provider table as TSV, header row plus\n" +
-      "columns name, state, monthly_fee, investments."
+    "Usage: node scripts/prepare-hsasearch-import.mjs <source.csv|tsv> <out.csv>\n\n" +
+      "Input: the hsasearch.com provider table, header row plus columns\n" +
+      "name, state, monthly fee, investment options."
   );
   process.exit(1);
+}
+
+/**
+ * RFC 4180: quoted fields, embedded commas and newlines, "" escapes.
+ * Needed because hsasearch's own header cell contains a newline, and provider
+ * names contain commas ("Community Bank, N.A.") — a split(",") loses both.
+ */
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let field = "";
+  let inQuotes = false;
+
+  if (text.charCodeAt(0) === 0xfeff) text = text.slice(1); // Excel BOM
+
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') {
+          field += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        field += c;
+      }
+      continue;
+    }
+
+    if (c === '"') inQuotes = true;
+    else if (c === ",") {
+      row.push(field);
+      field = "";
+    } else if (c === "\n" || c === "\r") {
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(field);
+      field = "";
+      rows.push(row);
+      row = [];
+    } else field += c;
+  }
+
+  if (field.length > 0 || row.length > 0) {
+    row.push(field);
+    rows.push(row);
+  }
+
+  return rows.filter((r) => r.some((f) => f.trim() !== ""));
+}
+
+function parseTsv(text) {
+  return text
+    .split(/\r?\n/)
+    .filter((l) => l.trim())
+    .map((l) => l.split("\t"));
 }
 
 // Names in the source that are already in our database under a different
@@ -68,11 +124,19 @@ function orgType(name) {
   return "";
 }
 
-const lines = fs.readFileSync(IN, "utf-8").split(/\r?\n/).filter((l) => l.trim());
-const rows = lines.slice(1).map((l) => {
-  const [name, state] = l.split("\t");
-  return { name: (name ?? "").trim(), state: (state ?? "").trim() };
-});
+const text = fs.readFileSync(IN, "utf-8");
+const table = IN.toLowerCase().endsWith(".tsv") ? parseTsv(text) : parseCsv(text);
+
+// Columns 0 and 1 by position, not by header name — see the note at the top.
+const rows = table.slice(1).map(([name, state]) => ({
+  name: (name ?? "").trim(),
+  state: (state ?? "").trim(),
+}));
+
+if (rows.length === 0) {
+  console.error(`No data rows found in ${IN}.`);
+  process.exit(1);
+}
 
 // Count BASE SLUGS, not names. Keying on names misses the case that matters
 // most: "Farmers & Merchants Bank" and "Farmers and Merchants Bank" are
