@@ -362,15 +362,52 @@ create index if not exists idx_hsa_administrators_former_names
 -- configuration (api_base_url, form_template_id, submission_notes), which has
 -- no business being served to the public internet via PostgREST.
 --
--- RLS is row-level and cannot express "these columns only", so the public
--- surface is a view over the safe columns. The view is SECURITY DEFINER
--- (security_invoker = off) precisely so that it, and not an anon policy on
--- the base table, is the only anonymous path in. Supabase's linter flags
--- SECURITY DEFINER views by default; here it is the mechanism, not an
--- oversight. The base table keeps its authenticated-only policy untouched.
+-- RLS is row-level and cannot express "these columns only" — but Postgres has
+-- a separate native mechanism that can: GRANT SELECT (col, ...) ON table.
+-- So the boundary is two independent layers on the BASE TABLE:
+--
+--   1. an RLS policy letting anon read rows where active = true
+--   2. column-level GRANTs letting anon read only the public columns
+--
+-- and the view below is just a convenient projection over them, with
+-- security_invoker = on so the caller's own privileges apply.
+--
+-- An earlier version of this migration made the view SECURITY DEFINER
+-- instead, which Supabase's linter correctly flags as CRITICAL: such a view
+-- bypasses the base table's RLS entirely, making its own WHERE clause the
+-- only thing between anon and every row and column of the table. One
+-- careless `create or replace view` would then leak internal claim-routing
+-- config to the public internet, from a definition nobody reviews as
+-- security-critical. See provider_view_column_grants.sql.
+
+drop policy if exists "Anyone can read active providers" on public.hsa_administrators;
+
+create policy "Anyone can read active providers"
+  on public.hsa_administrators
+  for select
+  to anon
+  using (active = true);
+
+-- Supabase grants anon SELECT on every table in public by default, so the
+-- blanket grant has to go before the column-scoped one means anything.
+revoke select on public.hsa_administrators from anon;
+
+-- Withheld from anon: fax_number, email_address, mailing_address,
+-- api_base_url, form_template_id, submission_notes, accepts_email_phi,
+-- data_source. Querying one of those as anon is a permission error.
+grant select (
+  id, slug, name, legal_name, aliases, former_names, org_type,
+  website_url, portal_url, support_phone, hq_state,
+  is_custodian, is_administrator, account_types,
+  market_share_pct, accounts_count, logo_url,
+  submission_tier, claim_form_url, routing_varies_by_employer, docs_required,
+  has_guide, guide_summary, guide_body, sources, last_reviewed,
+  active,            -- the RLS policy's own USING clause reads it
+  updated_at
+) on public.hsa_administrators to anon;
 
 create or replace view public.hsa_providers_public
-with (security_invoker = off)
+with (security_invoker = on)
 as
 select
   id,
@@ -407,7 +444,7 @@ revoke all on public.hsa_providers_public from public;
 grant select on public.hsa_providers_public to anon, authenticated;
 
 comment on view public.hsa_providers_public is
-  'Public-safe projection of hsa_administrators for /hsa-providers. Excludes internal routing config (api_base_url, form_template_id, fax_number, email_address, mailing_address, submission_notes). SECURITY DEFINER is intentional — it provides the column-level restriction that RLS cannot.';
+  'Public projection of hsa_administrators for /hsa-providers. security_invoker = on, so the caller''s RLS and column grants apply — this view is a convenience, not a security boundary. Anon access is enforced by the "Anyone can read active providers" policy plus column-level GRANTs on the base table.';
 
 -- ────────────────────────────────────────────────
 -- 8. Column documentation

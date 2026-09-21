@@ -178,11 +178,27 @@ It is unrelated to `expenses.account_type`, which remains `('hsa', 'lpfsa', 'hcf
 
 ### Public read access
 
-`/hsa-providers` is a logged-out marketing route, so it needs anonymous read. But the table also holds internal routing configuration that has no business being served to the public internet via PostgREST.
+`/hsa-providers` is a logged-out marketing route, so it needs anonymous read. But the table also holds internal claim-routing configuration that has no business being served to the public internet via PostgREST.
 
-RLS is row-level and cannot express "these columns only", so the public surface is the `hsa_providers_public` view. It is `SECURITY DEFINER` (`security_invoker = off`) **on purpose**: that is what lets the base table keep its authenticated-only policy while anon reads a safe projection. Supabase's linter flags SECURITY DEFINER views by default — here it is the mechanism, not an oversight.
+RLS is row-level, but Postgres has a separate native mechanism for the column half — `GRANT SELECT (col, ...) ON table TO role`. Anon access is therefore **two independent layers on the base table**:
 
-Excluded from the view: `fax_number`, `email_address`, `mailing_address`, `api_base_url`, `form_template_id`, `submission_notes`, `accepts_email_phi`, `data_source`.
+| Layer | Enforces |
+|---|---|
+| RLS policy `"Anyone can read active providers"` | anon sees only rows where `active = true` |
+| Column `GRANT` to `anon` | anon sees only the public columns |
+
+Withheld from anon: `fax_number`, `email_address`, `mailing_address`, `api_base_url`, `form_template_id`, `submission_notes`, `accepts_email_phi`, `data_source`. Querying one of those as anon is a permission error, not a filtered result.
+
+`hsa_providers_public` is `security_invoker = on`, so it runs as whoever queries it and both layers apply. **The view is a convenience, not a security boundary** — a stable name and fixed column list for the app.
+
+That distinction is the whole point. An earlier version made the view `SECURITY DEFINER`, which Supabase's linter flags as CRITICAL and was right to: such a view bypasses the base table's RLS entirely, so the view's own `WHERE` clause becomes the only thing between anon and every row and column. One careless `create or replace view` would leak internal routing config, from a definition nobody reviews as security-critical. Now getting the view wrong leaks nothing, because anon holds no privilege on the withheld columns.
+
+Verify as anon:
+
+```sql
+select count(*) from public.hsa_providers_public;   -- works
+select fax_number from public.hsa_administrators;   -- permission denied
+```
 
 ## Maintenance
 

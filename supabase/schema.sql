@@ -604,13 +604,34 @@ create policy "Authenticated users can read hsa_administrators"
   using (auth.role() = 'authenticated');
 
 -- /hsa-providers is a logged-out marketing route, so it needs anonymous read —
--- but the table also holds internal routing config. RLS is row-level and
--- cannot express "these columns only", so the public surface is this view.
--- SECURITY DEFINER (security_invoker = off) is the mechanism, not an
--- oversight: it is what lets the base table keep its authenticated-only
--- policy while anon reads the safe projection.
+-- but the table also holds internal routing config. RLS is row-level, but
+-- Postgres has a separate mechanism for the column half: GRANT SELECT (cols).
+-- So anon access is two independent layers on the BASE TABLE — a row policy
+-- and column grants — and the view below is only a convenient projection.
+create policy "Anyone can read active providers"
+  on public.hsa_administrators
+  for select
+  to anon
+  using (active = true);
+
+-- Supabase grants anon SELECT on every public table by default; the blanket
+-- grant must go before the column-scoped one means anything. Withheld:
+-- fax_number, email_address, mailing_address, api_base_url, form_template_id,
+-- submission_notes, accepts_email_phi, data_source.
+revoke select on public.hsa_administrators from anon;
+grant select (
+  id, slug, name, legal_name, aliases, former_names, org_type,
+  website_url, portal_url, support_phone, hq_state,
+  is_custodian, is_administrator, account_types,
+  market_share_pct, accounts_count, logo_url,
+  submission_tier, claim_form_url, routing_varies_by_employer, docs_required,
+  has_guide, guide_summary, guide_body, sources, last_reviewed,
+  active,            -- the RLS policy's own USING clause reads it
+  updated_at
+) on public.hsa_administrators to anon;
+
 create or replace view public.hsa_providers_public
-with (security_invoker = off)
+with (security_invoker = on)
 as
 select
   id, slug, name, legal_name, aliases, former_names, org_type,
