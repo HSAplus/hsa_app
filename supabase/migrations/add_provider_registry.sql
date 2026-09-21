@@ -108,15 +108,31 @@ alter table public.hsa_administrators
 -- Mirrors slugify() in scripts/import-providers.mjs. The two must agree, or a
 -- row imported from a file gets a different URL than the same row backfilled
 -- here.
+--
+-- unaccent() is what keeps them agreeing. The JS side normalizes to NFKD and
+-- strips combining marks; without the equivalent here, a provider with an
+-- accented name would slug to `z-rich-bank` in Postgres and `zurich-bank` in
+-- the importer — two URLs for one company, decided by which path created the
+-- row.
+create extension if not exists unaccent;
+
+-- STABLE rather than IMMUTABLE: unaccent() depends on a text-search
+-- dictionary that can be reloaded, so it isn't truly immutable. Declaring
+-- this immutable would be a lie the planner is entitled to act on, and it is
+-- only ever called from a trigger — never from an index expression — so
+-- stable costs nothing here.
 create or replace function public.slugify(value text)
 returns text
 language sql
-immutable
+stable
 as $$
   select nullif(
     trim(both '-' from
       regexp_replace(
-        regexp_replace(lower(coalesce(value, '')), '&', ' and ', 'g'),
+        regexp_replace(
+          lower(unaccent(coalesce(value, ''))),
+          '&', ' and ', 'g'
+        ),
         '[^a-z0-9]+', '-', 'g'
       )
     ),

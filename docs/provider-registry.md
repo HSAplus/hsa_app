@@ -60,6 +60,21 @@ Run in the Supabase SQL Editor, in order:
 
 Both are idempotent and safe to re-run.
 
+### Credentials
+
+The scripts read `.env.local.hosted` (gitignored) via `scripts/load-env.mjs`, so `npm run export:providers` works the same from bash, PowerShell or cmd without shell-specific env-var syntax.
+
+**Real environment variables always win**, so this is inert in CI and on Vercel.
+
+It is deliberately *not* `.env.local`. That file points `npm run dev` at a local Supabase, and pointing local development at production would mean a stray dev action writes real user data.
+
+| Script | Needs |
+|---|---|
+| `export:providers` | URL + anon key (the view is granted to `anon`) |
+| `import:providers` | URL + **service role key** |
+
+The service role key is required for writes because `hsa_administrators` has a read-only RLS policy and no write policy. It is marked Sensitive in Vercel and **cannot be read back** — `vercel env pull` returns an empty string for it. Get it from Supabase → Project Settings → API, paste it into `.env.local.hosted` for the import, then remove it.
+
 ### Importing a provider list
 
 ```bash
@@ -68,8 +83,6 @@ npm run import:providers path/to/providers.csv
 npm run export:providers                                       # refresh the snapshot
 git add data/providers.generated.json && git commit
 ```
-
-Requires `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in the environment. The service role key is needed because `hsa_administrators` has a read-only RLS policy and no write policy.
 
 **Always dry-run first.** It validates every row and writes nothing.
 

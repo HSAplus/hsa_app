@@ -512,15 +512,24 @@ create table if not exists public.hsa_administrators (
 
 -- Mirrored in scripts/import-providers.mjs; the two must agree or the same
 -- provider gets a different URL depending on how it entered the table.
+-- unaccent() is the part that keeps them agreeing — the JS side strips
+-- combining marks after NFKD normalization.
+create extension if not exists unaccent;
+
+-- STABLE, not IMMUTABLE: unaccent() depends on a reloadable dictionary. Only
+-- called from a trigger, never an index expression, so stable costs nothing.
 create or replace function public.slugify(value text)
 returns text
 language sql
-immutable
+stable
 as $$
   select nullif(
     trim(both '-' from
       regexp_replace(
-        regexp_replace(lower(coalesce(value, '')), '&', ' and ', 'g'),
+        regexp_replace(
+          lower(unaccent(coalesce(value, ''))),
+          '&', ' and ', 'g'
+        ),
         '[^a-z0-9]+', '-', 'g'
       )
     ),

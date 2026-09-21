@@ -22,6 +22,9 @@
 import fs from "fs";
 import path from "path";
 import { createClient } from "@supabase/supabase-js";
+import { loadEnv } from "./load-env.mjs";
+
+loadEnv();
 
 // Columns this script is allowed to write. Anything in the input file outside
 // this list is reported and ignored rather than guessed at.
@@ -164,7 +167,9 @@ function slugify(name) {
   return String(name)
     .toLowerCase()
     .normalize("NFKD")
-    .replace(/[̀-ͯ]/g, "")
+    // Strip the combining diacritical marks NFKD just separated out, so
+    // "Zurich" with an umlaut slugs to "zurich" and not "zu-rich".
+    .replace(/\p{Diacritic}/gu, "")
     .replace(/&/g, " and ")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
