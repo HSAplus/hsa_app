@@ -12,6 +12,23 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { graph, article, breadcrumbs } from "@/lib/seo/structured-data";
+
+const jsonLd = graph(
+  article({
+    path: "/strategy/delayed-reimbursement",
+    headline: "The Delayed Reimbursement Strategy for HSAs",
+    description:
+      "Pay medical bills out of pocket, keep the receipts, and let your HSA compound tax-free. There is no IRS deadline to reimburse yourself — which makes an unclaimed receipt a standing right to withdraw tax-free, whenever you choose.",
+  }),
+  // Two levels, not three. There is no /strategy index page, so a
+  // "Strategy" crumb would have to reuse this page's own URL — and a
+  // BreadcrumbList with two items pointing at the same place is invalid.
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Delayed Reimbursement Strategy", path: "/strategy/delayed-reimbursement" },
+  ]),
+);
 
 export const metadata: Metadata = {
   alternates: { canonical: "https://hsa.plus/strategy/delayed-reimbursement" },
@@ -38,6 +55,10 @@ export const metadata: Metadata = {
 export default function DelayedReimbursementPage() {
   return (
     <div className="min-h-screen bg-[#FAFAF8] dark:bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Nav */}
       <header className="border-b border-[#E2E8F0]/80 dark:border-border bg-white/80 dark:bg-card/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">

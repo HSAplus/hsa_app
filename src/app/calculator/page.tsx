@@ -7,6 +7,20 @@ import Link from "next/link";
 import Image from "next/image";
 import { Logo } from "@/components/ui/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { graph, webApplication, breadcrumbs } from "@/lib/seo/structured-data";
+
+const jsonLd = graph(
+  webApplication({
+    path: "/calculator",
+    name: "HSA Compound Growth & Tax Calculator",
+    description:
+      "Model how much tax-free wealth an HSA generates over 5, 10, 20 or 30 years when reimbursements are delayed and the balance stays invested.",
+  }),
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Calculator", path: "/calculator" },
+  ]),
+);
 
 export const metadata: Metadata = {
   alternates: { canonical: "https://hsa.plus/calculator" },
@@ -38,6 +52,10 @@ export default async function CalculatorPage() {
 
   return (
     <div className="min-h-screen bg-[#FAFAF8] dark:bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Header */}
       <header className="sticky top-0 z-50 w-full border-b border-[#E2E8F0]/80 dark:border-border bg-white/80 dark:bg-card/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">

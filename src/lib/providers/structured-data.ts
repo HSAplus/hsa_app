@@ -1,22 +1,6 @@
 import type { PublicProvider } from "@/lib/claims/types";
 import type { ProviderListItem } from "@/lib/providers/queries";
-
-const SITE = "https://hsa.plus";
-
-/** Matches the @id the homepage already publishes, so the graph joins up. */
-const ORGANIZATION = { "@id": `${SITE}/#organization` };
-
-function breadcrumbs(trail: { name: string; path: string }[]) {
-  return {
-    "@type": "BreadcrumbList",
-    itemListElement: trail.map((item, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      name: item.name,
-      item: `${SITE}${item.path}`,
-    })),
-  };
-}
+import { SITE, ORGANIZATION, breadcrumbs } from "@/lib/seo/structured-data";
 
 /**
  * Structured data for the directory hub.

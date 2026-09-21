@@ -12,6 +12,17 @@ import {
   Sparkles,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { graph, breadcrumbs } from "@/lib/seo/structured-data";
+
+const jsonLd = graph(
+  // The visible trail shows "Comparisons" as plain text, but there is no
+  // /vs index page for it to point at, so it is omitted here rather than
+  // given a duplicate URL.
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "HSA Plus vs Spreadsheets", path: "/vs/spreadsheets" },
+  ]),
+);
 
 export const metadata: Metadata = {
   alternates: { canonical: "https://hsa.plus/vs/spreadsheets" },
@@ -95,6 +106,10 @@ const COMPARISON_POINTS = [
 export default function VsSpreadsheetsPage() {
   return (
     <div className="min-h-screen bg-[#FAFAF8] dark:bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Nav */}
       <header className="border-b border-[#E2E8F0]/80 dark:border-border bg-white/80 dark:bg-card/80 backdrop-blur-xl sticky top-0 z-50">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">

@@ -8,6 +8,14 @@ import {
   ProblemCards,
   type ComparisonRow,
 } from "@/components/marketing/comparison-table";
+import { graph, breadcrumbs } from "@/lib/seo/structured-data";
+
+const jsonLd = graph(
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "Google Drive vs HSA Plus", path: "/vs/google-drive" },
+  ]),
+);
 
 const TITLE =
   "Google Drive vs HSA Plus | Why a Receipts Folder Isn't HSA Tracking";
@@ -60,6 +68,10 @@ const ROWS: ComparisonRow[] = [
 export default function VsGoogleDrivePage() {
   return (
     <MarketingShell>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Breadcrumbs
         items={[
           { label: "Home", href: "/" },

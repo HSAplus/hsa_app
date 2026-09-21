@@ -8,6 +8,14 @@ import {
   ProblemCards,
   type ComparisonRow,
 } from "@/components/marketing/comparison-table";
+import { graph, breadcrumbs } from "@/lib/seo/structured-data";
+
+const jsonLd = graph(
+  breadcrumbs([
+    { name: "Home", path: "/" },
+    { name: "The Shoebox Method vs HSA Plus", path: "/vs/shoebox-method" },
+  ]),
+);
 
 const TITLE =
   "The Shoebox Method vs HSA Plus | Why Paper HSA Receipts Don't Survive";
@@ -59,6 +67,10 @@ const ROWS: ComparisonRow[] = [
 export default function VsShoeboxMethodPage() {
   return (
     <MarketingShell>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Breadcrumbs
         items={[
           { label: "Home", href: "/" },
