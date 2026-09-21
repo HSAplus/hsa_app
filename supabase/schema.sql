@@ -438,9 +438,16 @@ create policy "Users can delete own plaid transactions"
 -- column group; has_guide is the switch between "registry row" and
 -- "published page".
 create table if not exists public.hsa_administrators (
-  -- id is the public URL slug at /hsa-providers/[id]
-  id text primary key
-    check (id ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
+  -- Internal key. claims.administrator_id and profiles.hsa_administrator_id
+  -- reference it with no ON UPDATE CASCADE, so it must never change.
+  id text primary key,
+  -- Public path segment at /hsa-providers/[slug]. Separate from id so a URL
+  -- can change for SEO, or when a provider renames, at the cost of a redirect
+  -- rather than a data migration. Backfilled and auto-derived by the trigger
+  -- below, so a hand-written insert can omit it.
+  slug text not null
+    constraint hsa_administrators_slug_format_check
+      check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
   name text not null,
 
   -- 'self_directed' covers providers like Fidelity where no claim exists —
@@ -503,27 +510,58 @@ create table if not exists public.hsa_administrators (
            or (guide_summary is not null and last_reviewed is not null))
 );
 
-create or replace function public.touch_hsa_administrators_updated_at()
+-- Mirrored in scripts/import-providers.mjs; the two must agree or the same
+-- provider gets a different URL depending on how it entered the table.
+create or replace function public.slugify(value text)
+returns text
+language sql
+immutable
+as $$
+  select nullif(
+    trim(both '-' from
+      regexp_replace(
+        regexp_replace(lower(coalesce(value, '')), '&', ' and ', 'g'),
+        '[^a-z0-9]+', '-', 'g'
+      )
+    ),
+    ''
+  );
+$$;
+
+create or replace function public.maintain_hsa_administrator_row()
 returns trigger
 language plpgsql
 security definer
 set search_path = public
 as $$
 begin
-  new.updated_at := now();
+  if new.slug is null then
+    new.slug := coalesce(
+      public.slugify(new.name),
+      public.slugify(new.id),
+      'provider'
+    );
+  end if;
+
+  if tg_op = 'UPDATE' then
+    new.updated_at := now();
+  end if;
+
   return new;
 end;
 $$;
 
-drop trigger if exists trg_hsa_administrators_updated_at on public.hsa_administrators;
+drop trigger if exists trg_hsa_administrators_maintain on public.hsa_administrators;
 
-create trigger trg_hsa_administrators_updated_at
-  before update on public.hsa_administrators
+create trigger trg_hsa_administrators_maintain
+  before insert or update on public.hsa_administrators
   for each row
-  execute function public.touch_hsa_administrators_updated_at();
+  execute function public.maintain_hsa_administrator_row();
 
+create unique index if not exists idx_hsa_administrators_slug
+  on public.hsa_administrators (slug);
 create index if not exists idx_hsa_administrators_has_guide
-  on public.hsa_administrators (id) where has_guide = true;
+  on public.hsa_administrators (slug) where has_guide = true;
 create index if not exists idx_hsa_administrators_active
   on public.hsa_administrators (active) where active = true;
 create index if not exists idx_hsa_administrators_org_type
@@ -556,7 +594,7 @@ create or replace view public.hsa_providers_public
 with (security_invoker = off)
 as
 select
-  id, name, legal_name, aliases, former_names, org_type,
+  id, slug, name, legal_name, aliases, former_names, org_type,
   website_url, portal_url, support_phone, hq_state,
   is_custodian, is_administrator, account_types,
   market_share_pct, accounts_count, logo_url,

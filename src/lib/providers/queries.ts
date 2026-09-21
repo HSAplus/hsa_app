@@ -24,6 +24,7 @@ function publicClient() {
 /** Columns the hub needs. Excludes guide_body, which is large and unused there. */
 const LIST_COLUMNS = [
   "id",
+  "slug",
   "name",
   "legal_name",
   "aliases",
@@ -46,6 +47,7 @@ const LIST_COLUMNS = [
 export type ProviderListItem = Pick<
   PublicProvider,
   | "id"
+  | "slug"
   | "name"
   | "legal_name"
   | "aliases"
@@ -109,15 +111,15 @@ export async function getGuidedProviderSlugs(): Promise<string[]> {
   const supabase = publicClient();
   const { data, error } = await supabase
     .from("hsa_providers_public")
-    .select("id")
+    .select("slug")
     .eq("has_guide", true)
-    .order("id");
+    .order("slug");
 
   if (error) {
     console.error("getGuidedProviderSlugs failed:", error.message);
     return [];
   }
-  return (data ?? []).map((r) => r.id as string);
+  return (data ?? []).map((r) => r.slug as string);
 }
 
 /** A single provider's full guide. Returns null when there is no page to show. */
@@ -128,7 +130,7 @@ export async function getProviderGuide(
   const { data, error } = await supabase
     .from("hsa_providers_public")
     .select("*")
-    .eq("id", slug)
+    .eq("slug", slug)
     .eq("has_guide", true)
     .maybeSingle();
 

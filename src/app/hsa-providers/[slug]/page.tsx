@@ -57,11 +57,11 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: { canonical: `https://hsa.plus/hsa-providers/${provider.id}` },
+    alternates: { canonical: `https://hsa.plus/hsa-providers/${provider.slug}` },
     openGraph: {
       title,
       description,
-      url: `https://hsa.plus/hsa-providers/${provider.id}`,
+      url: `https://hsa.plus/hsa-providers/${provider.slug}`,
       siteName: "HSA Plus",
       type: "article",
     },

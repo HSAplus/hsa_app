@@ -13,7 +13,7 @@
  * Because it is derived, it cannot drift the way a hand-maintained copy would.
  * The worst case is staleness, and staleness is visible from the commit date.
  *
- * Output is deliberately deterministic — rows sorted by id, keys in a fixed
+ * Output is deliberately deterministic — rows sorted by slug, keys in a fixed
  * order — so a diff shows only what actually changed in the data, not
  * whatever order Postgres happened to return rows in.
  *
@@ -37,6 +37,7 @@ const OUT_PATH = path.join(rootDir, "data", "providers.generated.json");
 // Fixed key order. Matches public.hsa_providers_public; keep the two in sync.
 const COLUMNS = [
   "id",
+  "slug",
   "name",
   "legal_name",
   "aliases",
@@ -78,7 +79,7 @@ async function fetchAll(supabase) {
     const { data, error } = await supabase
       .from("hsa_providers_public")
       .select(COLUMNS.join(","))
-      .order("id", { ascending: true })
+      .order("slug", { ascending: true })
       .range(from, from + PAGE_SIZE - 1);
 
     if (error) throw new Error(`Query failed: ${error.message}`);

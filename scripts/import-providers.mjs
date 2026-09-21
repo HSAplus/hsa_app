@@ -27,6 +27,7 @@ import { createClient } from "@supabase/supabase-js";
 // this list is reported and ignored rather than guessed at.
 const REGISTRY_COLUMNS = new Set([
   "id",
+  "slug",
   "name",
   "legal_name",
   "aliases",
@@ -154,6 +155,10 @@ function parseCsv(text) {
  * Build a URL slug from a provider name. Providers arrive with inconsistent
  * punctuation ("Optum Bank, Inc." / "HSA Bank (a division of Webster Bank)"),
  * and this is the public path segment, so it has to be stable and clean.
+ *
+ * Mirrors public.slugify() in add_provider_registry.sql. The two must agree,
+ * or a row imported from a file gets a different URL than the same row
+ * backfilled by the migration.
  */
 function slugify(name) {
   return String(name)
@@ -257,15 +262,21 @@ function validateRow(row, rowNum, errors) {
     return false;
   }
 
-  if (!row.id) row.id = slugify(row.name);
+  // `id` is the internal key that claims.administrator_id points at, and
+  // `slug` is the public URL. They are separate columns and only default to
+  // the same value for genuinely new providers.
+  if (!row.slug) row.slug = slugify(row.id || row.name);
+  if (!row.id) row.id = row.slug;
 
-  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(row.id)) {
-    const fixed = slugify(row.id);
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(row.slug)) {
+    const fixed = slugify(row.slug);
     if (!fixed) {
-      errors.push(`row ${rowNum}: id "${row.id}" cannot be made into a valid slug`);
+      errors.push(
+        `row ${rowNum}: slug "${row.slug}" cannot be made into a valid URL slug`
+      );
       return false;
     }
-    row.id = fixed;
+    row.slug = fixed;
   }
 
   // submission_tier is NOT NULL with no default. 'portal' is the honest
@@ -345,7 +356,11 @@ async function main() {
 
   const warnings = [];
   const errors = [];
-  const seen = new Map();
+  // Both columns are unique in the database, so both are checked here — a
+  // collision caught in the file is a readable error, while the same
+  // collision caught by Postgres aborts a batch halfway through.
+  const seenIds = new Map();
+  const seenSlugs = new Map();
   const prepared = [];
 
   records.forEach((rec, i) => {
@@ -353,15 +368,22 @@ async function main() {
     const row = normalizeRow(rec, rowNum, warnings);
     if (!validateRow(row, rowNum, errors)) return;
 
-    // A duplicate slug would make one provider silently overwrite another —
-    // two rows in, one row out, no error. Catch it here instead.
-    if (seen.has(row.id)) {
+    // A duplicate would make one provider silently overwrite another — two
+    // rows in, one row out, no error. Catch it here instead.
+    if (seenSlugs.has(row.slug)) {
       errors.push(
-        `row ${rowNum}: duplicate id "${row.id}" (also row ${seen.get(row.id)}) — "${row.name}" collides with an earlier provider. Give one of them an explicit distinct id.`
+        `row ${rowNum}: duplicate slug "${row.slug}" (also row ${seenSlugs.get(row.slug)}) — "${row.name}" collides with an earlier provider. Give one of them an explicit distinct slug.`
       );
       return;
     }
-    seen.set(row.id, rowNum);
+    if (seenIds.has(row.id)) {
+      errors.push(
+        `row ${rowNum}: duplicate id "${row.id}" (also row ${seenIds.get(row.id)}) — "${row.name}" collides with an earlier provider. Give one of them an explicit distinct id.`
+      );
+      return;
+    }
+    seenSlugs.set(row.slug, rowNum);
+    seenIds.set(row.id, rowNum);
     prepared.push(row);
   });
 
@@ -423,9 +445,15 @@ async function main() {
   let written = 0;
   for (let i = 0; i < prepared.length; i += BATCH_SIZE) {
     const batch = prepared.slice(i, i + BATCH_SIZE);
+    // Conflict on slug, not id. The table already holds hand-entered rows
+    // whose ids follow no convention, so matching on id would insert a second
+    // "HealthEquity" beside an existing `health_equity` instead of updating
+    // it — and the new row would be orphaned from the claims pointing at the
+    // old one. Matching on slug updates in place and leaves ids, and
+    // therefore foreign keys, untouched.
     const { error } = await supabase
       .from("hsa_administrators")
-      .upsert(batch, { onConflict: "id" });
+      .upsert(batch, { onConflict: "slug" });
 
     if (error) {
       console.error(`\nBatch starting at row ${i + 2} failed: ${error.message}`);

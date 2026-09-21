@@ -44,7 +44,14 @@ export type ClaimStatus =
  * public.hsa_providers_public view — keep the two in sync.
  */
 export interface PublicProvider {
+  /**
+   * Internal key. Referenced by claims.administrator_id and
+   * profiles.hsa_administrator_id with no ON UPDATE CASCADE, so it never
+   * changes. Not the URL — use `slug` for that.
+   */
   id: string;
+  /** Public path segment at /hsa-providers/[slug]. */
+  slug: string;
   name: string;
   legal_name: string | null;
   aliases: string[];

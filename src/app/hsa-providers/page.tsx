@@ -95,7 +95,7 @@ function ProviderRow({ p }: { p: ProviderListItem }) {
     >
       {p.has_guide ? (
         <Link
-          href={`/hsa-providers/${p.id}`}
+          href={`/hsa-providers/${p.slug}`}
           className={`${className} hover:bg-[#059669]/[0.04] dark:hover:bg-[#059669]/10`}
         >
           {inner}
@@ -191,7 +191,7 @@ export default async function HsaProvidersPage() {
             {guided.map((p) => (
               <Link
                 key={p.id}
-                href={`/hsa-providers/${p.id}`}
+                href={`/hsa-providers/${p.slug}`}
                 className="group rounded-2xl border border-[#E2E8F0] dark:border-border bg-white dark:bg-card p-5 transition-colors hover:border-[#059669]/40"
               >
                 <div className="mb-2 flex items-center justify-between gap-2">

@@ -82,11 +82,20 @@ Accepted columns: `id`, `name`, `legal_name`, `aliases`, `former_names`, `org_ty
 - **Arrays** (`aliases`, `former_names`, `account_types`) — semicolon or pipe delimited, or a JSON array. **Not comma delimited**: provider legal names contain commas.
 - **Booleans** — `true/false`, `yes/no`, `y/n`, `1/0`, any case.
 - **Empty cells are skipped, not written as NULL.** This is deliberate: an import must not be able to blank a value a human curated in the database.
-- **`id`** is generated from `name` if absent. Supply it explicitly when you care about the URL.
+- **`slug`** is the URL and is generated from `name` if absent. Supply it explicitly when you care about the URL, or when the provider already exists.
+- **`id`** is the internal key. It defaults to the slug for new providers and should be left alone for existing ones — rows are matched on `slug`, so an existing provider keeps whatever id it already had.
 
 #### Two things to watch
 
-**Slug collisions with the researched five.** `"Optum Bank, Inc."` slugifies to `optum-bank-inc`, but the seed uses `optum-bank` — importing it would create a duplicate provider rather than updating the existing one. Set `id` explicitly in your source file for any of `fidelity`, `via-benefits`, `inspira-financial`, `healthequity`, `optum-bank`. The importer catches duplicates *within* a file and refuses to run, but it cannot know that two different slugs mean the same company.
+**Slug collisions with providers already in the table.** `"Optum Bank, Inc."` slugifies to `optum-bank-inc`, but the seed uses `optum-bank` — importing it would create a duplicate provider rather than updating the existing one. Set `slug` explicitly in your source file for any provider already present, including `fidelity`, `via-benefits`, `inspira-financial`, `healthequity` and `optum-bank`.
+
+Check what's there first:
+
+```sql
+select id, slug, name from public.hsa_administrators order by name;
+```
+
+The importer catches duplicates *within* a file and refuses to run, but it cannot know that two different slugs mean the same company.
 
 **Editorial columns are rejected.** `has_guide`, `guide_summary`, `guide_body`, `sources`, `last_reviewed` and `accepts_email_phi` are never written by the importer, even if present in the file. They are reviewed content; a re-import must not be able to blank them or silently republish something unreviewed. Edit `supabase/seed/providers_researched.sql` instead.
 
@@ -95,6 +104,19 @@ Accepted columns: `id`, `name`, `legal_name`, `aliases`, `former_names`, `org_ty
 Set `active = false`. Don't delete: `claims.administrator_id` is a foreign key, and deleting a provider someone has filed a claim against would break their history. Inactive rows disappear from `hsa_providers_public` automatically.
 
 ## Schema notes
+
+### `id` vs `slug`
+
+Two separate columns, deliberately.
+
+- **`id`** — internal key. `claims.administrator_id` and `profiles.hsa_administrator_id` are foreign keys to it, and neither declares `ON UPDATE CASCADE`, so **it must never change**. Rows added by hand before this registry existed have ids in whatever format their author chose; those stay as they are.
+- **`slug`** — the public path segment at `/hsa-providers/[slug]`. Unique, kebab-case, auto-derived from `name` by a trigger when omitted.
+
+The first draft of the migration constrained `id` itself to kebab-case and was rejected by Postgres: `check constraint "hsa_administrators_id_slug_check" is violated by some row`. Normalizing those ids wasn't an option — it would have either failed on the foreign keys or stranded existing claim history.
+
+Splitting them turned out to be the better design regardless. A public URL is something you may well want to change — a provider renames, or a slug reads badly in search results — and changing it should cost a redirect, not a data migration.
+
+**Everything matches on `slug`**: the seed's `on conflict`, the importer's upsert, and the page queries. Matching on `id` would insert a second "HealthEquity" beside an existing `health_equity` row, orphaned from the claims pointing at the original.
 
 ### `submission_tier`
 

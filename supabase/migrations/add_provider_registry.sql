@@ -53,8 +53,6 @@ alter table public.claims
 -- ────────────────────────────────────────────────
 
 alter table public.hsa_administrators
-  -- Identity. `id` is the URL slug (/hsa-providers/[id]), so it is constrained
-  -- to lowercase kebab-case rather than left as free text.
   add column if not exists legal_name text,
   add column if not exists aliases text[] not null default '{}'::text[],
 
@@ -90,12 +88,80 @@ alter table public.hsa_administrators
   add column if not exists created_at timestamp with time zone not null default now(),
   add column if not exists updated_at timestamp with time zone not null default now();
 
-alter table public.hsa_administrators
-  drop constraint if exists hsa_administrators_id_slug_check;
+-- ────────────────────────────────────────────────
+-- 2a. Public URL slug
+-- ────────────────────────────────────────────────
+-- The public path segment is a separate column, NOT `id`.
+--
+-- An earlier draft of this migration constrained `id` itself to kebab-case and
+-- failed on the rows already in the table. Normalizing those ids was not an
+-- option: claims.administrator_id and profiles.hsa_administrator_id are
+-- foreign keys to them and neither declares ON UPDATE CASCADE, so renaming
+-- would either be rejected outright or strand somebody's claim history.
+--
+-- Separating the two turns out to be the better design regardless. `id` is an
+-- internal key that must never move because rows point at it; `slug` is a
+-- public URL that we may well want to change — a provider renames, or a slug
+-- reads badly in search results — and changing it should cost a redirect, not
+-- a data migration.
+
+-- Mirrors slugify() in scripts/import-providers.mjs. The two must agree, or a
+-- row imported from a file gets a different URL than the same row backfilled
+-- here.
+create or replace function public.slugify(value text)
+returns text
+language sql
+immutable
+as $$
+  select nullif(
+    trim(both '-' from
+      regexp_replace(
+        regexp_replace(lower(coalesce(value, '')), '&', ' and ', 'g'),
+        '[^a-z0-9]+', '-', 'g'
+      )
+    ),
+    ''
+  );
+$$;
 
 alter table public.hsa_administrators
-  add constraint hsa_administrators_id_slug_check
-  check (id ~ '^[a-z0-9]+(-[a-z0-9]+)*$');
+  add column if not exists slug text;
+
+-- Backfill. Prefers the display name over the id, because the name is what a
+-- reader would search for. row_number() disambiguates collisions — two rows
+-- named "Optum Bank" would otherwise both want the same slug and the unique
+-- index below would reject the whole migration.
+with candidates as (
+  select
+    id,
+    coalesce(public.slugify(name), public.slugify(id), 'provider') as base
+  from public.hsa_administrators
+  where slug is null
+),
+numbered as (
+  select
+    id,
+    base,
+    row_number() over (partition by base order by id) as rn
+  from candidates
+)
+update public.hsa_administrators a
+set slug = case when n.rn = 1 then n.base else n.base || '-' || n.rn end
+from numbered n
+where a.id = n.id;
+
+alter table public.hsa_administrators
+  alter column slug set not null;
+
+create unique index if not exists idx_hsa_administrators_slug
+  on public.hsa_administrators (slug);
+
+alter table public.hsa_administrators
+  drop constraint if exists hsa_administrators_slug_format_check;
+
+alter table public.hsa_administrators
+  add constraint hsa_administrators_slug_format_check
+  check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$');
 
 alter table public.hsa_administrators
   drop constraint if exists hsa_administrators_org_type_check;
@@ -194,30 +260,50 @@ alter table public.hsa_administrators
   check (jsonb_typeof(sources) = 'array');
 
 -- ────────────────────────────────────────────────
--- 5. updated_at maintenance
+-- 5. Row maintenance: updated_at and slug
 -- ────────────────────────────────────────────────
 -- updated_at is what the exporter stamps into the snapshot and what tells us
 -- whether a row is stale, so it cannot depend on the caller remembering to
 -- set it.
+--
+-- slug is NOT NULL, so deriving it here keeps a plain
+-- `insert into hsa_administrators (id, name, submission_tier) ...` working —
+-- the shape anyone adding a provider by hand in the SQL editor will reach for.
 
-create or replace function public.touch_hsa_administrators_updated_at()
+create or replace function public.maintain_hsa_administrator_row()
 returns trigger
 language plpgsql
 security definer
 set search_path = public
 as $$
 begin
-  new.updated_at := now();
+  if new.slug is null then
+    new.slug := coalesce(
+      public.slugify(new.name),
+      public.slugify(new.id),
+      'provider'
+    );
+  end if;
+
+  if tg_op = 'UPDATE' then
+    new.updated_at := now();
+  end if;
+
   return new;
 end;
 $$;
 
+-- Drop the older single-purpose trigger if a previous run of this migration
+-- created it.
 drop trigger if exists trg_hsa_administrators_updated_at on public.hsa_administrators;
+drop function if exists public.touch_hsa_administrators_updated_at();
 
-create trigger trg_hsa_administrators_updated_at
-  before update on public.hsa_administrators
+drop trigger if exists trg_hsa_administrators_maintain on public.hsa_administrators;
+
+create trigger trg_hsa_administrators_maintain
+  before insert or update on public.hsa_administrators
   for each row
-  execute function public.touch_hsa_administrators_updated_at();
+  execute function public.maintain_hsa_administrator_row();
 
 -- ────────────────────────────────────────────────
 -- 6. Indexes
@@ -226,7 +312,7 @@ create trigger trg_hsa_administrators_updated_at
 -- generateStaticParams and the "researched providers" rail. Partial, because
 -- the true rows are a ~2% slice of the table.
 create index if not exists idx_hsa_administrators_has_guide
-  on public.hsa_administrators (id)
+  on public.hsa_administrators (slug)
   where has_guide = true;
 
 create index if not exists idx_hsa_administrators_active
@@ -272,6 +358,7 @@ with (security_invoker = off)
 as
 select
   id,
+  slug,
   name,
   legal_name,
   aliases,
@@ -311,7 +398,9 @@ comment on view public.hsa_providers_public is
 -- ────────────────────────────────────────────────
 
 comment on column public.hsa_administrators.id is
-  'URL slug. Constrained to lowercase kebab-case because it is the public path segment at /hsa-providers/[id].';
+  'Internal key. Referenced by claims.administrator_id and profiles.hsa_administrator_id with no ON UPDATE CASCADE, so it must never change. The public URL is slug, not this.';
+comment on column public.hsa_administrators.slug is
+  'Public path segment at /hsa-providers/[slug]. Separate from id so a URL can be changed for SEO, or when a provider renames, at the cost of a redirect rather than a data migration.';
 comment on column public.hsa_administrators.former_names is
   'Prior names, e.g. Inspira Financial carries {PayFlex}. Searched alongside name — users hold paperwork under the old name for years.';
 comment on column public.hsa_administrators.is_custodian is

@@ -18,10 +18,30 @@
 --
 -- Idempotent: safe to re-run. Editorial columns are overwritten on conflict;
 -- routing columns are too, since this file is their source for these five.
+--
+-- KEYED ON slug, NOT id. The table already held hand-entered rows when this
+-- was written, with ids in whatever format whoever added them chose. Matching
+-- on id would insert a second "HealthEquity" alongside an existing
+-- `health_equity` rather than updating it — two rows for one company, one of
+-- them orphaned from the claims that point at it. Matching on slug updates
+-- the existing row in place and leaves its id (and therefore its foreign
+-- keys) untouched.
+--
+-- The id values below are only used for rows that are genuinely new.
+--
+-- BEFORE RUNNING, check what is already there:
+--
+--   select id, slug, name, submission_tier from public.hsa_administrators
+--   order by name;
+--
+-- If an existing provider's slug differs from the one below — say it is named
+-- "Fidelity Investments" and so slugged to `fidelity-investments` — this file
+-- will insert a duplicate. Fix the existing row's slug first, or change the
+-- slug here to match.
 -- ============================================================================
 
 insert into public.hsa_administrators (
-  id, name, legal_name, aliases, former_names, org_type,
+  id, slug, name, legal_name, aliases, former_names, org_type,
   website_url, portal_url, hq_state,
   is_custodian, is_administrator, account_types, market_share_pct,
   submission_tier, routing_varies_by_employer, docs_required, accepts_email_phi,
@@ -31,6 +51,7 @@ insert into public.hsa_administrators (
 
 -- ────────────────────────────────────────────────
 (
+  'fidelity',
   'fidelity',
   'Fidelity',
   'Fidelity Investments',
@@ -105,6 +126,7 @@ Store them somewhere that will outlive the provider portal they came from. Most 
 -- ────────────────────────────────────────────────
 (
   'via-benefits',
+  'via-benefits',
   'Via Benefits',
   'Via Benefits Insurance Services',
   '{"Via Benefits Accounts","Extend Health"}',
@@ -178,6 +200,7 @@ Via Benefits retains claim documentation for a limited period, and if your emplo
 
 -- ────────────────────────────────────────────────
 (
+  'inspira-financial',
   'inspira-financial',
   'Inspira Financial',
   'Inspira Financial Health, Inc.',
@@ -254,6 +277,7 @@ Keep your own copies regardless. Administrator document retention is finite, and
 -- ────────────────────────────────────────────────
 (
   'healthequity',
+  'healthequity',
   'HealthEquity',
   'HealthEquity, Inc.',
   '{"Health Equity","HealthEquity WageWorks"}',
@@ -327,6 +351,7 @@ Meanwhile the IRS can question a distribution years after you took it, and the b
 -- ────────────────────────────────────────────────
 (
   'optum-bank',
+  'optum-bank',
   'Optum Bank',
   'Optum Bank, Inc.',
   '{"Optum","Optum Financial","OptumHealth Bank"}',
@@ -395,7 +420,7 @@ Store it outside the Optum portal. Portal document retention is finite and acces
   true
 )
 
-on conflict (id) do update set
+on conflict (slug) do update set
   name                       = excluded.name,
   legal_name                 = excluded.legal_name,
   aliases                    = excluded.aliases,
