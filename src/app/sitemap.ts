@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
+import { getGuidedProviderSlugs } from "@/lib/providers/queries";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://hsa.plus";
+const baseUrl = "https://hsa.plus";
 
-  return [
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -29,6 +30,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/hsa-providers`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/calculator`,
       lastModified: new Date(),
       changeFrequency: "monthly",
@@ -41,4 +48,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.4,
     },
   ];
+
+  // Only providers with has_guide = true — the same source generateStaticParams
+  // uses, so the sitemap can never advertise a URL that 404s.
+  const providerRoutes: MetadataRoute.Sitemap = (
+    await getGuidedProviderSlugs()
+  ).map((slug) => ({
+    url: `${baseUrl}/hsa-providers/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  return [...staticRoutes, ...providerRoutes];
 }

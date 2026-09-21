@@ -27,6 +27,9 @@ jobs:
       - name: "Guard: Check Public Schema Tables Have RLS"
         run: npm run check:rls
 
+      - name: "Guard: SQL Dollar-Quote Balance"
+        run: npm run check:sql
+
       - name: "Test: Storage Path Security & Traversal Defense"
         run: npm run test:storage
 

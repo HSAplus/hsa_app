@@ -10,7 +10,10 @@
     "check:rls": "node scripts/check-schema-rls.mjs",
     "test:storage": "node scripts/test-storage.mjs",
     "test:attribution": "node scripts/test-attribution.mjs",
-    "test": "npm run check:rls && npm run test:storage && npm run test:attribution"
+    "test": "npm run check:rls && npm run check:sql && npm run test:storage && npm run test:attribution",
+    "import:providers": "node scripts/import-providers.mjs",
+    "export:providers": "node scripts/export-providers.mjs",
+    "check:sql": "node scripts/check-sql.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
@@ -33,8 +36,10 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.71.1",
+    "react-markdown": "^10.1.0",
     "react-plaid-link": "^4.1.1",
     "recharts": "^3.7.0",
+    "remark-gfm": "^4.0.1",
     "resend": "^6.9.1",
     "sonner": "^2.0.7",
     "stripe": "^21.0.1",
@@ -43,6 +48,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@tailwindcss/typography": "^0.5.20",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

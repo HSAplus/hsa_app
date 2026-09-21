@@ -181,7 +181,11 @@ begin
   end if;
   return new;
 end;
-$$ language plpgsql;
+$$ language plpgsql
+  -- Deliberately NOT security definer: it only copies old values over new
+  -- ones, so it needs no elevation. pg_temp last so a temp table cannot
+  -- shadow a relation name.
+  set search_path = public, pg_temp;
 
 create trigger trg_protect_signup_attribution
   before update on public.profiles
@@ -259,7 +263,13 @@ begin
 
   return new;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql
+  security definer
+  -- The highest-privilege trigger in the system: runs as the definer on
+  -- every signup and writes to public.profiles and storage.objects. Pinned
+  -- so the unqualified calls above resolve predictably; pg_temp last so a
+  -- temp table cannot shadow a relation name.
+  set search_path = public, pg_temp;
 
 create trigger on_auth_user_created
   after insert on auth.users
@@ -432,20 +442,159 @@ create policy "Users can delete own plaid transactions"
 -- HSA Administrators & Claims
 -- ────────────────────────────────────────────────
 
+-- Canonical registry of every HSA provider we know about (800+ rows), serving
+-- both claim routing and the public /hsa-providers content. See
+-- supabase/migrations/add_provider_registry.sql for the reasoning behind each
+-- column group; has_guide is the switch between "registry row" and
+-- "published page".
 create table if not exists public.hsa_administrators (
+  -- Internal key. claims.administrator_id and profiles.hsa_administrator_id
+  -- reference it with no ON UPDATE CASCADE, so it must never change.
   id text primary key,
+  -- Public path segment at /hsa-providers/[slug]. Separate from id so a URL
+  -- can change for SEO, or when a provider renames, at the cost of a redirect
+  -- rather than a data migration. Backfilled and auto-derived by the trigger
+  -- below, so a hand-written insert can omit it.
+  slug text not null
+    constraint hsa_administrators_slug_format_check
+      check (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
   name text not null,
-  submission_tier text not null check (submission_tier in ('api', 'email', 'fax', 'portal')),
+
+  -- 'self_directed' covers providers like Fidelity where no claim exists —
+  -- the accountholder withdraws from their own custodial account. Duplicated
+  -- as a check on public.claims; the two must move together.
+  submission_tier text not null
+    check (submission_tier in ('api', 'email', 'fax', 'portal', 'mail', 'self_directed')),
+
+  -- Internal routing config — excluded from the public view
   fax_number text,
   email_address text,
-  portal_url text,
   api_base_url text,
   form_template_id text,
   mailing_address text,
+  submission_notes text,
+
+  -- Registry
+  legal_name text,
+  aliases text[] not null default '{}'::text[],
+  former_names text[] not null default '{}'::text[],  -- e.g. Inspira: {PayFlex}
+  org_type text check (org_type is null or org_type in (
+    'bank', 'credit_union', 'non_bank_custodian', 'tpa',
+    'health_plan', 'investment_platform', 'payroll_benefits', 'other')),
+  website_url text,
+  portal_url text,
+  support_phone text,
+  hq_state text,
+  is_custodian boolean not null default false,      -- holds funds, files 1099-SA
+  is_administrator boolean not null default false,  -- adjudicates claims
+  account_types text[] not null default '{hsa}'::text[],  -- describes the provider, not our scope
   market_share_pct numeric,
+  accounts_count bigint,
   logo_url text,
-  active boolean not null default true
+  active boolean not null default true,
+
+  -- Submission
+  claim_form_url text,
+  routing_varies_by_employer boolean not null default false,
+  docs_required text check (docs_required is null or docs_required in (
+    'none', 'always', 'varies', 'over_threshold')),
+  accepts_email_phi boolean not null default false,  -- unencrypted email is not HIPAA-compliant for PHI
+
+  -- Editorial (populated only for researched providers)
+  has_guide boolean not null default false,
+  guide_summary text,
+  guide_body text,
+  sources jsonb not null default '[]'::jsonb,
+  last_reviewed date,
+
+  -- Provenance
+  data_source text,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+
+  constraint hsa_administrators_sources_is_array_check
+    check (jsonb_typeof(sources) = 'array'),
+  -- A row cannot become a public page without a summary and a review date
+  constraint hsa_administrators_guide_ready_check
+    check (has_guide = false
+           or (guide_summary is not null and last_reviewed is not null))
 );
+
+-- Mirrored in scripts/import-providers.mjs; the two must agree or the same
+-- provider gets a different URL depending on how it entered the table.
+-- unaccent() is the part that keeps them agreeing — the JS side strips
+-- combining marks after NFKD normalization.
+create extension if not exists unaccent;
+
+-- STABLE, not IMMUTABLE: unaccent() depends on a reloadable dictionary. Only
+-- called from a trigger, never an index expression, so stable costs nothing.
+create or replace function public.slugify(value text)
+returns text
+language sql
+stable
+as $$
+  select nullif(
+    trim(both '-' from
+      regexp_replace(
+        regexp_replace(
+          lower(unaccent(coalesce(value, ''))),
+          '&', ' and ', 'g'
+        ),
+        '[^a-z0-9]+', '-', 'g'
+      )
+    ),
+    ''
+  );
+$$;
+
+create or replace function public.maintain_hsa_administrator_row()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+begin
+  if new.slug is null then
+    new.slug := coalesce(
+      public.slugify(new.name),
+      public.slugify(new.id),
+      'provider'
+    );
+  end if;
+
+  if tg_op = 'UPDATE' then
+    new.updated_at := now();
+  end if;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_hsa_administrators_maintain on public.hsa_administrators;
+
+create trigger trg_hsa_administrators_maintain
+  before insert or update on public.hsa_administrators
+  for each row
+  execute function public.maintain_hsa_administrator_row();
+
+create unique index if not exists idx_hsa_administrators_slug
+  on public.hsa_administrators (slug);
+create index if not exists idx_hsa_administrators_has_guide
+  on public.hsa_administrators (slug) where has_guide = true;
+create index if not exists idx_hsa_administrators_active
+  on public.hsa_administrators (active) where active = true;
+create index if not exists idx_hsa_administrators_org_type
+  on public.hsa_administrators (org_type);
+
+-- Typeahead: 800 rows are never shipped to the client, so the picker queries
+-- server-side per keystroke and needs these to stay index scans.
+create extension if not exists pg_trgm;
+create index if not exists idx_hsa_administrators_name_trgm
+  on public.hsa_administrators using gin (name gin_trgm_ops);
+create index if not exists idx_hsa_administrators_aliases
+  on public.hsa_administrators using gin (aliases);
+create index if not exists idx_hsa_administrators_former_names
+  on public.hsa_administrators using gin (former_names);
 
 alter table public.hsa_administrators enable row level security;
 
@@ -454,12 +603,57 @@ create policy "Authenticated users can read hsa_administrators"
   for select
   using (auth.role() = 'authenticated');
 
+-- /hsa-providers is a logged-out marketing route, so it needs anonymous read —
+-- but the table also holds internal routing config. RLS is row-level, but
+-- Postgres has a separate mechanism for the column half: GRANT SELECT (cols).
+-- So anon access is two independent layers on the BASE TABLE — a row policy
+-- and column grants — and the view below is only a convenient projection.
+create policy "Anyone can read active providers"
+  on public.hsa_administrators
+  for select
+  to anon
+  using (active = true);
+
+-- Supabase grants anon SELECT on every public table by default; the blanket
+-- grant must go before the column-scoped one means anything. Withheld:
+-- fax_number, email_address, mailing_address, api_base_url, form_template_id,
+-- submission_notes, accepts_email_phi, data_source.
+revoke select on public.hsa_administrators from anon;
+grant select (
+  id, slug, name, legal_name, aliases, former_names, org_type,
+  website_url, portal_url, support_phone, hq_state,
+  is_custodian, is_administrator, account_types,
+  market_share_pct, accounts_count, logo_url,
+  submission_tier, claim_form_url, routing_varies_by_employer, docs_required,
+  has_guide, guide_summary, guide_body, sources, last_reviewed,
+  active,            -- the RLS policy's own USING clause reads it
+  updated_at
+) on public.hsa_administrators to anon;
+
+create or replace view public.hsa_providers_public
+with (security_invoker = on)
+as
+select
+  id, slug, name, legal_name, aliases, former_names, org_type,
+  website_url, portal_url, support_phone, hq_state,
+  is_custodian, is_administrator, account_types,
+  market_share_pct, accounts_count, logo_url,
+  submission_tier, claim_form_url, routing_varies_by_employer, docs_required,
+  has_guide, guide_summary, guide_body, sources, last_reviewed, updated_at
+from public.hsa_administrators
+where active = true;
+
+revoke all on public.hsa_providers_public from public;
+grant select on public.hsa_providers_public to anon, authenticated;
+
 create table if not exists public.claims (
   id uuid default gen_random_uuid() primary key,
   user_id uuid not null references auth.users(id) on delete cascade,
   expense_id uuid not null unique references public.expenses(id) on delete cascade,
   administrator_id text not null references public.hsa_administrators(id),
-  submission_tier text not null check (submission_tier in ('api', 'email', 'fax', 'portal')),
+  -- Must stay in sync with the matching check on hsa_administrators
+  submission_tier text not null
+    check (submission_tier in ('api', 'email', 'fax', 'portal', 'mail', 'self_directed')),
   status text not null default 'draft' check (status in ('draft', 'submitted', 'processing', 'approved', 'denied', 'reimbursed')),
   submitted_at timestamp with time zone,
   submitted_via text,

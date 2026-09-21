@@ -235,6 +235,61 @@ for (const tc of hostMatchesCases) {
   }
 }
 
+// ────────────────────────────────────────────────
+// SIGNUP_CHANNELS must match the database check constraint
+// ────────────────────────────────────────────────
+// profiles_signup_channel_check exists so a typo in deriveChannel() fails
+// loudly rather than writing junk. But "loudly at write time" means a real
+// person's signup erroring out, so the mismatch is worth catching in CI
+// instead — the constraint stays as the last line of defence.
+
+{
+  const name = "SIGNUP_CHANNELS matches profiles_signup_channel_check";
+  testCases.push({ name });
+
+  const migration = fs.readFileSync(
+    path.resolve(__dirname, "..", "supabase", "migrations", "add_signup_attribution.sql"),
+    "utf-8"
+  );
+
+  const match = migration.match(
+    /check\s*\(\s*signup_channel\s+in\s*\(([^)]*)\)/i
+  );
+
+  if (!match) {
+    console.error(`  ✗ ${name}: could not find the constraint in the migration`);
+  } else {
+    const sqlChannels = [...match[1].matchAll(/'([^']+)'/g)]
+      .map((m) => m[1])
+      .sort();
+
+    // Read the array out of attribution.ts the same way the rest of this file
+    // reads it — by text, because CI runs Node 20 and cannot import TS.
+    const tsChannels = [
+      ...extractStatement(
+        "SIGNUP_CHANNELS",
+        /export const SIGNUP_CHANNELS[^=]*=\s*\[/
+      ).matchAll(/"([^"]+)"/g),
+    ]
+      .map((m) => m[1])
+      .sort();
+
+    try {
+      assert.deepStrictEqual(sqlChannels, tsChannels);
+      console.log(`  ✓ ${name} (${tsChannels.length} channels)`);
+      passed++;
+    } catch {
+      const onlyTs = tsChannels.filter((c) => !sqlChannels.includes(c));
+      const onlySql = sqlChannels.filter((c) => !tsChannels.includes(c));
+      console.error(`  ✗ ${name}`);
+      if (onlyTs.length)
+        console.error(`      in attribution.ts but not the constraint: ${onlyTs.join(", ")}`);
+      if (onlySql.length)
+        console.error(`      in the constraint but not attribution.ts: ${onlySql.join(", ")}`);
+    }
+  }
+}
+
 if (passed === testCases.length) {
   console.log(`\n[SUCCESS] All ${passed} test cases passed.`);
   process.exit(0);

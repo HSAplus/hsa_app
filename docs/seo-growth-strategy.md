@@ -11,7 +11,7 @@ Two fronts: technical/on-page quick wins (mostly shipped — see status below), 
 | Item | Status |
 |---|---|
 | `robots.txt` | Shipped — allows marketing routes, disallows `/dashboard`, `/api`, auth routes |
-| `sitemap.ts` | Shipped — public routes only (`/`, `/pricing`, `/calculator`, `/privacy`, `/vs/spreadsheets`, `/strategy/delayed-reimbursement`) |
+| `sitemap.ts` | Shipped — public routes plus every published provider guide, sourced from the same query `generateStaticParams` uses so it can't advertise a 404 |
 | Search Console | `hsa.plus` verified as a Domain property, sitemap submitted (Status: Success) |
 | Google site verification meta tag | Wired into `layout.tsx`, gated behind `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` (optional, unused unless the meta-tag verification path is needed instead of DNS) |
 
@@ -44,13 +44,19 @@ The HSA space has high-volume, low-competition, high-intent search queries. Rath
 
 **Suggested next step**: seed set of ~20–30 well-known items first (reviewable in one pass), validate the route/template/data-schema pattern, then scale to 300–500 once the pattern and review workflow are proven.
 
-### B. HSA Administrator guides — `/guides/[administrator]` or `/integrations/[administrator]`
+### B. HSA provider guides — `/hsa-providers` — **BUILT**
 
-**The opportunity**: `hsa_administrators` table already exists in the schema (Fidelity, HealthEquity, Optum Bank, HSA Bank, Lively, WEX, etc.). Search queries like "how to submit a manual claim on HealthEquity," "does Fidelity HSA store receipts," "Optum Bank HSA receipt rules for IRS audit."
+Shipped as a pillar-and-spoke directory. Full detail in [provider-registry.md](./provider-registry.md); the SEO-relevant decisions:
 
-**Page contents**: how each administrator handles claims, their limits, whether they store receipts long-term (most don't), and HSA Plus positioned as the permanent shoebox layer on top of them.
+- **`/hsa-providers`** — hub listing all 800+ providers, server-rendered with a client-side filter. One page with 800 rows is not 800 pages, so there's no thin-content exposure here.
+- **`/hsa-providers/[slug]`** — spokes, generated **only** for providers where `has_guide = true` (currently five: Fidelity, Via Benefits, Inspira, HealthEquity, Optum Bank). The other ~780 appear on the hub but never get a page. This is the whole guard against the doorway-page failure mode, and it's enforced by a DB constraint rather than by discipline: `has_guide = true` requires both `guide_summary` and `last_reviewed`.
+- **`/api/hsa-providers`** — the registry as public JSON, explicitly allowed in `robots.txt`. No free, licensable HSA provider dataset exists, so publishing ours is link bait that costs nothing to maintain.
 
-**Dependency**: accuracy here depends on the `hsa_administrators` data already in the schema being current — worth an audit pass before generating pages from it.
+**What makes the guides rank rather than just exist**: they answer a question the providers' own sites answer badly. Fidelity has no claims process at all (you withdraw from your own account); Via Benefits and Inspira set submission routing per *employer plan*, so every generic "the fax number is X" answer on the internet is wrong for most readers. Each guide carries sources and a visible `last_reviewed` date.
+
+**Maintenance is the real cost**: Inspira was PayFlex until 1 January 2024. Guides need re-verifying before they age past roughly six months, and `former_names` is indexed and searchable because people hold paperwork under the old name for years.
+
+**To scale past five**: research a provider, add it to `supabase/seed/providers_researched.sql` with sources, re-run the seed, `npm run export:providers`, commit. Prioritize by `market_share_pct`.
 
 ### C. Comparison pages — `/vs/[alternative]`
 
@@ -64,7 +70,8 @@ Lowest effort of the three since the route pattern and page structure already ex
 
 ## Suggested build order
 
-1. **A** (eligibility directory) — seed set of 20–30 items, validate the pattern
-2. **C** (comparison pages) — cheap, reuses existing pattern, can interleave with (A)
-3. **A** scaled to 300–500 items, after the review workflow from step 1 is proven
-4. **B** (administrator guides) — after an accuracy pass on the `hsa_administrators` table data
+1. ~~**B** (provider guides)~~ — **built**. Pattern proven: DB-backed registry, hand-researched subset, `has_guide` gating page generation.
+2. **A** (eligibility directory) — seed set of 20–30 items. Reuse B's pattern directly: registry table, a `reviewed` flag gating `generateStaticParams`, sources and a review date per item. The accuracy risk is higher here than it was for providers — a wrong "Yes, eligible" is a tax-penalty risk for whoever trusts it — so the review gate matters more, not less.
+3. **C** (comparison pages) — cheap, reuses the existing `/vs/` pattern, can interleave with (A)
+4. **A** scaled to 300–500 items, once the review workflow from step 2 is proven
+5. **B** scaled past five providers, prioritized by `market_share_pct`

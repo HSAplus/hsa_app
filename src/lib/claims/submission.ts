@@ -75,6 +75,23 @@ export async function submitClaim(
 
   const administrator = admin as HsaAdministrator;
 
+  // 5a. Self-directed providers have no claim to submit. At Fidelity and
+  // similar custodians the accountholder simply withdraws from their own
+  // account — there is no adjudicator, no documentation requirement, and no
+  // claim to track. Returning before the insert matters: creating a draft
+  // claim and deleting it moments later would leave these users looking at a
+  // failed submission for something that was never a submission.
+  if (administrator.submission_tier === "self_directed") {
+    return {
+      success: false,
+      error:
+        `${administrator.name} doesn't process reimbursement claims. You withdraw ` +
+        `directly from your HSA whenever you choose — keep the receipt here as your ` +
+        `audit trail, then request the distribution from your account.`,
+      portalUrl: administrator.portal_url ?? undefined,
+    };
+  }
+
   // 6. Validate documents
   if (!isAuditReady(typedExpense)) {
     return {
@@ -150,6 +167,10 @@ export async function submitClaim(
       result = await faxAdapter.submit(payload);
       break;
     case "portal":
+    // 'mail' reuses the portal adapter: both produce a completed PDF for the
+    // user to deliver themselves. The difference is turnaround, which the UI
+    // communicates, not the mechanics of generating the form.
+    case "mail":
       result = await portalAdapter.submit(payload);
       break;
     default:
@@ -157,19 +178,27 @@ export async function submitClaim(
   }
 
   // 10. Update claim record
+  // portal and mail hand a PDF back to the user rather than transmitting it,
+  // so nothing has actually been submitted yet and the claim stays a draft.
+  const isSelfServe =
+    administrator.submission_tier === "portal" ||
+    administrator.submission_tier === "mail";
+
+  const submittedVia = isSelfServe
+    ? "manual"
+    : administrator.submission_tier === "api"
+    ? "alegeus_api"
+    : administrator.submission_tier === "email"
+    ? "resend"
+    : "westfax";
+
   if (result.success) {
     await supabase
       .from("claims")
       .update({
-        status: administrator.submission_tier === "portal" ? "draft" : "submitted",
-        submitted_at: administrator.submission_tier === "portal" ? null : new Date().toISOString(),
-        submitted_via: administrator.submission_tier === "portal"
-          ? "manual"
-          : administrator.submission_tier === "api"
-          ? "alegeus_api"
-          : administrator.submission_tier === "email"
-          ? "resend"
-          : "westfax",
+        status: isSelfServe ? "draft" : "submitted",
+        submitted_at: isSelfServe ? null : new Date().toISOString(),
+        submitted_via: submittedVia,
         external_claim_id: result.externalClaimId ?? null,
         fax_confirmation_id: administrator.submission_tier === "fax" ? (result.confirmationId ?? null) : null,
         email_message_id: administrator.submission_tier === "email" ? (result.confirmationId ?? null) : null,
