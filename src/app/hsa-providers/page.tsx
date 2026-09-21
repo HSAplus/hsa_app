@@ -4,6 +4,7 @@ import { ArrowRight, Building2, ShieldCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MarketingShell, Breadcrumbs } from "@/components/marketing/marketing-shell";
 import { ProviderDirectory } from "@/components/providers/provider-directory";
+import { hubStructuredData } from "@/lib/providers/structured-data";
 import {
   getAllProviders,
   ORG_TYPE_LABELS,
@@ -24,6 +25,12 @@ export const metadata: Metadata = {
       "Search every HSA provider and find out how reimbursement actually works at yours.",
     url: "https://hsa.plus/hsa-providers",
     siteName: "HSA Plus",
+    images: [{ url: "/og-image.jpg", width: 1920, height: 1080, alt: "HSA Providers Directory" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "HSA Providers Directory",
+    description: "Search every HSA provider and find out how reimbursement actually works at yours.",
   },
 };
 
@@ -128,6 +135,11 @@ export default async function HsaProvidersPage() {
 
   return (
     <MarketingShell maxWidth="max-w-5xl">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(hubStructuredData(guided)) }}
+      />
+
       <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "HSA Providers" }]} />
 
       <div className="mx-auto mb-12 max-w-2xl text-center">

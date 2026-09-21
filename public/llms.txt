@@ -20,8 +20,22 @@ Under IRC Section 223 and IRS Notice 2004-50, there is no deadline by which an H
 - **Free**: $0 forever. Up to 10 expenses, 5 document uploads per expense, IRS audit readiness scoring, 7-year retention alerts, 2 what-if growth scenarios, CSV export.
 - **Plus**: $5/month or $48/year (20% discount). Unlimited expenses, unlimited document uploads, AI receipt scanning, Plaid bank sync, automated claim generation, family dependent profiles, and multi-account support.
 
+## HSA Provider Directory
+A directory of 845 HSA providers — banks, credit unions, non-bank custodians and third-party administrators — at https://hsa.plus/hsa-providers, with the underlying dataset published as JSON at https://hsa.plus/api/hsa-providers (free to use with attribution).
+
+The distinction the directory is built around, and which most HSA coverage gets wrong: a **custodian** holds the money and files your 1099-SA but does not decide whether an expense qualifies, while an **administrator** adjudicates claims and usually requires documentation at submission. A provider may be either, both, or neither. Fidelity is a custodian only, so it has no claims process at all — you take a distribution from your own account. Via Benefits administers without custodying, and sets claim routing per employer plan rather than centrally.
+
+Hand-researched guides with cited sources and review dates exist for:
+- Fidelity: https://hsa.plus/hsa-providers/fidelity
+- HealthEquity: https://hsa.plus/hsa-providers/healthequity
+- Inspira Financial (formerly PayFlex): https://hsa.plus/hsa-providers/inspira-financial
+- Optum Bank: https://hsa.plus/hsa-providers/optum-bank
+- Via Benefits: https://hsa.plus/hsa-providers/via-benefits
+
 ## Important URLs
 - Homepage: https://hsa.plus
+- HSA Provider Directory: https://hsa.plus/hsa-providers
+- HSA Provider Dataset (JSON): https://hsa.plus/api/hsa-providers
 - Free Growth Calculator: https://hsa.plus/calculator
 - Pricing & Features: https://hsa.plus/pricing
 - Delayed Reimbursement Strategy: https://hsa.plus/strategy/delayed-reimbursement

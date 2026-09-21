@@ -13,6 +13,7 @@ import {
   TIER_LABELS,
   roleLabel,
 } from "@/lib/providers/queries";
+import { guideStructuredData } from "@/lib/providers/structured-data";
 
 export const revalidate = 86400;
 
@@ -64,7 +65,9 @@ export async function generateMetadata({
       url: `https://hsa.plus/hsa-providers/${provider.slug}`,
       siteName: "HSA Plus",
       type: "article",
+      images: [{ url: "/og-image.jpg", width: 1920, height: 1080, alt: `${provider.name} HSA reimbursement guide` }],
     },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
@@ -118,6 +121,11 @@ export default async function ProviderGuidePage({
 
   return (
     <MarketingShell>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(guideStructuredData(provider)) }}
+      />
+
       <Breadcrumbs
         items={[
           { label: "Home", href: "/" },
