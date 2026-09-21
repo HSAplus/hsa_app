@@ -139,11 +139,25 @@ comment on view public.hsa_providers_public is
   'Public projection of hsa_administrators for /hsa-providers. security_invoker = on, so the caller''s RLS and column grants apply — this view is a convenience, not a security boundary. Anon access is enforced by the "Anyone can read active providers" policy plus column-level GRANTs on the base table.';
 
 -- ============================================================================
--- Verify
+-- Verify — NOT from the SQL Editor
 -- ============================================================================
--- As anon, the first should return rows and the second should be denied:
+-- The Supabase SQL Editor runs as postgres, a superuser, which bypasses both
+-- RLS and column grants. Running the checks below there returns every column
+-- happily and proves nothing. It is the single easiest way to convince
+-- yourself this migration failed when it did not, or worse, that it worked
+-- when it did not.
 --
---   select count(*) from public.hsa_providers_public;
---   select fax_number from public.hsa_administrators limit 1;
---     -> ERROR: permission denied for table hsa_administrators
+-- Test as anon, over PostgREST, with the anon key:
+--
+--   curl -s "$SUPABASE_URL/rest/v1/hsa_providers_public?select=slug" \
+--     -H "apikey: $ANON_KEY" -H "Authorization: Bearer $ANON_KEY"
+--   # -> 200, rows
+--
+--   curl -s "$SUPABASE_URL/rest/v1/hsa_administrators?select=fax_number" \
+--     -H "apikey: $ANON_KEY" -H "Authorization: Bearer $ANON_KEY"
+--   # -> 401 {"message":"permission denied for table hsa_administrators"}
+--
+-- Verified 2026-09-20: fax_number, email_address, api_base_url,
+-- accepts_email_phi and select=* are all denied to anon; the view and the
+-- public columns return 200.
 -- ============================================================================
