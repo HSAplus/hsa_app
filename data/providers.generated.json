@@ -1,0 +1,587 @@
+{
+  "_comment": "GENERATED FILE — DO NOT EDIT. Produced by scripts/export-providers.mjs from public.hsa_providers_public. The database is the source of truth; edit there and re-run `npm run export:providers`. Hand edits here will be silently overwritten on the next export.",
+  "generated_from": "public.hsa_providers_public",
+  "count": 15,
+  "providers": [
+    {
+      "id": "alegeus",
+      "slug": "alegeus-wealthcare",
+      "name": "Alegeus / WealthCare",
+      "legal_name": null,
+      "aliases": [],
+      "former_names": [],
+      "org_type": null,
+      "website_url": null,
+      "portal_url": null,
+      "support_phone": null,
+      "hq_state": null,
+      "is_custodian": false,
+      "is_administrator": false,
+      "account_types": [
+        "hsa"
+      ],
+      "market_share_pct": 6,
+      "accounts_count": null,
+      "logo_url": null,
+      "submission_tier": "api",
+      "claim_form_url": null,
+      "routing_varies_by_employer": false,
+      "docs_required": null,
+      "has_guide": false,
+      "guide_summary": null,
+      "guide_body": null,
+      "sources": [],
+      "last_reviewed": null,
+      "updated_at": "2026-09-21T00:09:21.999219+00:00"
+    },
+    {
+      "id": "bofa",
+      "slug": "bank-of-america",
+      "name": "Bank of America",
+      "legal_name": null,
+      "aliases": [],
+      "former_names": [],
+      "org_type": null,
+      "website_url": null,
+      "portal_url": "https://healthaccounts.bankofamerica.com",
+      "support_phone": null,
+      "hq_state": null,
+      "is_custodian": false,
+      "is_administrator": false,
+      "account_types": [
+        "hsa"
+      ],
+      "market_share_pct": 5,
+      "accounts_count": null,
+      "logo_url": null,
+      "submission_tier": "fax",
+      "claim_form_url": null,
+      "routing_varies_by_employer": false,
+      "docs_required": null,
+      "has_guide": false,
+      "guide_summary": null,
+      "guide_body": null,
+      "sources": [],
+      "last_reviewed": null,
+      "updated_at": "2026-09-21T00:09:21.999219+00:00"
+    },
+    {
+      "id": "schwab",
+      "slug": "charles-schwab",
+      "name": "Charles Schwab",
+      "legal_name": null,
+      "aliases": [],
+      "former_names": [],
+      "org_type": null,
+      "website_url": null,
+      "portal_url": "https://www.schwab.com",
+      "support_phone": null,
+      "hq_state": null,
+      "is_custodian": false,
+      "is_administrator": false,
+      "account_types": [
+        "hsa"
+      ],
+      "market_share_pct": 2,
+      "accounts_count": null,
+      "logo_url": null,
+      "submission_tier": "portal",
+      "claim_form_url": null,
+      "routing_varies_by_employer": false,
+      "docs_required": null,
+      "has_guide": false,
+      "guide_summary": null,
+      "guide_body": null,
+      "sources": [],
+      "last_reviewed": null,
+      "updated_at": "2026-09-21T00:09:21.999219+00:00"
+    },
+    {
+      "id": "fidelity",
+      "slug": "fidelity",
+      "name": "Fidelity",
+      "legal_name": "Fidelity Investments",
+      "aliases": [
+        "Fidelity HSA",
+        "Fidelity Investments HSA"
+      ],
+      "former_names": [],
+      "org_type": "investment_platform",
+      "website_url": "https://www.fidelity.com",
+      "portal_url": "https://www.fidelity.com",
+      "support_phone": null,
+      "hq_state": "MA",
+      "is_custodian": true,
+      "is_administrator": false,
+      "account_types": [
+        "hsa"
+      ],
+      "market_share_pct": 24,
+      "accounts_count": null,
+      "logo_url": null,
+      "submission_tier": "self_directed",
+      "claim_form_url": null,
+      "routing_varies_by_employer": false,
+      "docs_required": "none",
+      "has_guide": true,
+      "guide_summary": "Fidelity has no claims process. You withdraw from your own HSA whenever you like and keep the receipts yourself — which means nobody but you is tracking whether you can prove the expense years later.",
+      "guide_body": "\r\n## There is no claim to submit\r\n\r\nFidelity is a **custodian**, not an administrator. It holds your HSA money; it does not review your expenses or decide whether they qualify. So the question \"how do I submit a claim to Fidelity?\" has no answer — there is no claim.\r\n\r\nInstead you take a **distribution**: you move money out of your own HSA, at any time, for any amount, without asking permission and without submitting documentation to anyone.\r\n\r\n## What that means in practice\r\n\r\n| | Fidelity | An administered HSA |\r\n|---|---|---|\r\n| Approval needed | No | Yes |\r\n| Documentation at withdrawal | None | Usually required |\r\n| Who decides eligibility | You | The administrator |\r\n| Who holds the proof | You | Partly them |\r\n| Turnaround | Immediate to a few days | Days to weeks |\r\n\r\n## The part that catches people\r\n\r\nThe freedom is real, and so is the exposure. Nobody checks your work, which is exactly why **the IRS is the one who eventually might**.\r\n\r\nEvery distribution appears on the **Form 1099-SA** Fidelity issues you each January. That form reports the total amount distributed. It does not report what the money was spent on, because Fidelity does not know. On your tax return you assert how much of it was for qualified medical expenses. If that assertion is ever questioned, the burden of proof is entirely yours: a non-qualified distribution is taxed as income **plus a 20% penalty** if you are under 65.\r\n\r\nThe receipts are the whole defense. There is no administrator's file to fall back on.\r\n\r\n## The long-game version\r\n\r\nBecause Fidelity never asks when the expense happened, there is no deadline to reimburse yourself. You can pay a medical bill out of pocket today, leave the money in the HSA to grow tax-free for twenty years, and take the distribution then — as long as the expense occurred after your HSA was established and you never claimed it elsewhere.\r\n\r\nThat strategy is only as good as your records. A receipt you cannot produce in 2045 is a deduction you cannot take.\r\n\r\n## What to keep\r\n\r\nFor every expense you intend to reimburse eventually:\r\n\r\n- An **itemized receipt** — date of service, patient, provider, what was done, amount\r\n- An **EOB** if insurance was involved\r\n- Proof you **paid out of pocket** and were not reimbursed from anywhere else\r\n- A record of **which distribution** covered it, once you take one\r\n\r\nStore them somewhere that will outlive the provider portal they came from. Most portals purge documents after a few years; the IRS window does not close on the same schedule.\r\n  ",
+      "sources": [
+        {
+          "url": "https://www.fidelity.com/go/hsa/overview",
+          "title": "Fidelity HSA overview",
+          "accessed": "2026-09-20"
+        },
+        {
+          "url": "https://www.irs.gov/forms-pubs/about-form-1099-sa",
+          "title": "IRS — About Form 1099-SA",
+          "accessed": "2026-09-20"
+        },
+        {
+          "url": "https://www.irs.gov/publications/p969",
+          "title": "IRS Publication 969 — HSAs and Other Tax-Favored Health Plans",
+          "accessed": "2026-09-20"
+        }
+      ],
+      "last_reviewed": "2026-09-20",
+      "updated_at": "2026-09-21T00:10:31.992887+00:00"
+    },
+    {
+      "id": "further",
+      "slug": "further",
+      "name": "Further",
+      "legal_name": null,
+      "aliases": [],
+      "former_names": [],
+      "org_type": null,
+      "website_url": null,
+      "portal_url": "https://www.hellofurther.com",
+      "support_phone": null,
+      "hq_state": null,
+      "is_custodian": false,
+      "is_administrator": false,
+      "account_types": [
+        "hsa"
+      ],
+      "market_share_pct": 3,
+      "accounts_count": null,
+      "logo_url": null,
+      "submission_tier": "fax",
+      "claim_form_url": null,
+      "routing_varies_by_employer": false,
+      "docs_required": null,
+      "has_guide": false,
+      "guide_summary": null,
+      "guide_body": null,
+      "sources": [],
+      "last_reviewed": null,
+      "updated_at": "2026-09-21T00:09:21.999219+00:00"
+    },
+    {
+      "id": "healthequity",
+      "slug": "healthequity",
+      "name": "HealthEquity",
+      "legal_name": "HealthEquity, Inc.",
+      "aliases": [
+        "Health Equity",
+        "HealthEquity WageWorks"
+      ],
+      "former_names": [
+        "WageWorks"
+      ],
+      "org_type": "non_bank_custodian",
+      "website_url": "https://www.healthequity.com",
+      "portal_url": "https://my.healthequity.com",
+      "support_phone": null,
+      "hq_state": "UT",
+      "is_custodian": true,
+      "is_administrator": true,
+      "account_types": [
+        "hsa",
+        "hra",
+        "lpfsa",
+        "hcfsa"
+      ],
+      "market_share_pct": null,
+      "accounts_count": null,
+      "logo_url": null,
+      "submission_tier": "portal",
+      "claim_form_url": null,
+      "routing_varies_by_employer": false,
+      "docs_required": "varies",
+      "has_guide": true,
+      "guide_summary": "HealthEquity custodies the account and administers claims. Its portal has a \"Reimburse Me\" flow that moves money from your HSA to your bank account without requiring documentation up front — the proof obligation still exists, it just falls on you.",
+      "guide_body": "\r\n## Both custodian and administrator\r\n\r\nHealthEquity is unusual in filling both roles: it holds the money *and* runs the claims process. That makes it a single point of contact, which is convenient, and a single point of failure for your records, which is worth planning around.\r\n\r\n## Reimbursing yourself from an HSA\r\n\r\nThe portal flow is called **Reimburse Me**. You enter the expense and request the money; it transfers from your HSA to your linked bank account.\r\n\r\n**Documentation is generally not required to complete this for an HSA.** That is not an oversight and not a loophole — it's a consequence of what an HSA is. The money is already yours. HealthEquity is not approving your expense; it's moving your own funds at your instruction, exactly as Fidelity would.\r\n\r\nThe portal will offer to let you attach a receipt. Do it. Not because HealthEquity requires it, but because:\r\n\r\n- You may need it years later and won't remember the details\r\n- HealthEquity's retention window is not the IRS's\r\n- If you ever leave HealthEquity, your uploaded documents may not come with you\r\n\r\n## FSA and HRA are a different story\r\n\r\nIf your account is an **LPFSA, HCFSA, or HRA** — and HealthEquity administers all of these, often for the same person alongside an HSA — then it is not your money in the same sense, a real adjudication happens, and **documentation is required**.\r\n\r\nKnow which account you're drawing from before you assume the rules. This is the most common mistake among people who hold more than one.\r\n\r\n## The WageWorks history\r\n\r\nHealthEquity acquired **WageWorks** in 2019 and has been consolidating the platforms since. If your account originated at WageWorks, older correspondence and tax documents may carry that name. It's the same organization now.\r\n\r\n## What a complete record looks like\r\n\r\nWhether or not anyone asks for it at submission time:\r\n\r\n- Itemized receipt — date of service, patient, provider, service description, amount\r\n- EOB, when insurance was involved\r\n- Evidence you paid out of pocket\r\n- Which reimbursement covered which expense\r\n\r\n## The retention gap\r\n\r\nThis is the part worth taking seriously. HealthEquity's portal is not a permanent archive. Documents age out; access ends when your account does; a change of employer or administrator can sever your history entirely.\r\n\r\nMeanwhile the IRS can question a distribution years after you took it, and the burden of proof is yours. **A portal you no longer have access to is not a defense.** Keep your own copies somewhere independent of whoever is administering the account this year.\r\n  ",
+      "sources": [
+        {
+          "url": "https://www.healthequity.com",
+          "title": "HealthEquity",
+          "accessed": "2026-09-20"
+        },
+        {
+          "url": "https://my.healthequity.com",
+          "title": "HealthEquity member portal",
+          "accessed": "2026-09-20"
+        },
+        {
+          "url": "https://www.irs.gov/publications/p969",
+          "title": "IRS Publication 969",
+          "accessed": "2026-09-20"
+        }
+      ],
+      "last_reviewed": "2026-09-20",
+      "updated_at": "2026-09-21T00:10:31.992887+00:00"
+    },
+    {
+      "id": "hsa_bank",
+      "slug": "hsa-bank",
+      "name": "HSA Bank",
+      "legal_name": null,
+      "aliases": [],
+      "former_names": [],
+      "org_type": null,
+      "website_url": null,
+      "portal_url": "https://www.hsabank.com",
+      "support_phone": null,
+      "hq_state": null,
+      "is_custodian": false,
+      "is_administrator": false,
+      "account_types": [
+        "hsa"
+      ],
+      "market_share_pct": 8,
+      "accounts_count": null,
+      "logo_url": null,
+      "submission_tier": "email",
+      "claim_form_url": null,
+      "routing_varies_by_employer": false,
+      "docs_required": null,
+      "has_guide": false,
+      "guide_summary": null,
+      "guide_body": null,
+      "sources": [],
+      "last_reviewed": null,
+      "updated_at": "2026-09-21T00:09:21.999219+00:00"
+    },
+    {
+      "id": "inspira-financial",
+      "slug": "inspira-financial",
+      "name": "Inspira Financial",
+      "legal_name": "Inspira Financial Health, Inc.",
+      "aliases": [
+        "Inspira"
+      ],
+      "former_names": [
+        "PayFlex",
+        "PayFlex Systems USA"
+      ],
+      "org_type": "tpa",
+      "website_url": "https://inspirafinancial.com",
+      "portal_url": "https://inspirafinancial.com",
+      "support_phone": null,
+      "hq_state": "IL",
+      "is_custodian": true,
+      "is_administrator": true,
+      "account_types": [
+        "hsa",
+        "hra",
+        "lpfsa",
+        "hcfsa"
+      ],
+      "market_share_pct": null,
+      "accounts_count": null,
+      "logo_url": null,
+      "submission_tier": "fax",
+      "claim_form_url": null,
+      "routing_varies_by_employer": true,
+      "docs_required": "always",
+      "has_guide": true,
+      "guide_summary": "Inspira Financial is the company formerly known as PayFlex — the rebrand took effect 1 January 2024. Claims are adjudicated and documentation is required every time, but the fax number and address are assigned per employer plan.",
+      "guide_body": "\r\n## If you're looking for PayFlex, you're in the right place\r\n\r\n**PayFlex became Inspira Financial on 1 January 2024.** Same accounts, same balances, new name and new branding.\r\n\r\nThis trips people up for a long time after a rebrand. Your older paperwork, your tax documents from before 2024, and a great deal of still-indexed guidance on the internet all say PayFlex. Old claim forms may still carry PayFlex branding. If you're holding a document that says PayFlex, it is not out of date in a way that invalidates it — but the routing details on it might be, and those are worth confirming.\r\n\r\n## Claims are genuinely reviewed\r\n\r\nUnlike a self-directed custodian, Inspira **adjudicates**. A person or a system looks at your claim and approves or denies it.\r\n\r\nThe practical consequence: **documentation is required at submission, every time.** Not \"keep it in case you're audited\" — attached to the claim, or the claim gets denied.\r\n\r\nWhat a complete submission needs:\r\n\r\n- An **itemized receipt** or **EOB**. A credit card receipt is not enough — it shows an amount, not what was purchased. This is the most common denial reason there is.\r\n- **Date of service** (not the date you paid)\r\n- **Patient name**\r\n- **Provider name**\r\n- **Description of service**\r\n- **Amount you owe** after insurance\r\n\r\n## Where to send it\r\n\r\nInspira administers accounts for employers, and like other administrators of that kind, **the fax number and mailing address are set per employer plan.** There is no single Inspira claims fax number that works for everyone.\r\n\r\nGet yours from:\r\n\r\n1. **The claim form in your own plan materials** — it carries your plan's routing\r\n2. **The Inspira portal**, which generates a form pre-filled for your account\r\n3. **The member services number on your Inspira or PayFlex card**\r\n\r\n## Fax is still the fastest non-portal channel\r\n\r\nIt's an odd thing to say in 2026, but fax remains the standard for claim submission across benefits administration, and for a specific reason: it satisfies HIPAA transport requirements in a way ordinary email does not. Email addresses you may find for \"Inspira support\" are for general inquiries — they are not claims intake, and they should not receive your medical documentation.\r\n\r\nIf you're choosing between channels: portal is most reliable, fax is the standard fallback, mail is slowest, and email is not an option.\r\n\r\n## After you submit\r\n\r\nApproved claims typically reimburse to your bank account on file, or by check if you haven't set one up. Denials cite a reason — most often missing or insufficient documentation, which is usually fixable by resubmitting with a proper itemized receipt rather than starting over.\r\n\r\nKeep your own copies regardless. Administrator document retention is finite, and if your employer switches administrators your history may not travel with you.\r\n  ",
+      "sources": [
+        {
+          "url": "https://inspirafinancial.com",
+          "title": "Inspira Financial",
+          "accessed": "2026-09-20"
+        },
+        {
+          "url": "https://inspirafinancial.com/individual",
+          "title": "Inspira Financial — individuals",
+          "accessed": "2026-09-20"
+        },
+        {
+          "url": "https://www.irs.gov/publications/p502",
+          "title": "IRS Publication 502 — Medical and Dental Expenses",
+          "accessed": "2026-09-20"
+        }
+      ],
+      "last_reviewed": "2026-09-20",
+      "updated_at": "2026-09-21T00:10:31.992887+00:00"
+    },
+    {
+      "id": "lively",
+      "slug": "lively",
+      "name": "Lively",
+      "legal_name": null,
+      "aliases": [],
+      "former_names": [],
+      "org_type": null,
+      "website_url": null,
+      "portal_url": "https://livelyme.com",
+      "support_phone": null,
+      "hq_state": null,
+      "is_custodian": false,
+      "is_administrator": false,
+      "account_types": [
+        "hsa"
+      ],
+      "market_share_pct": 4,
+      "accounts_count": null,
+      "logo_url": null,
+      "submission_tier": "portal",
+      "claim_form_url": null,
+      "routing_varies_by_employer": false,
+      "docs_required": null,
+      "has_guide": false,
+      "guide_summary": null,
+      "guide_body": null,
+      "sources": [],
+      "last_reviewed": null,
+      "updated_at": "2026-09-21T00:09:21.999219+00:00"
+    },
+    {
+      "id": "optum",
+      "slug": "optum-bank",
+      "name": "Optum Bank",
+      "legal_name": "Optum Bank, Inc.",
+      "aliases": [
+        "Optum",
+        "Optum Financial",
+        "OptumHealth Bank"
+      ],
+      "former_names": [
+        "OptumHealth Bank"
+      ],
+      "org_type": "bank",
+      "website_url": "https://www.optumbank.com",
+      "portal_url": "https://www.optumbank.com",
+      "support_phone": null,
+      "hq_state": "UT",
+      "is_custodian": true,
+      "is_administrator": true,
+      "account_types": [
+        "hsa",
+        "hra",
+        "lpfsa",
+        "hcfsa"
+      ],
+      "market_share_pct": null,
+      "accounts_count": null,
+      "logo_url": null,
+      "submission_tier": "portal",
+      "claim_form_url": null,
+      "routing_varies_by_employer": false,
+      "docs_required": "always",
+      "has_guide": true,
+      "guide_summary": "Optum Bank is an actual FDIC-insured bank and part of UnitedHealth Group, so many people get it through their health plan without choosing it. Reimbursement runs through the app or website, and an itemized receipt is expected.",
+      "guide_body": "\r\n## You may not have picked this one\r\n\r\nOptum Bank is a **chartered, FDIC-insured bank** and part of UnitedHealth Group. If your health plan is UnitedHealthcare, there's a good chance your HSA landed at Optum Bank by default rather than by choice.\r\n\r\nThat's worth knowing for one reason: an HSA is portable. You are not required to keep it where it was opened, and you can transfer to another custodian without a tax consequence. Whether you should is a separate question — but it is your decision, not your employer's.\r\n\r\n## Reimbursing yourself\r\n\r\nThree routes, in order of how well they work:\r\n\r\n1. **The Optum Bank mobile app** — photograph the receipt, enter the expense, submit\r\n2. **The website** — the same flow with a real keyboard\r\n3. **Paper form by mail** — slowest, and mostly a fallback\r\n\r\nExpect to provide an **itemized receipt**. Optum is more consistent about asking for documentation than a purely self-directed custodian like Fidelity, so plan on attaching it rather than hoping the request doesn't come.\r\n\r\nAn itemized receipt means: date of service, patient name, provider name, description of the service or item, and the amount you owe. A credit card slip showing only a total is the single most common reason a submission comes back.\r\n\r\n## The debit card shortcut\r\n\r\nOptum issues a debit card drawing directly on the HSA. Paying with it skips reimbursement entirely — no claim, no waiting.\r\n\r\nIt does **not** skip the documentation. Card transactions are subject to the same substantiation rules, and Optum may ask you to prove one after the fact. A card swipe you can't document is a taxable distribution with a 20% penalty attached if you're under 65.\r\n\r\nKeep receipts for card purchases exactly as you would for anything else.\r\n\r\n## Which account are you spending from\r\n\r\nOptum administers HSAs, HRAs, and FSAs, frequently for the same person at once. The rules differ sharply — an HSA is your money, an HRA is your employer's — and the debit card may draw on either. Check the account before assuming how a transaction will be treated.\r\n\r\n## What to keep, and where\r\n\r\n- Itemized receipt for every expense, card or reimbursement\r\n- EOB where insurance was involved\r\n- Proof of out-of-pocket payment\r\n- A record linking each distribution to the expense it covered\r\n\r\nStore it outside the Optum portal. Portal document retention is finite and access ends with the account — but the IRS can ask about a distribution long after either. Your own archive is the only copy guaranteed to still be there.\r\n  ",
+      "sources": [
+        {
+          "url": "https://www.optumbank.com",
+          "title": "Optum Bank",
+          "accessed": "2026-09-20"
+        },
+        {
+          "url": "https://www.optumbank.com/all-products/hsa.html",
+          "title": "Optum Bank — Health Savings Account",
+          "accessed": "2026-09-20"
+        },
+        {
+          "url": "https://www.irs.gov/publications/p969",
+          "title": "IRS Publication 969",
+          "accessed": "2026-09-20"
+        }
+      ],
+      "last_reviewed": "2026-09-20",
+      "updated_at": "2026-09-21T00:10:31.992887+00:00"
+    },
+    {
+      "id": "payflex",
+      "slug": "payflex",
+      "name": "PayFlex",
+      "legal_name": null,
+      "aliases": [],
+      "former_names": [],
+      "org_type": null,
+      "website_url": null,
+      "portal_url": "https://www.payflex.com",
+      "support_phone": null,
+      "hq_state": null,
+      "is_custodian": false,
+      "is_administrator": false,
+      "account_types": [
+        "hsa"
+      ],
+      "market_share_pct": 1,
+      "accounts_count": null,
+      "logo_url": null,
+      "submission_tier": "portal",
+      "claim_form_url": null,
+      "routing_varies_by_employer": false,
+      "docs_required": null,
+      "has_guide": false,
+      "guide_summary": null,
+      "guide_body": null,
+      "sources": [],
+      "last_reviewed": null,
+      "updated_at": "2026-09-21T00:09:21.999219+00:00"
+    },
+    {
+      "id": "tasc",
+      "slug": "tasc",
+      "name": "TASC",
+      "legal_name": null,
+      "aliases": [],
+      "former_names": [],
+      "org_type": null,
+      "website_url": null,
+      "portal_url": "https://www.tasconline.com",
+      "support_phone": null,
+      "hq_state": null,
+      "is_custodian": false,
+      "is_administrator": false,
+      "account_types": [
+        "hsa"
+      ],
+      "market_share_pct": 1,
+      "accounts_count": null,
+      "logo_url": null,
+      "submission_tier": "fax",
+      "claim_form_url": null,
+      "routing_varies_by_employer": false,
+      "docs_required": null,
+      "has_guide": false,
+      "guide_summary": null,
+      "guide_body": null,
+      "sources": [],
+      "last_reviewed": null,
+      "updated_at": "2026-09-21T00:09:21.999219+00:00"
+    },
+    {
+      "id": "umb",
+      "slug": "umb-healthcare-services",
+      "name": "UMB Healthcare Services",
+      "legal_name": null,
+      "aliases": [],
+      "former_names": [],
+      "org_type": null,
+      "website_url": null,
+      "portal_url": "https://hsa.umb.com",
+      "support_phone": null,
+      "hq_state": null,
+      "is_custodian": false,
+      "is_administrator": false,
+      "account_types": [
+        "hsa"
+      ],
+      "market_share_pct": 1,
+      "accounts_count": null,
+      "logo_url": null,
+      "submission_tier": "fax",
+      "claim_form_url": null,
+      "routing_varies_by_employer": false,
+      "docs_required": null,
+      "has_guide": false,
+      "guide_summary": null,
+      "guide_body": null,
+      "sources": [],
+      "last_reviewed": null,
+      "updated_at": "2026-09-21T00:09:21.999219+00:00"
+    },
+    {
+      "id": "via-benefits",
+      "slug": "via-benefits",
+      "name": "Via Benefits",
+      "legal_name": "Via Benefits Insurance Services",
+      "aliases": [
+        "Via Benefits Accounts",
+        "Extend Health"
+      ],
+      "former_names": [
+        "OneExchange",
+        "Towers Watson OneExchange"
+      ],
+      "org_type": "tpa",
+      "website_url": "https://www.viabenefits.com",
+      "portal_url": "https://my.viabenefits.com",
+      "support_phone": null,
+      "hq_state": "UT",
+      "is_custodian": false,
+      "is_administrator": true,
+      "account_types": [
+        "hsa",
+        "hra"
+      ],
+      "market_share_pct": null,
+      "accounts_count": null,
+      "logo_url": null,
+      "submission_tier": "portal",
+      "claim_form_url": null,
+      "routing_varies_by_employer": true,
+      "docs_required": "varies",
+      "has_guide": true,
+      "guide_summary": "Via Benefits administers accounts on behalf of employers and retiree plans, so almost every specific — where a claim goes, whether documentation is required, what is even covered — is set by your former or current employer, not by Via Benefits.",
+      "guide_body": "\r\n## Your employer wrote the rules, not Via Benefits\r\n\r\nVia Benefits is a **third-party administrator**. It does not hold your money and it does not set your plan's terms. It runs the account on behalf of whoever sponsors it — usually an employer or a retiree health plan.\r\n\r\nThis matters more than it sounds. It means almost nothing about your account can be answered generically:\r\n\r\n- **Where claims go** — fax number and mailing address are assigned per employer plan\r\n- **Whether documentation is required** — differs between HSA and HRA, and between plans\r\n- **What is reimbursable** — the plan sponsor defines this, particularly for HRAs\r\n- **Reimbursement timing** — set by the plan\r\n\r\nAnyone who tells you \"the Via Benefits fax number is X\" is quoting one employer's number. It may not be yours.\r\n\r\n## HSA and HRA work differently here\r\n\r\nThis is the single most common source of confusion, because many people have both.\r\n\r\n**If it's an HSA**, the money is yours. Documentation is generally not required at the time you request reimbursement, for the same reason it isn't at Fidelity: it is your own account and you carry the proof.\r\n\r\n**If it's an HRA**, the money is your employer's. It is a reimbursement arrangement, which means a claim is genuinely adjudicated — and **documentation is required**. Expect to submit an itemized receipt or EOB every time, and expect claims to be denied when it's missing or illegible.\r\n\r\n## Finding your actual submission details\r\n\r\nThe reliable sources, in order:\r\n\r\n1. **Your plan documents** — the packet from your employer or retiree plan. The claim form in it carries the fax number and address for *your* plan.\r\n2. **The Via Benefits portal** — log in and look for the reimbursement or claim section. Forms generated there are pre-filled with your plan's routing.\r\n3. **The phone number on your Via Benefits card or plan materials** — also plan-specific.\r\n\r\nDo not reuse a fax number you found in a forum or on a general-purpose benefits site. Sending medical documentation to the wrong destination is not recoverable.\r\n\r\n## What to have ready\r\n\r\n- Itemized receipt: date of service, patient name, provider, description, amount\r\n- EOB, if insurance processed it\r\n- The claim form **from your own plan**, not a generic one\r\n- Your account or member ID as it appears in the portal\r\n\r\n## Keep your own copy\r\n\r\nVia Benefits retains claim documentation for a limited period, and if your employer changes administrators — which happens more often than people expect — your history does not necessarily follow you. The documents you submitted are still your responsibility to keep.\r\n  ",
+      "sources": [
+        {
+          "url": "https://www.viabenefits.com",
+          "title": "Via Benefits",
+          "accessed": "2026-09-20"
+        },
+        {
+          "url": "https://my.viabenefits.com",
+          "title": "Via Benefits member portal",
+          "accessed": "2026-09-20"
+        },
+        {
+          "url": "https://www.irs.gov/publications/p969",
+          "title": "IRS Publication 969 — HRAs and HSAs",
+          "accessed": "2026-09-20"
+        }
+      ],
+      "last_reviewed": "2026-09-20",
+      "updated_at": "2026-09-21T00:10:31.992887+00:00"
+    },
+    {
+      "id": "wex",
+      "slug": "wex",
+      "name": "WEX",
+      "legal_name": null,
+      "aliases": [],
+      "former_names": [],
+      "org_type": null,
+      "website_url": null,
+      "portal_url": "https://www.wexinc.com",
+      "support_phone": null,
+      "hq_state": null,
+      "is_custodian": false,
+      "is_administrator": false,
+      "account_types": [
+        "hsa"
+      ],
+      "market_share_pct": 3,
+      "accounts_count": null,
+      "logo_url": null,
+      "submission_tier": "fax",
+      "claim_form_url": null,
+      "routing_varies_by_employer": false,
+      "docs_required": null,
+      "has_guide": false,
+      "guide_summary": null,
+      "guide_body": null,
+      "sources": [],
+      "last_reviewed": null,
+      "updated_at": "2026-09-21T00:09:21.999219+00:00"
+    }
+  ]
+}
