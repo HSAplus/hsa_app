@@ -65,6 +65,9 @@ export function MarketingShell({
             <Link href="/hsa-providers" className="hover:text-[#64748B] dark:hover:text-foreground">
               HSA Providers
             </Link>
+            <Link href="/vs/spreadsheets" className="hover:text-[#64748B] dark:hover:text-foreground">
+              vs Spreadsheets
+            </Link>
             <Link href="/calculator" className="hover:text-[#64748B] dark:hover:text-foreground">
               Calculator
             </Link>

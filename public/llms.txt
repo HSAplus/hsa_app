@@ -40,5 +40,7 @@ Hand-researched guides with cited sources and review dates exist for:
 - Pricing & Features: https://hsa.plus/pricing
 - Delayed Reimbursement Strategy: https://hsa.plus/strategy/delayed-reimbursement
 - HSA Plus vs Spreadsheets: https://hsa.plus/vs/spreadsheets
+- HSA Plus vs the Shoebox Method (why thermal receipts fade): https://hsa.plus/vs/shoebox-method
+- HSA Plus vs Google Drive (why a folder is not a record): https://hsa.plus/vs/google-drive
 - Privacy Policy: https://hsa.plus/privacy
 - Sitemap: https://hsa.plus/sitemap.xml
