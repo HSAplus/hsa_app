@@ -181,7 +181,11 @@ begin
   end if;
   return new;
 end;
-$$ language plpgsql;
+$$ language plpgsql
+  -- Deliberately NOT security definer: it only copies old values over new
+  -- ones, so it needs no elevation. pg_temp last so a temp table cannot
+  -- shadow a relation name.
+  set search_path = public, pg_temp;
 
 create trigger trg_protect_signup_attribution
   before update on public.profiles
@@ -259,7 +263,13 @@ begin
 
   return new;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql
+  security definer
+  -- The highest-privilege trigger in the system: runs as the definer on
+  -- every signup and writes to public.profiles and storage.objects. Pinned
+  -- so the unqualified calls above resolve predictably; pg_temp last so a
+  -- temp table cannot shadow a relation name.
+  set search_path = public, pg_temp;
 
 create trigger on_auth_user_created
   after insert on auth.users
@@ -541,7 +551,7 @@ create or replace function public.maintain_hsa_administrator_row()
 returns trigger
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, pg_temp
 as $$
 begin
   if new.slug is null then

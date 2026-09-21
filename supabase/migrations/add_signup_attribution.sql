@@ -1,5 +1,19 @@
 -- Migration: Add signup attribution columns to profiles table
 -- Run this in Supabase SQL Editor if the profiles table already exists
+--
+-- ⚠ BEFORE RUNNING — this replaces public.handle_new_user() wholesale.
+--
+-- If anyone has edited that function directly in the SQL Editor since it was
+-- last committed, `create or replace` discards their change silently. Diff the
+-- live definition against the version below first:
+--
+--   select prosrc from pg_proc
+--   where proname = 'handle_new_user'
+--     and pronamespace = 'public'::regnamespace;
+--
+-- The body below should differ from what is live ONLY by the attribution
+-- columns in the insert. Anything else in the live version is a change that
+-- needs merging in rather than overwriting.
 
 -- All columns are nullable with no default: NULL means "unknown," which is
 -- true for every pre-existing user and for any signup where attribution
@@ -66,7 +80,18 @@ begin
 
   return new;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql
+  security definer
+  -- Pinned because this is the highest-privilege trigger in the system: it
+  -- runs as the definer on every signup and writes to both public.profiles
+  -- and storage.objects. Without a fixed search_path, the unqualified calls
+  -- above (coalesce, split_part, substring, position, now) resolve through
+  -- whatever path the calling session happens to have.
+  --
+  -- pg_temp is listed LAST on purpose. When it is omitted entirely, Postgres
+  -- searches it first for relation names, which would let a temporary table
+  -- shadow a real one.
+  set search_path = public, pg_temp;
 
 -- Prevent a user from overwriting their own attribution via the "update own
 -- profile" policy once it has been set. Not a security boundary (this is
@@ -87,7 +112,12 @@ begin
   end if;
   return new;
 end;
-$$ language plpgsql;
+$$ language plpgsql
+  -- Deliberately NOT security definer. This runs with the caller's rights and
+  -- only ever copies old values over new ones, so it needs no elevation —
+  -- and a trigger that fires on every profile update is the last place to
+  -- hand out privileges it doesn't use.
+  set search_path = public, pg_temp;
 
 drop trigger if exists trg_protect_signup_attribution on public.profiles;
 create trigger trg_protect_signup_attribution

@@ -290,7 +290,7 @@ create or replace function public.maintain_hsa_administrator_row()
 returns trigger
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, pg_temp
 as $$
 begin
   if new.slug is null then
