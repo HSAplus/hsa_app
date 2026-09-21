@@ -9,6 +9,7 @@ import { Logo } from "@/components/ui/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://hsa.plus/calculator" },
   title: "Free HSA Compound Growth & Tax Calculator | HSA Plus",
   description:
     "Calculate your HSA investment growth over 5, 10, 20, or 30 years. See how much tax-free wealth you gain by delaying reimbursements with our free interactive calculator.",

@@ -4,6 +4,7 @@ import type { PlanType } from "@/lib/types";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://hsa.plus/pricing" },
   title: "Pricing | HSA Plus",
   description:
     "Free forever with up to 10 expenses. Upgrade to Plus for unlimited tracking, family dependents, AI receipt scanning, and automated claims.",

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -56,6 +57,14 @@ const FAQS = [
       "Yes. HSA Plus is free forever for up to 10 expenses with full audit readiness checks, 5 document uploads per expense, and investment growth projections. Upgrading to Plus unlocks unlimited expenses, AI receipt scanning, Plaid bank sync, and automated claims.",
   },
 ];
+
+// Title and description are inherited from the root layout. Only the canonical
+// is declared here: the homepage is the most common target for URL variations
+// (utm parameters, trailing slashes, the bare apex), and without it those are
+// all candidates to be treated as separate pages.
+export const metadata: Metadata = {
+  alternates: { canonical: "https://hsa.plus" },
+};
 
 const jsonLd = {
   "@context": "https://schema.org",

@@ -44,7 +44,10 @@ const sitemap = read("src/app/sitemap.ts");
 for (const m of sitemap.matchAll(/\$\{baseUrl\}(\/[^`"'\s]*)/g)) {
   advertised.set(m[1], "sitemap.ts");
 }
-// `url: baseUrl` with no suffix is the home page, which is always public.
+// `url: baseUrl` with no suffix is the home page. It is always publicly
+// reachable, but it still needs a canonical — it is the single most common
+// target for URL variations (utm params, trailing slash, apex vs www).
+if (/url:s*baseUrls*,/.test(sitemap)) advertised.set("/", "sitemap.ts");
 
 const robots = read("src/app/robots.ts");
 const allowMatch = robots.match(/allow:\s*(\[[\s\S]*?\]|"[^"]*")/);
@@ -82,3 +85,44 @@ if (unreachable.length > 0) {
 
 for (const [route] of advertised) console.log(`  ✓ ${route}`);
 console.log("\n[SUCCESS] Every advertised route is publicly reachable.");
+
+// ── canonical URLs on advertised routes ────────────────────────
+// Without an explicit canonical, a URL variation — a utm parameter, a
+// trailing slash, the apex vs www — is a candidate to be indexed as a
+// separate page competing with the original. Every route we put in the
+// sitemap should declare which URL is the real one.
+console.log("\n=== Canonical URL Guard ===");
+
+const missingCanonical = [];
+for (const [route] of advertised) {
+  if (route.includes("${")) continue; // dynamic segment, checked in its own file
+  if (route.startsWith("/api/")) continue; // JSON, not an indexable document
+
+  // sitemap path -> page file
+  const pageFile = path.join(rootDir, "src/app", route === "/" ? "" : route, "page.tsx");
+  if (!fs.existsSync(pageFile)) {
+    missingCanonical.push({ route, why: "no page.tsx found" });
+    continue;
+  }
+  if (!/canonical/.test(fs.readFileSync(pageFile, "utf-8"))) {
+    missingCanonical.push({ route, why: "no canonical in metadata" });
+  }
+}
+
+if (missingCanonical.length > 0) {
+  console.error("\n[ERROR] Advertised routes without a canonical URL:");
+  for (const { route, why } of missingCanonical) {
+    console.error(`  - ${route}   (${why})`);
+  }
+  console.error(
+    '\nAdd `alternates: { canonical: "<path>" }` to the page metadata.\n' +
+      "metadataBase is set in layout.tsx, so a relative path is correct and\n" +
+      "stays correct if the domain changes."
+  );
+  process.exit(1);
+}
+
+for (const [route] of advertised) {
+  if (!route.includes("${") && !route.startsWith("/api/")) console.log(`  ✓ ${route}`);
+}
+console.log("\n[SUCCESS] Every advertised route declares a canonical URL.");

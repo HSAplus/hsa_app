@@ -14,6 +14,7 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://hsa.plus/strategy/delayed-reimbursement" },
   title: "The Delayed HSA Reimbursement Strategy | HSA Plus",
   description:
     "Learn how the delayed HSA reimbursement strategy works. Pay medical bills out of pocket today, let your funds compound tax-free in index funds, and reimburse yourself decades later.",

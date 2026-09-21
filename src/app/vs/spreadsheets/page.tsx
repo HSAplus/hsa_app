@@ -14,6 +14,7 @@ import {
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://hsa.plus/vs/spreadsheets" },
   title: "HSA Plus vs Spreadsheets | Why Google Sheets Fails for HSA Tracking",
   description:
     "Compare tracking HSA receipts in Excel or Google Sheets vs HSA Plus. Learn why spreadsheets fail IRS audit requirements, risk broken links, and lack automated retention tracking.",

@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+// Cloudflare serves its own robots.txt with `Allow: /`, overriding
+// src/app/robots.ts entirely, so a Disallow rule there never reaches a
+// crawler. This meta tag is served by us and does apply.
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { ExpenseFormPage } from "@/components/dashboard/expense-form-page";

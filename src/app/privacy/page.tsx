@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://hsa.plus/privacy" },
   title: "Privacy Policy | HSA Plus",
   description: "Learn how HSA Plus protects your health and financial data.",
 };

@@ -14,6 +14,14 @@ export const metadata: Metadata = {
   title: "Create Your Free Account | HSA Plus",
   description:
     "Start tracking HSA expenses, managing family receipts, and optimizing your tax-free growth with HSA Plus.",
+  // Cloudflare serves its own robots.txt with `Allow: /`, overriding
+  // src/app/robots.ts entirely, so a Disallow rule there never reaches a
+  // crawler. This meta tag is served by us and does apply.
+  //
+  // follow stays true, unlike the other auth pages: /signup is linked from
+  // every marketing page, and the links out of it are worth following even
+  // though the page itself has nothing to index.
+  robots: { index: false, follow: true },
 };
 
 export default async function SignUpPage({
