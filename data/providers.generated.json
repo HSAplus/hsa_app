@@ -1,7 +1,7 @@
 {
   "_comment": "GENERATED FILE — DO NOT EDIT. Produced by scripts/export-providers.mjs from public.hsa_providers_public. The database is the source of truth; edit there and re-run `npm run export:providers`. Hand edits here will be silently overwritten on the next export.",
   "generated_from": "public.hsa_providers_public",
-  "count": 15,
+  "count": 14,
   "providers": [
     {
       "id": "alegeus",
@@ -404,37 +404,6 @@
       ],
       "last_reviewed": "2026-09-20",
       "updated_at": "2026-09-21T00:10:31.992887+00:00"
-    },
-    {
-      "id": "payflex",
-      "slug": "payflex",
-      "name": "PayFlex",
-      "legal_name": null,
-      "aliases": [],
-      "former_names": [],
-      "org_type": null,
-      "website_url": null,
-      "portal_url": "https://www.payflex.com",
-      "support_phone": null,
-      "hq_state": null,
-      "is_custodian": false,
-      "is_administrator": false,
-      "account_types": [
-        "hsa"
-      ],
-      "market_share_pct": 1,
-      "accounts_count": null,
-      "logo_url": null,
-      "submission_tier": "portal",
-      "claim_form_url": null,
-      "routing_varies_by_employer": false,
-      "docs_required": null,
-      "has_guide": false,
-      "guide_summary": null,
-      "guide_body": null,
-      "sources": [],
-      "last_reviewed": null,
-      "updated_at": "2026-09-21T00:09:21.999219+00:00"
     },
     {
       "id": "tasc",
