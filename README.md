@@ -38,6 +38,14 @@ HSA Plus is a full-stack web application for managing Health Savings Accounts, L
 - Claims tracking with status and submission channel
 - Reimbursement optimizer — see which unreimbursed expenses have the most growth potential
 - Mark expenses as reimbursed with date and amount
+- Submission tiers per provider: API, fax, portal, mail, email, and `self_directed` — the last meaning **no claim exists**, which is how the largest provider by market share actually works
+
+### HSA Provider Directory (public)
+
+- [`/hsa-providers`](https://hsa.plus/hsa-providers) — all 845 known HSA providers, server-rendered with client-side search that matches former names, so "PayFlex" finds Inspira
+- [`/hsa-providers/[slug]`](https://hsa.plus/hsa-providers/fidelity) — hand-researched guides with cited sources and a visible review date. Generated **only** for providers where `has_guide = true`, so unresearched registry rows appear in the directory without becoming thin pages
+- [`/api/hsa-providers`](https://hsa.plus/api/hsa-providers) — the registry as public JSON, free to use with attribution
+- Built on the custodian/administrator distinction most HSA coverage collapses: one holds the money, the other decides whether an expense qualifies, and a provider may be either, both, or neither
 
 ### Investment Growth & Tax Optimization
 
@@ -153,15 +161,28 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 
-# Resend (optional — for email digests)
+# Resend (optional — for email)
 RESEND_API_KEY=your_resend_api_key
-RESEND_FROM_EMAIL=noreply@yourdomain.com
+# Two senders, deliberately on separate domains. A spam complaint about a
+# digest must not degrade deliverability of a reimbursement claim — that is
+# money the user doesn't get back.
+RESEND_FROM_CLAIMS="HSA Plus Claims <claims@mail.hsa.plus>"
+RESEND_FROM_DIGEST="HSA Plus <digest@news.hsa.plus>"
 
 # Anthropic Claude (optional — for AI receipt scanning)
 ANTHROPIC_API_KEY=your_anthropic_api_key
 
-# Cron protection (optional)
+# Cron protection — NOT optional if any cron is configured.
+# /api/plaid/sync and /api/digest return 500 when this is unset, and Vercel
+# only sends the Bearer header when the variable exists.
 CRON_SECRET=your_cron_secret
+
+# Fax submission (required for the 'fax' tier — currently the only
+# automatable claim channel, since unencrypted email isn't HIPAA-compliant
+# for PHI and no major administrator publishes an intake address that is)
+WESTFAX_USERNAME=
+WESTFAX_PASSWORD=
+WESTFAX_PRODUCT_ID=
 ```
 
 ### Development
@@ -242,11 +263,13 @@ The app uses Supabase Postgres (core tables include `profiles`, `expenses`, `hsa
 | `dependents` | Family members (spouse, dependent child, domestic partner) linked to a user |
 | `expense_templates` | Reusable expense shortcuts with pre-filled fields and frequency |
 | `claims` | Claim submissions tied to an expense and HSA administrator, with status lifecycle (draft → submitted → processing → approved/denied → reimbursed) |
-| `hsa_administrators` | Reference table of HSA custodians with submission tiers (API, email, fax, portal) and contact details |
+| `hsa_administrators` | Registry of every known HSA provider (845 rows) — submission tiers, routing, and the editorial content behind `/hsa-providers`. See [`docs/provider-registry.md`](docs/provider-registry.md) |
 | `hsa_connections` | Plaid-linked HSA accounts (access token server-only; cursor + sync status for recurring jobs) |
 | `plaid_transactions` | Imported Plaid lines for reconciliation with manual expenses |
 
 All user-owned tables enforce row-level security (RLS) scoped to `auth.uid() = user_id`. The `profiles` table is keyed directly to `auth.users(id)` and auto-created via a database trigger on signup.
+
+`hsa_administrators` is the exception, because `/hsa-providers` has to be readable by logged-out visitors while the same table holds internal claim-routing configuration. RLS is row-level and can't express "these columns only", so anonymous access is two independent layers: a policy limiting anon to `active = true` rows, and a **column-level `GRANT`** limiting it to the public columns. `hsa_providers_public` is a `security_invoker` view over both — a convenience, not a security boundary. Querying `fax_number` as anon is a permission error, not a filtered result.
 
 ---
 
@@ -264,12 +287,34 @@ The app includes built-in IRS HSA contribution limits from 2014 through 2026:
 
 ## Scripts
 
-| Command         | Description                |
-| --------------- | -------------------------- |
-| `npm run dev`   | Start development server   |
-| `npm run build` | Production build           |
-| `npm start`     | Start production server    |
-| `npm run lint`  | Run ESLint                 |
+| Command | Description |
+| ------- | ----------- |
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm test` | All CI guards and tests |
+
+### CI guards
+
+Each of these exists because the failure it catches is invisible in normal development — the build succeeds, the page renders, and only a logged-out visitor, a migration run, or a production import reveals the problem.
+
+| Command | Guards against |
+| ------- | -------------- |
+| `npm run check:rls` | A `public` table shipped without row-level security |
+| `npm run check:sql` | An unbalanced `$$` quote, which turns the rest of a migration into a string literal and half-applies it |
+| `npm run check:routes` | A route in `sitemap.ts` that middleware redirects to `/login` — advertised to Google, invisible to it |
+| `npm run test:storage` | Path traversal in document storage |
+| `npm run test:attribution` | Channel derivation, and drift between `SIGNUP_CHANNELS` and the database check constraint |
+
+### Provider registry
+
+| Command | Description |
+| ------- | ----------- |
+| `npm run import:providers <file>` | Upsert providers from CSV/JSON. Use `-- --dry-run` first. |
+| `npm run export:providers` | Write the committed snapshot; `-- --check` fails if stale |
+
+See [`docs/provider-registry.md`](docs/provider-registry.md) — particularly the section on how an import can quietly destroy curated data, which it did once.
 
 ---
 
