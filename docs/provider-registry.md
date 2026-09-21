@@ -80,11 +80,26 @@ The service role key is required for writes because `hsa_administrators` has a r
 ```bash
 npm run import:providers path/to/providers.csv -- --dry-run   # validate first
 npm run import:providers path/to/providers.csv
+# then re-run supabase/seed/providers_researched.sql            # see below
 npm run export:providers                                       # refresh the snapshot
 git add data/providers.generated.json && git commit
 ```
 
 **Always dry-run first.** It validates every row and writes nothing.
+
+**Re-run the seed afterwards.** A bulk list and a researched guide will disagree — hsasearch calls Fidelity "Fidelity Investments" and puts it in RI; our seed calls it "Fidelity", in MA, `investment_platform`. For a provider with a published guide the researched values win, and re-running the idempotent seed is how you re-assert them.
+
+#### What the importer will and won't overwrite
+
+| | Behaviour |
+|---|---|
+| `id` | **Never changed** on an existing provider. Looked up by slug and sent back unchanged. |
+| Synthesized defaults (`submission_tier`, `data_source`) | Only applied to genuinely new rows. On an existing row the current value is sent back. |
+| Empty cells | Genuinely skipped — rows are grouped by key signature so an omitted column is absent from the `INSERT`, not `NULL`. |
+| Editorial columns | Rejected from input files entirely. |
+| Values the file does supply | Overwritten. That is the point of an import. |
+
+These are not incidental: the first real run of this script broke all three of the first four rows above. See **Two ways an import can quietly destroy data** below.
 
 #### Input format
 
@@ -115,6 +130,32 @@ The importer catches duplicates *within* a file and refuses to run, but it canno
 ### Deactivating a provider
 
 Set `active = false`. Don't delete: `claims.administrator_id` is a foreign key, and deleting a provider someone has filed a claim against would break their history. Inactive rows disappear from `hsa_providers_public` automatically.
+
+## Two ways an import can quietly destroy data
+
+Both of these happened on the first real run of `import:providers`, against production, and both are now fixed. They are recorded because the failure modes are not obvious and the fixes look like noise if you don't know what they're for.
+
+### 1. An upsert on a non-primary key rewrites the primary key
+
+`upsert(rows, { onConflict: "slug" })` looks like it updates matching rows in place. It does — but PostgREST updates **every column in the payload**, including `id`. So a row whose slug already existed had its `id` rewritten to whatever the file generated.
+
+`claims.administrator_id` and `profiles.hsa_administrator_id` reference that id with no `ON UPDATE CASCADE`, so this either fails mid-batch with a foreign key error or succeeds and silently repoints a key. Both occurred: `bofa` became `bank-of-america` because nothing referenced it, and the batch containing HSA Bank aborted because a profile did.
+
+The fix looks up existing ids by slug and sends them back unchanged.
+
+### 2. A missing key in a batch writes NULL, it doesn't skip the column
+
+The importer's own docs said "empty cells are skipped, not written as NULL." That was true per row and false per request: PostgREST builds one `INSERT` whose column list is the **union of keys across the batch**, so a row that omitted a key got `NULL` written into it.
+
+Three curated providers had `org_type` nulled this way, and Fidelity's `submission_tier` went from `self_directed` to `portal` — which is to say the largest provider by market share silently acquired a claims process it does not have.
+
+The fix groups rows by key signature so each request has a uniform column list, plus tracking which values the script synthesized versus read from the file.
+
+One wrinkle worth knowing if you touch this: for a `NOT NULL` column with no default — `submission_tier` — omitting it is not enough. Postgres validates the `INSERT` tuple before resolving the conflict, so an omitted column fails the whole batch even when every row is destined for `DO UPDATE`. The current value has to be read and sent back.
+
+### What made this recoverable
+
+`data/providers.generated.json` was committed before the import, so diffing the live table against it produced an exact list of the 23 fields that changed and what they had been. That is the entire argument for the snapshot, and it paid for itself the first time it was tested.
 
 ## Schema notes
 

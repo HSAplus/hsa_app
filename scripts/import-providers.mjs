@@ -261,7 +261,7 @@ function normalizeRow(input, rowNum, warnings) {
   return out;
 }
 
-function validateRow(row, rowNum, errors) {
+function validateRow(row, rowNum, errors, synthesized) {
   if (!row.name) {
     errors.push(`row ${rowNum}: missing required column "name"`);
     return false;
@@ -271,7 +271,10 @@ function validateRow(row, rowNum, errors) {
   // `slug` is the public URL. They are separate columns and only default to
   // the same value for genuinely new providers.
   if (!row.slug) row.slug = slugify(row.id || row.name);
-  if (!row.id) row.id = row.slug;
+  if (!row.id) {
+    row.id = row.slug;
+    synthesized.add("id");
+  }
 
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(row.slug)) {
     const fixed = slugify(row.slug);
@@ -287,8 +290,14 @@ function validateRow(row, rowNum, errors) {
   // submission_tier is NOT NULL with no default. 'portal' is the honest
   // starting point for an unresearched provider: it says "go to their site",
   // which is true of every provider and claims nothing we haven't verified.
+  //
+  // Recorded as synthesized so it is dropped again for providers that already
+  // exist. The first real run of this script wrote this default over
+  // Fidelity's curated 'self_directed', which is how 24% of the market
+  // silently acquired a claims process it does not have.
   if (!row.submission_tier) {
     row.submission_tier = "portal";
+    synthesized.add("submission_tier");
   } else if (!VALID_TIERS.includes(row.submission_tier)) {
     errors.push(
       `row ${rowNum} (${row.id}): submission_tier "${row.submission_tier}" is not one of ${VALID_TIERS.join(", ")}`
@@ -310,7 +319,10 @@ function validateRow(row, rowNum, errors) {
     return false;
   }
 
-  if (!row.data_source) row.data_source = "import";
+  if (!row.data_source) {
+    row.data_source = "import";
+    synthesized.add("data_source");
+  }
 
   return true;
 }
@@ -367,11 +379,18 @@ async function main() {
   const seenIds = new Map();
   const seenSlugs = new Map();
   const prepared = [];
+  const synthesizedByRow = new Map();
 
   records.forEach((rec, i) => {
     const rowNum = i + 2; // 1-indexed, +1 for the header row
     const row = normalizeRow(rec, rowNum, warnings);
-    if (!validateRow(row, rowNum, errors)) return;
+
+    // Which fields this script invented rather than read from the file. They
+    // are fine for a brand-new provider and must never be written over an
+    // existing one.
+    const synthesized = new Set();
+    if (!validateRow(row, rowNum, errors, synthesized)) return;
+    synthesizedByRow.set(row, synthesized);
 
     // A duplicate would make one provider silently overwrite another — two
     // rows in, one row out, no error. Catch it here instead.
@@ -447,27 +466,125 @@ async function main() {
     auth: { persistSession: false },
   });
 
-  let written = 0;
-  for (let i = 0; i < prepared.length; i += BATCH_SIZE) {
-    const batch = prepared.slice(i, i + BATCH_SIZE);
-    // Conflict on slug, not id. The table already holds hand-entered rows
-    // whose ids follow no convention, so matching on id would insert a second
-    // "HealthEquity" beside an existing `health_equity` instead of updating
-    // it — and the new row would be orphaned from the claims pointing at the
-    // old one. Matching on slug updates in place and leaves ids, and
-    // therefore foreign keys, untouched.
-    const { error } = await supabase
+  // ────────────────────────────────────────────────
+  // Preserve the id of every row that already exists
+  // ────────────────────────────────────────────────
+  // The upsert below conflicts on slug, but PostgREST updates every column
+  // present in the payload — including id. So a row whose slug already exists
+  // would have its id rewritten to whatever this file generated, silently
+  // repointing a primary key that claims.administrator_id and
+  // profiles.hsa_administrator_id reference with no ON UPDATE CASCADE.
+  //
+  // In practice that either breaks with a foreign key error halfway through a
+  // batch, or succeeds and quietly orphans nothing today while changing an
+  // identifier something might rely on tomorrow. Both happened on the first
+  // real run of this script.
+  //
+  // So: look up the ids the database already has and send those back
+  // unchanged. `id` is only ever newly assigned for genuinely new providers.
+  const existingBySlug = new Map();
+  const LOOKUP_CHUNK = 500;
+  const allSlugs = prepared.map((r) => r.slug);
+
+  for (let i = 0; i < allSlugs.length; i += LOOKUP_CHUNK) {
+    const { data, error } = await supabase
       .from("hsa_administrators")
-      .upsert(batch, { onConflict: "slug" });
+      // Every column this script is capable of synthesizing, so the current
+      // value can be sent back unchanged instead of a guess.
+      .select("id,slug,submission_tier,data_source")
+      .in("slug", allSlugs.slice(i, i + LOOKUP_CHUNK));
 
     if (error) {
-      console.error(`\nBatch starting at row ${i + 2} failed: ${error.message}`);
-      console.error(`${written} record(s) were written before this point.`);
+      console.error(`\nCould not read existing providers: ${error.message}`);
       process.exit(1);
     }
+    for (const row of data ?? []) existingBySlug.set(row.slug, row);
+  }
 
-    written += batch.length;
-    process.stdout.write(`\r  upserted ${written}/${prepared.length}`);
+  let idPreserved = 0;
+  let defaultsDropped = 0;
+
+  for (const row of prepared) {
+    const existing = existingBySlug.get(row.slug);
+    if (existing === undefined) continue; // genuinely new — defaults apply
+
+    if (existing.id !== row.id) {
+      row.id = existing.id;
+      idPreserved++;
+    }
+
+    // Replace every field this script invented with what the database already
+    // holds. For a provider that already exists, a synthesized default is not
+    // information — it is this script guessing, over a value a human chose.
+    //
+    // Sending the current value back, rather than omitting the column, is
+    // required for submission_tier: it is NOT NULL with no default, and
+    // Postgres validates the INSERT tuple of an upsert before it ever
+    // resolves the conflict. Omitting it fails the whole batch even though
+    // every row is destined for DO UPDATE.
+    for (const field of synthesizedByRow.get(row) ?? []) {
+      if (field === "id") continue; // handled above
+
+      if (existing[field] !== null && existing[field] !== undefined) {
+        row[field] = existing[field];
+      } else {
+        delete row[field];
+      }
+      defaultsDropped++;
+    }
+  }
+
+  console.log(
+    `${existingBySlug.size} of ${prepared.length} already exist and will be updated in place` +
+      (idPreserved > 0 ? `; ${idPreserved} keep an id that differs from their slug` : "") +
+      (defaultsDropped > 0 ? `; ${defaultsDropped} synthesized default(s) replaced with the existing value` : "")
+  );
+  console.log(`${prepared.length - existingBySlug.size} are new.\n`);
+
+  // ────────────────────────────────────────────────
+  // Group by key signature before sending
+  // ────────────────────────────────────────────────
+  // PostgREST builds one INSERT per request, with a column list taken from
+  // the UNION of keys across the batch. A row that omits a key therefore does
+  // not "skip" that column — it gets NULL written into it. The first real run
+  // of this script nulled org_type on three curated providers exactly this
+  // way, while its own documentation promised empty cells were skipped.
+  //
+  // Grouping rows that share an identical key set restores the intended
+  // behaviour: a column absent from a group is absent from that INSERT, so
+  // new rows take the database default and existing rows keep what they have.
+  const groups = new Map();
+  for (const row of prepared) {
+    const signature = Object.keys(row).sort().join("\u0000");
+    if (!groups.has(signature)) groups.set(signature, []);
+    groups.get(signature).push(row);
+  }
+
+  console.log(`Sending ${groups.size} group(s) of uniform columns.`);
+
+  let written = 0;
+  for (const rows of groups.values()) {
+    for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+      const batch = rows.slice(i, i + BATCH_SIZE);
+
+      // Conflict on slug, not id. The table holds hand-entered rows whose ids
+      // follow no convention, so matching on id would insert a second
+      // "HealthEquity" beside an existing `health_equity` instead of updating
+      // it — and the new row would be orphaned from anything pointing at the
+      // old one.
+      const { error } = await supabase
+        .from("hsa_administrators")
+        .upsert(batch, { onConflict: "slug" });
+
+      if (error) {
+        console.error(`\nA batch failed: ${error.message}`);
+        console.error(`${written} record(s) were written before this point.`);
+        process.exit(1);
+      }
+
+      written += batch.length;
+      process.stdout.write(`\r  upserted ${written}/${prepared.length}`);
+    }
   }
 
   console.log(`\n\n[SUCCESS] ${written} provider(s) upserted.`);
