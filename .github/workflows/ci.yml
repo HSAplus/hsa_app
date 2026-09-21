@@ -30,6 +30,9 @@ jobs:
       - name: "Guard: SQL Dollar-Quote Balance"
         run: npm run check:sql
 
+      - name: "Guard: Advertised Routes Are Publicly Reachable"
+        run: npm run check:routes
+
       - name: "Test: Storage Path Security & Traversal Defense"
         run: npm run test:storage
 

@@ -52,6 +52,15 @@ export async function updateSession(request: NextRequest) {
     "/llms.txt",
     "/strategy",
     "/vs",
+    // The provider directory and guides exist to be read by logged-out
+    // visitors and crawlers. Without these, middleware 307s them to /login
+    // before the statically generated page is ever served — so the pages
+    // build correctly, render correctly, and stay invisible to everyone they
+    // are written for.
+    "/hsa-providers",
+    // The published dataset. Explicitly allowed in robots.txt, so redirecting
+    // it to a login page would be a contradiction.
+    "/api/hsa-providers",
   ];
   const isPublicPath =
     request.nextUrl.pathname === "/" ||
