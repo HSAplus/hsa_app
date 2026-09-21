@@ -18,7 +18,10 @@
 --   - the `inspira-financial` row already carries {PayFlex} in former_names,
 --     so searching "PayFlex" on the hub already finds the correct row
 --
--- BEFORE RUNNING, see what is attached to it:
+-- Checked against production on 2026-09-20: 0 claims and 0 profiles reference
+-- `payflex`, so nothing is lost by removing it outright. The block below
+-- re-checks rather than trusting that, because this also has to be correct on
+-- a database where the answer is different.
 --
 --   select
 --     (select count(*) from public.claims   where administrator_id    = 'payflex') as claims,
@@ -26,25 +29,38 @@
 --
 -- ============================================================================
 
--- Profiles drive FUTURE submissions, so these are repointed. A profile left
--- on `payflex` would keep routing new claims to a portal that is no longer
--- how this administrator takes them.
+-- Profiles drive FUTURE submissions, so these are repointed first regardless.
+-- A profile left on `payflex` would keep routing new claims to a portal that
+-- is no longer how this administrator takes them.
 update public.profiles
 set hsa_administrator_id = 'inspira-financial'
 where hsa_administrator_id = 'payflex';
 
--- Claims are deliberately NOT repointed. A claim submitted in 2023 was
--- submitted to PayFlex — that is a historical fact about where documents
--- actually went, and rewriting it would make the record say something untrue.
--- The foreign key targets id, not active, so these keep resolving fine
--- against a deactivated row.
+do $$
+declare
+  claim_count bigint;
+begin
+  select count(*) into claim_count
+  from public.claims
+  where administrator_id = 'payflex';
 
--- Deactivated rather than deleted. Deleting would break the claims above,
--- and `active = false` already removes it from hsa_providers_public and so
--- from every public page.
-update public.hsa_administrators
-set active = false
-where id = 'payflex';
+  if claim_count = 0 then
+    -- Nothing points at it, so delete rather than leaving a contradictory
+    -- row in the table for whoever reads it next.
+    delete from public.hsa_administrators where id = 'payflex';
+    raise notice 'payflex: deleted (no claims referenced it)';
+  else
+    -- Claims are deliberately NOT repointed. A claim submitted in 2023 was
+    -- submitted to PayFlex — a historical fact about where documents actually
+    -- went, and rewriting it would make the record say something untrue. The
+    -- foreign key targets id, not active, so those keep resolving against a
+    -- deactivated row, which already disappears from hsa_providers_public
+    -- and so from every public page.
+    update public.hsa_administrators set active = false where id = 'payflex';
+    raise notice 'payflex: deactivated (% claim(s) still reference it)', claim_count;
+  end if;
+end;
+$$;
 
 -- ============================================================================
 -- Separate issue found at the same time, NOT changed here
