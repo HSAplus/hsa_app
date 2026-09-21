@@ -32,6 +32,7 @@ export function MobileNav() {
               { href: "#features", label: "Features" },
               { href: "#growth", label: "Growth" },
               { href: "#how-it-works", label: "How It Works" },
+              { href: "/hsa-providers", label: "HSA Providers" },
               { href: "/pricing", label: "Pricing" },
               { href: "/calculator", label: "Calculator" },
               { href: "/privacy", label: "Privacy" },

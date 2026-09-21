@@ -157,6 +157,16 @@ export default async function Home() {
             >
               How It Works
             </a>
+            {/* The directory is the largest body of indexable content on the
+                site, and the homepage is the strongest page linking into it.
+                Without this it is reachable only from the sitemap, which gets
+                it crawled but passes it no authority. */}
+            <Link
+              href="/hsa-providers"
+              className="rounded-sm hover:text-[#0C1220] dark:hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/50 focus-visible:ring-offset-2"
+            >
+              Providers
+            </Link>
             <Link
               href="/pricing"
               className="rounded-sm hover:text-[#0C1220] dark:hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/50 focus-visible:ring-offset-2"
@@ -925,6 +935,12 @@ export default async function Home() {
               className="rounded-sm hover:text-[#64748B] dark:hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/40 focus-visible:ring-offset-2"
             >
               vs Spreadsheets
+            </Link>
+            <Link
+              href="/hsa-providers"
+              className="rounded-sm hover:text-[#64748B] dark:hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#059669]/40 focus-visible:ring-offset-2"
+            >
+              HSA Providers
             </Link>
             <Link
               href="/calculator"

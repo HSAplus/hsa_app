@@ -254,6 +254,7 @@ export default function DelayedReimbursementPage() {
             <span>&copy; {new Date().getFullYear()} HSA Plus &middot; Tax-free wealth, made simple.</span>
           </div>
           <div className="flex items-center gap-6 text-[13px] font-medium text-[#94A3B8] dark:text-muted-foreground">
+            <Link href="/hsa-providers" className="hover:text-[#64748B] dark:hover:text-foreground">HSA Providers</Link>
             <Link href="/calculator" className="hover:text-[#64748B] dark:hover:text-foreground">Calculator</Link>
             <Link href="/pricing" className="hover:text-[#64748B] dark:hover:text-foreground">Pricing</Link>
             <Link href="/vs/spreadsheets" className="hover:text-[#64748B] dark:hover:text-foreground">HSA Plus vs Spreadsheets</Link>
