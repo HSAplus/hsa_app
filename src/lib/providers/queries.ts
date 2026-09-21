@@ -1,5 +1,4 @@
 import { createClient } from "@supabase/supabase-js";
-import { getSupabasePublishableKey } from "@/lib/supabase/publishable-key";
 import type { PublicProvider } from "@/lib/claims/types";
 
 /**
@@ -14,11 +13,30 @@ import type { PublicProvider } from "@/lib/claims/types";
  * internal routing configuration.
  */
 function publicClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    getSupabasePublishableKey(),
-    { auth: { persistSession: false } }
-  );
+  // Returns null rather than throwing when the environment is incomplete.
+  //
+  // getSupabasePublishableKey() throws by design, which is right for the app
+  // but wrong here: generateStaticParams runs at build time, so a missing key
+  // took down the entire build — not just this route — on any environment
+  // that hadn't been given Supabase credentials. Preview deployments were
+  // exactly that, and had been fine until these pages became the first ones
+  // to need the database before runtime.
+  //
+  // The rest of this file already treats unreachable data as an empty list.
+  // This closes the one path that didn't.
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
+
+  if (!url || !key) {
+    console.warn(
+      "[providers] NEXT_PUBLIC_SUPABASE_URL / anon key not set — provider pages will render empty."
+    );
+    return null;
+  }
+
+  return createClient(url, key, { auth: { persistSession: false } });
 }
 
 /** Columns the hub needs. Excludes guide_body, which is large and unused there. */
@@ -80,6 +98,7 @@ const PAGE_SIZE = 1000;
  */
 export async function getAllProviders(): Promise<ProviderListItem[]> {
   const supabase = publicClient();
+  if (!supabase) return [];
   const rows: ProviderListItem[] = [];
 
   for (let from = 0; ; from += PAGE_SIZE) {
@@ -109,6 +128,7 @@ export async function getAllProviders(): Promise<ProviderListItem[]> {
  */
 export async function getGuidedProviderSlugs(): Promise<string[]> {
   const supabase = publicClient();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from("hsa_providers_public")
     .select("slug")
@@ -127,6 +147,7 @@ export async function getProviderGuide(
   slug: string
 ): Promise<PublicProvider | null> {
   const supabase = publicClient();
+  if (!supabase) return null;
   const { data, error } = await supabase
     .from("hsa_providers_public")
     .select("*")
